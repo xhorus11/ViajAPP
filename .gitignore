@@ -1,0 +1,18 @@
+# Archivos personales que no son parte de la app
+a4241728-86f3-4dba-be82-4f5f11f00184.pdf
+
+# Herramientas locales
+.claude/
+.firebase/
+node_modules/
+**/node_modules/
+
+# Google Drive / Windows
+.tmp.drive*/
+desktop.ini
+Thumbs.db
+
+# Salidas de las pruebas (se regeneran)
+tests/out*/
+tests/shots/
+tests/m-*.png

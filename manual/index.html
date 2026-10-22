@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#140c33">
+  <title>Manual de uso · Viajapp</title>
+  <meta name="description" content="Guía paso a paso para usar Viajapp: lista del súper, recetas, gastos y carta financiera, agenda de comidas y viaje compartido.">
+  <link rel="icon" type="image/png" href="../icons/favicon-64.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #140c33; --bg2: #1f1250; --card: rgba(255,255,255,.06); --stroke: rgba(255,255,255,.12);
+      --text: #fff; --muted: #c3b9ef; --dim: #8f84c2;
+      --pink: #ff3d8b; --orange: #ff8a00; --yellow: #ffd23f; --lime: #3ef08a; --cyan: #22d3ee; --violet: #8b5cf6;
+      --display: 'Bricolage Grotesque', 'Outfit', system-ui, sans-serif; --font: 'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      color-scheme: dark;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+    body { margin: 0; background: radial-gradient(120% 60% at 50% 0%, var(--bg2), var(--bg) 60%) fixed, var(--bg); color: var(--text); font: 17px/1.6 var(--font); }
+    a { color: var(--cyan); }
+    img { max-width: 100%; display: block; }
+    h1, h2, h3 { font-family: var(--display); letter-spacing: -.02em; line-height: 1.1; margin: 0; }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 18px; }
+
+    /* Portada */
+    .hero { padding: calc(env(safe-area-inset-top, 0px) + 40px) 0 34px; text-align: center; }
+    .hero img { width: 150px; margin: 0 auto 10px; filter: drop-shadow(0 16px 30px rgba(0,0,0,.45)); }
+    .hero .kicker { font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); font-size: 13px; }
+    .hero h1 { font-size: clamp(34px, 8vw, 58px); margin: 8px 0 12px; }
+    .hero h1 span { background: linear-gradient(90deg, var(--pink), var(--orange), var(--yellow)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .hero p { color: var(--muted); max-width: 620px; margin: 0 auto 22px; }
+    .cta { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 22px; border-radius: 16px; font-weight: 700; text-decoration: none; color: #fff; background: rgba(255,255,255,.1); border: 1px solid var(--stroke); }
+    .btn.primary { background: linear-gradient(135deg, var(--pink), var(--orange)); border: 0; box-shadow: 0 12px 30px -10px rgba(255,61,139,.8); }
+
+    /* Índice */
+    .toc { position: sticky; top: 0; z-index: 10; background: rgba(20,12,51,.88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--stroke); }
+    .toc .wrap { display: flex; gap: 8px; overflow-x: auto; padding-top: 10px; padding-bottom: 10px; scrollbar-width: none; }
+    .toc .wrap::-webkit-scrollbar { display: none; }
+    .toc a { flex: none; text-decoration: none; color: var(--muted); font-weight: 600; font-size: 14px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--stroke); background: var(--card); }
+    .toc a:hover { color: #fff; border-color: var(--pink); }
+
+    /* Secciones */
+    section { padding: 46px 0 10px; }
+    .sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+    .sec-num { width: 46px; height: 46px; flex: none; border-radius: 15px; display: grid; place-items: center; font: 800 20px var(--display); background: var(--c, linear-gradient(135deg, var(--pink), var(--orange))); }
+    .sec-head h2 { font-size: clamp(26px, 5.5vw, 36px); }
+    .lead { color: var(--muted); font-size: 18px; max-width: 760px; margin: 0 0 18px; }
+    h3 { font-size: 21px; margin: 28px 0 10px; }
+    ol.steps { counter-reset: s; list-style: none; padding: 0; margin: 0 0 8px; }
+    ol.steps li { counter-increment: s; position: relative; padding: 4px 0 10px 44px; }
+    ol.steps li::before { content: counter(s); position: absolute; left: 0; top: 4px; width: 30px; height: 30px; border-radius: 10px; display: grid; place-items: center; font-weight: 800; font-size: 15px; background: rgba(139,92,246,.35); border: 1px solid rgba(139,92,246,.6); }
+    ul.dots { padding-left: 20px; margin: 0 0 8px; } ul.dots li { margin-bottom: 6px; }
+    b, strong { color: #fff; }
+    .ui { display: inline-block; padding: 0 8px; border-radius: 8px; background: rgba(255,255,255,.1); border: 1px solid var(--stroke); font-weight: 700; font-size: .92em; white-space: nowrap; }
+    .tip { margin: 16px 0; padding: 14px 16px 14px 18px; border-radius: 16px; background: rgba(34,211,238,.09); border: 1px solid rgba(34,211,238,.35); border-left: 4px solid var(--cyan); }
+    .tip.warn { background: rgba(255,138,0,.1); border-color: rgba(255,138,0,.4); border-left-color: var(--orange); }
+    .tip b:first-child { color: var(--cyan); } .tip.warn b:first-child { color: var(--orange); }
+
+    .split { display: grid; gap: 26px; align-items: start; }
+    @media (min-width: 860px) { .split { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); } .split.rev > :first-child { order: 2; } }
+
+    /* Capturas en marco de teléfono */
+    .shots { display: grid; grid-auto-flow: column; grid-auto-columns: min(250px, 72%); gap: 16px; overflow-x: auto; padding: 6px 2px 16px; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+    .shots.wide { grid-auto-columns: min(300px, 82%); }
+    figure { margin: 0; scroll-snap-align: start; }
+    .phone { display: block; border-radius: 34px; padding: 7px; background: #07041a; border: 1px solid rgba(255,255,255,.14); box-shadow: 0 24px 50px -20px rgba(0,0,0,.8), 0 0 0 1px rgba(255,61,139,.08); }
+    .phone img { border-radius: 27px; aspect-ratio: 400 / 860; width: 100%; height: auto; background: var(--bg2); }
+    .doc img { border-radius: 14px; box-shadow: 0 20px 40px -18px rgba(0,0,0,.8); background: #fff; }
+    figcaption { font-size: 14px; color: var(--muted); text-align: center; margin-top: 10px; line-height: 1.35; }
+
+    .faq details { border: 1px solid var(--stroke); background: var(--card); border-radius: 16px; padding: 4px 18px; margin-bottom: 10px; }
+    .faq summary { cursor: pointer; font-weight: 700; padding: 12px 0; list-style: none; }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::after { content: '+'; float: right; color: var(--pink); font-size: 22px; line-height: 1; }
+    .faq details[open] summary::after { content: '–'; }
+    .faq details p { margin: 0 0 14px; color: var(--muted); }
+
+    footer { margin-top: 50px; padding: 30px 0 calc(env(safe-area-inset-bottom, 0px) + 40px); text-align: center; color: var(--dim); border-top: 1px solid var(--stroke); }
+    footer img { width: 56px; margin: 0 auto 8px; }
+
+    @media print {
+      :root { color-scheme: light; }
+      body { background: #fff; color: #1b1040; font-size: 11.5pt; }
+      .toc, .cta, .no-print { display: none !important; }
+      .hero { padding-top: 10mm; } .hero h1 span { color: #ff3d8b; -webkit-text-fill-color: #ff3d8b; }
+      .hero p, .lead, figcaption, .faq details p { color: #4b4170; }
+      b, strong { color: #1b1040; }
+      .ui { background: #f1edff; border-color: #d9d0ff; }
+      .tip { background: #ecfbff; } .tip.warn { background: #fff4e6; }
+      section { padding-top: 6mm; break-before: page; } section#inicio-rapido { break-before: auto; }
+      .split, .split.rev { grid-template-columns: 1fr; gap: 4mm; }
+      .split.rev > :first-child { order: 0; }
+      .shots { overflow: visible; grid-auto-flow: row; grid-template-columns: repeat(4, 1fr); grid-auto-columns: auto; gap: 5mm; }
+      .shots.wide { grid-template-columns: repeat(3, 1fr); }
+      .doc { max-width: 60%; margin: 0 auto; }
+      figure { break-inside: avoid; }
+      .phone { box-shadow: none; padding: 3px; }
+      .faq details { background: #faf8ff; } .faq details p { display: block; }
+      ol.steps li::before { background: #efe9ff; border-color: #c9b8ff; color: #1b1040; }
+      footer { border: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="hero wrap">
+  <img src="../icons/logo-mark-256.png" alt="Logo de Viajapp: un león viajero">
+  <div class="kicker">Manual de uso</div>
+  <h1>Todo tu viaje en <span>Viajapp</span></h1>
+  <p>La lista del súper, la despensa de la cabaña, recetas que se adaptan a la dieta de cada uno, los gastos con sus boletas, la carta financiera, la agenda de comidas, quién lleva qué, las camas y la bitácora del grupo, todo compartido en tiempo real. Esta guía te muestra cómo usar cada parte, paso a paso.</p>
+  <div class="cta">
+    <a class="btn primary" href="../">Abrir Viajapp</a>
+    <a class="btn" href="Manual-Viajapp.pdf" download>Descargar en PDF</a>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contenido">
+  <div class="wrap">
+    <a href="#inicio-rapido">Primeros pasos</a>
+    <a href="#inicio">Inicio</a>
+    <a href="#super">Súper</a>
+    <a href="#despensa">Despensa</a>
+    <a href="#recetas">Recetas</a>
+    <a href="#dietas">Dietas y alergias</a>
+    <a href="#dinero">Dinero</a>
+    <a href="#agenda">Agenda</a>
+    <a href="#grupo">Tu grupo</a>
+    <a href="#compartido">Viaje compartido</a>
+    <a href="#datos">Tus datos</a>
+    <a href="#faq">Preguntas</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- 1. Primeros pasos -->
+  <section id="inicio-rapido">
+    <div class="sec-head"><span class="sec-num">1</span><h2>Primeros pasos</h2></div>
+    <p class="lead">Viajapp funciona en el navegador, pero lo ideal es instalarla: queda en tu pantalla de inicio con el ícono del león y funciona aunque no tengas señal.</p>
+    <div class="split">
+      <div>
+        <h3>Instalar en el celular</h3>
+        <ol class="steps">
+          <li>Abre <a href="https://viajapp-trip.web.app">viajapp-trip.web.app</a> en tu celular.</li>
+          <li><b>Android (Chrome):</b> toca <span class="ui">Instalar Viajapp en este celular</span> en la pantalla de Inicio, o el menú ⋮ → <span class="ui">Instalar app</span>.</li>
+          <li><b>iPhone (Safari):</b> toca el botón Compartir y luego <span class="ui">Agregar a pantalla de inicio</span>.</li>
+        </ol>
+        <h3>Configurar tu viaje</h3>
+        <ol class="steps">
+          <li>En Inicio, toca el botón de ajustes (arriba a la derecha) o la tarjeta de tu viaje.</li>
+          <li>Escribe el <b>nombre del viaje</b>, las <b>fechas</b> y los <b>participantes</b> separados por coma.</li>
+          <li>En <b>Fondos y rendición</b> anota cuánta plata les entregaron, la moneda y la <b>entidad</b> que entrega los fondos.</li>
+          <li>Agrega a los <b>responsables</b> con su RUT. Puedes sumar todos los que necesites con <span class="ui">+ Agregar responsable</span>: cada uno tendrá su línea de firma en la carta financiera.</li>
+          <li>Si alguien es vegetariano, celíaco o tiene alguna alergia, toca <span class="ui">Dietas y alergias</span> (ver la sección <a href="#dietas">Dietas y alergias</a>).</li>
+          <li>Toca <span class="ui">Guardar</span>.</li>
+        </ol>
+        <div class="tip"><b>Consejo:</b> los participantes son las personas que aparecen en "¿Quién pagó?" y entre quienes se dividen las cuentas. Los responsables son quienes firman la rendición. Pueden ser los mismos o no.</div>
+      </div>
+      <div class="shots">
+        <figure><span class="phone"><img loading="lazy" src="img/18-viaje.webp" alt="Hoja Tu viaje con nombre, fechas, participantes y fondos"></span><figcaption>Datos del viaje</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/19-responsables.webp" alt="Lista de responsables con nombre y RUT"></span><figcaption>Varios responsables con su RUT</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Inicio -->
+  <section id="inicio">
+    <div class="sec-head"><span class="sec-num" style="--c:linear-gradient(135deg,#ff3d8b,#ff8a00)">2</span><h2>Inicio</h2></div>
+    <p class="lead">Es el resumen de tu viaje: en qué día van, cuánto se ha comprado y gastado, y qué toca comer.</p>
+    <div class="split rev">
+      <div>
+        <ul class="dots">
+          <li><b>Tarjeta del viaje:</b> nombre, fechas, participantes y el contador "Día 3 de 7". Tócala para editar el viaje.</li>
+          <li><b>Productos comprados</b> y <b>gastado de los fondos</b>: tócalos para ir directo al Súper o a Dinero.</li>
+          <li><b>Próximo plan:</b> la siguiente comida o actividad de la agenda.</li>
+          <li><b>Accesos rápidos:</b> lista del súper, nuevo gasto, planear comida, dividir cuenta, carta financiera y recetas.</li>
+          <li><b>Tu grupo:</b> acceso a <a href="#grupo">¿Quién lleva qué?, Habitaciones y Bitácora</a>, con un resumen de cada uno.</li>
+          <li><b>Hoy:</b> la línea de tiempo con las comidas del día y quién cocina.</li>
+        </ul>
+        <p>Abajo siempre tienes la barra con los cinco módulos: <span class="ui">Inicio</span> <span class="ui">Súper</span> <span class="ui">Recetas</span> <span class="ui">Dinero</span> <span class="ui">Agenda</span>. El número amarillo sobre Súper indica cuántos productos faltan por comprar.</p>
+      </div>
+      <div class="shots">
+        <figure><span class="phone"><img loading="lazy" src="img/01-inicio.webp" alt="Pantalla de Inicio con la tarjeta del viaje y resúmenes"></span><figcaption>Resumen del viaje</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/02-inicio-accesos.webp" alt="Accesos rápidos y comidas de hoy"></span><figcaption>Accesos rápidos y el día de hoy</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Súper -->
+  <section id="super">
+    <div class="sec-head"><span class="sec-num" style="--c:linear-gradient(135deg,#3ef08a,#22d3ee)">3</span><h2>Súper: la lista de compras</h2></div>
+    <p class="lead">Un catálogo con más de 200 productos ordenados por secciones (frutas, verduras, carnes, bebestibles, limpieza…) para armar la lista con toques, sin escribir.</p>
+    <div class="split">
+      <div>
+        <h3>Armar la lista</h3>
+        <ol class="steps">
+          <li>En <span class="ui">Catálogo</span>, busca un producto o elige una sección en la fila de categorías.</li>
+          <li>Toca un producto. Si tiene variantes (por ejemplo <b>Aceite → Maravilla, Oliva, Canola…</b>) se abre una hoja donde marcas una o varias y ajustas la cantidad con <span class="ui">−</span> <span class="ui">+</span>.</li>
+          <li>¿Buscas una marca o tamaño que no está? Escríbelo en <b>¿Otra variante o marca?</b> y toca <span class="ui">+</span>.</li>
+          <li>¿No existe el producto? Usa <span class="ui">Agregar producto</span> al final de cada sección: queda guardado en el catálogo.</li>
+        </ol>
+        <h3>Ir de compras</h3>
+        <ol class="steps">
+          <li>Toca <span class="ui">Ver mi lista</span> o la pestaña <span class="ui">Mi lista</span>.</li>
+          <li>Marca cada producto a medida que lo echas al carro: la barra de progreso avanza y, al completar la lista, ¡hay confeti!</li>
+          <li>Los productos que vienen de una receta muestran la cantidad exacta (por ejemplo <b>440 g</b>) y el nombre de la receta.</li>
+          <li>Lo que marcas como comprado <b>entra solo a la Despensa</b>.</li>
+          <li>Al terminar, toca <span class="ui">Registrar gasto</span> para anotar la boleta en Dinero.</li>
+        </ol>
+        <div class="tip warn"><b>Avisos de dieta:</b> si un producto no sirve para alguien del grupo, la lista lo avisa, por ejemplo "No apto para Cami (gluten)". Así sabes qué separar o comprar aparte.</div>
+        <div class="tip"><b>Compartir la lista:</b> con <span class="ui">PNG</span> obtienes una imagen lista para WhatsApp; con <span class="ui">PDF</span>, un documento para imprimir con casillas para marcar.</div>
+      </div>
+      <div>
+        <div class="shots">
+          <figure><span class="phone"><img loading="lazy" src="img/03-super-catalogo.webp" alt="Catálogo del supermercado por secciones"></span><figcaption>Catálogo por secciones</figcaption></figure>
+          <figure><span class="phone"><img loading="lazy" src="img/04-super-variantes.webp" alt="Variantes del aceite con cantidades"></span><figcaption>Variantes y cantidades</figcaption></figure>
+          <figure><span class="phone"><img loading="lazy" src="img/05-super-lista.webp" alt="Mi lista con progreso y productos marcados"></span><figcaption>Mi lista mientras compras</figcaption></figure>
+        </div>
+        <figure class="doc" style="margin-top:10px"><img loading="lazy" src="img/export-lista.webp" alt="Imagen PNG exportada de la lista del súper"><figcaption>La lista exportada en PNG, lista para compartir</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Despensa -->
+  <section id="despensa">
+    <div class="sec-head"><span class="sec-num" style="--c:linear-gradient(135deg,#ffd23f,#3ef08a)">4</span><h2>Despensa de la cabaña</h2></div>
+    <p class="lead">Lo que hay en la cabaña, siempre al día. Evita comprar dos veces lo mismo (el clásico tercer aceite) y al final del viaje te dice qué sobró.</p>
+    <div class="split">
+      <div>
+        <h3>Cómo se llena sola</h3>
+        <ul class="dots">
+          <li><b>Al comprar:</b> cada producto que marcas como comprado en Mi lista entra a la despensa con su cantidad. Si lo desmarcas, se descuenta otra vez.</li>
+          <li><b>Al cocinar:</b> cuando marcas un plan de la agenda como <span class="ui">Marcar como cocinado</span>, se descuentan los ingredientes de su receta. Si te equivocas, <span class="ui">Cocinado · deshacer</span> los devuelve.</li>
+          <li><b>Al planificar:</b> cuando agregas una receta a la lista, lo que ya está en la despensa aparece como "en despensa" y no se vuelve a pedir. Si hay una parte, solo se pide lo que falta (por ejemplo "faltan 140 g").</li>
+        </ul>
+        <h3>Usarla a mano</h3>
+        <ol class="steps">
+          <li>En <span class="ui">Súper</span> toca la pestaña <span class="ui">Despensa</span>.</li>
+          <li>Para agregar algo que ya tenían (lo que trajo cada uno, por ejemplo), escribe el producto, la cantidad y la unidad, y toca <span class="ui">+</span>.</li>
+          <li>Ajusta las cantidades con <span class="ui">−</span> <span class="ui">+</span>.</li>
+          <li>Si algo <b>se acabó</b>, toca el carrito: sale de la despensa y pasa directo a Mi lista.</li>
+          <li>Al final del viaje, <span class="ui">Copiar sobrantes</span> te da la lista para repartir lo que quedó por WhatsApp.</li>
+        </ol>
+        <div class="tip"><b>En el catálogo</b> los productos que ya tienen aparecen con la nota "En la despensa", para que no los agregues de nuevo sin querer.</div>
+      </div>
+      <div class="shots">
+        <figure><span class="phone"><img loading="lazy" src="img/24-despensa.webp" alt="Despensa con los productos de la cabaña"></span><figcaption>La despensa de la cabaña</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/07-receta-cocinar.webp" alt="Receta mostrando lo que ya está en la despensa"></span><figcaption>La receta sabe lo que ya tienen</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Recetas -->
+  <section id="recetas">
+    <div class="sec-head"><span class="sec-num" style="--c:linear-gradient(135deg,#ffd23f,#ff3d8b)">5</span><h2>Recetas</h2></div>
+    <p class="lead">120 recetas con más de 330 variantes en 18 categorías:
+      <b>cocina chilena</b> (pastel de choclo, cazuela, curanto, caldillo de congrio, pastel de papas, plateada, mote con huesillo, calzones rotos…),
+      <b>Latinoamérica</b> (tacos, arepas, ají de gallina, causa, feijoada, pollo a la brasa…),
+      <b>Asia</b> (sushi, poke, pad thai, curry thai, teriyaki…),
+      <b>Europa y Mediterráneo</b> (tortilla española, moussaka, quiche, shawarma, falafel…),
+      además de pastas, asados, ensaladas, desayunos, onces, postres, tragos y picoteo. Elige qué cocinar y los ingredientes pasan solos a la lista del súper.</p>
+    <div class="split rev">
+      <div>
+        <h3>Cocinar una receta</h3>
+        <ol class="steps">
+          <li>Busca (la búsqueda recorre todo el recetario) o elige una categoría y toca la receta. En "Todas" cada categoría muestra unas pocas recetas; toca <span class="ui">Ver las N recetas</span> para ver el resto.</li>
+          <li>Elige la <b>variante</b> (por ejemplo, Pastas → Pesto).</li>
+          <li>Indica <b>para cuántas personas</b>: las cantidades se recalculan solas.</li>
+          <li><b>Desmarca lo que ya tienes</b> (la sal, el aceite…). Lo que está en la despensa ya viene desmarcado ("en despensa") y lo que está en tu lista dice "en tu lista".</li>
+          <li>Toca <span class="ui">Agregar ingredientes a la lista</span>, o <span class="ui">Agendar</span> para ponerla en el calendario.</li>
+        </ol>
+        <h3>Crear o modificar recetas</h3>
+        <ul class="dots">
+          <li>Con el botón <span class="ui">+</span> creas tu propia receta: nombre, categoría, ingredientes base y variantes.</li>
+          <li>Las cantidades se escriben <b>por persona</b>. Usa la unidad <b>"fijo"</b> para lo que se compra una sola vez, como sal o especias.</li>
+          <li>Puedes elegir los productos del catálogo o escribir uno nuevo: se crea solo en el Súper.</li>
+          <li>Puedes <span class="ui">Editar receta</span> en cualquiera de las incluidas sin perder la original: siempre está <span class="ui">Restaurar original</span>. También puedes <b>ocultar</b> las que no te sirvan.</li>
+          <li>Tus recetas y las que modificaste aparecen en el filtro <span class="ui">Mías</span>, con una estrella.</li>
+        </ul>
+      </div>
+      <div class="shots">
+        <figure><span class="phone"><img loading="lazy" src="img/06-recetas.webp" alt="Recetario con categorías"></span><figcaption>El recetario</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/07-receta-cocinar.webp" alt="Receta de pastas con variante pesto para 4 personas"></span><figcaption>Variante, personas e ingredientes</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/08-receta-editor.webp" alt="Editor de recetas con ingredientes y variantes"></span><figcaption>Editor de recetas</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Dietas -->
+  <section id="dietas">
+    <div class="sec-head"><span class="sec-num" style="--c:linear-gradient(135deg,#3ef08a,#22d3ee)">6</span><h2>Dietas y alergias del grupo</h2></div>
+    <p class="lead">Anota quién es vegetariano, celíaco, sin lactosa o alérgico a algo, y Viajapp lo tiene en cuenta en todas las recetas y en la lista del súper.</p>
+    <div class="split rev">
+      <div>
+        <h3>Configurarlas</h3>
+        <ol class="steps">
+          <li>En la hoja del viaje (ajustes en Inicio) toca <span class="ui">Dietas y alergias</span>, o el aviso verde de arriba en Recetas.</li>
+          <li>Para cada persona marca lo que corresponda: <b>vegetariano, vegano, celíaco / sin gluten, sin lactosa, sin cerdo, alergia a mariscos, a frutos secos / maní, al huevo</b> o <b>no toma alcohol</b>.</li>
+          <li>Si hay algo más (por ejemplo "no le gusta el cilantro"), escríbelo en la nota.</li>
+        </ol>
+        <h3>Qué hace la app con eso</h3>
+        <ul class="dots">
+          <li><b>En el recetario</b> cada receta muestra si es <b>"Apta para todos"</b>, si <b>"Se adapta"</b> con reemplazos o si <b>"No apta"</b> para alguien. El filtro <span class="ui">Aptas para el grupo</span> deja solo las que sirven.</li>
+          <li><b>Al cocinar</b> te explica qué cambiar. Por ejemplo: <i>"Cami: fideos spaghetti → fideos sin gluten"</i>. Los puntos de color en las variantes indican cuáles funcionan para todos.</li>
+          <li>Eliges cómo adaptar:
+            <ul class="dots">
+              <li><b>Porción aparte:</b> compra la versión apta solo para quien la necesita; el resto, la normal.</li>
+              <li><b>Todo el plato apto:</b> todos comen la versión adaptada.</li>
+              <li><b>Sin adaptar:</b> no reemplaza nada, solo avisa.</li>
+            </ul>
+          </li>
+          <li>Si algo no tiene reemplazo (por ejemplo, la carne del asado para alguien vegetariano), te avisa para que le prepares algo aparte.</li>
+          <li>En la lista, los productos adaptados dicen <b>"para Cami"</b>, y los que no sirven para alguien muestran un aviso.</li>
+        </ul>
+      </div>
+      <div class="shots">
+        <figure><span class="phone"><img loading="lazy" src="img/23-dietas.webp" alt="Hoja de dietas y alergias por persona"></span><figcaption>Dietas y alergias por persona</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/06-recetas.webp" alt="Recetario con las dietas del grupo y etiquetas de aptitud"></span><figcaption>Recetas aptas, adaptables o no aptas</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/25-receta-adaptada.webp" alt="Receta de asado adaptada: pan sin gluten para Cami y aviso para Diego"></span><figcaption>Reemplazos y avisos al cocinar</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/05-super-lista.webp" alt="Lista con avisos de no apto"></span><figcaption>Avisos en la lista del súper</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Dinero -->
+  <section id="dinero">
+    <div class="sec-head"><span class="sec-num" style="--c:linear-gradient(135deg,#ffd23f,#ff8a00)">7</span><h2>Dinero y carta financiera</h2></div>
+    <p class="lead">Registra cada gasto con la foto de su boleta. Viajapp calcula el saldo, muestra en qué se va la plata, reparte las cuentas entre el grupo y arma la rendición para la entidad.</p>
+    <div class="split">
+      <div>
+        <h3>El resumen</h3>
+        <ul class="dots">
+          <li><b>Saldo disponible</b> de los fondos asignados y el anillo con el porcentaje usado. Si se pasan, la tarjeta lo avisa.</li>
+          <li><b>¿En qué se va la plata?</b>: el gasto por categoría (alojamiento, súper, bar, transporte…).</li>
+          <li><b>¿Quién pagó?</b>: cuánto ha puesto cada persona y el Fondo común.</li>
+          <li><b>Movimientos</b>: todos los gastos por día. Toca uno para editarlo.</li>
+        </ul>
+        <h3>Registrar un gasto</h3>
+        <ol class="steps">
+          <li>Toca <span class="ui">+</span> (o <span class="ui">Gasto</span>).</li>
+          <li>Escribe el <b>monto</b>, elige la <b>categoría</b> y una descripción.</li>
+          <li>Indica el tipo de comprobante (boleta, factura, ticket) y su número.</li>
+          <li>En <b>Pagado por</b> elige <b>Fondo común</b> si se pagó con la plata de la entidad, o la persona que lo pagó de su bolsillo.</li>
+          <li>Toca <span class="ui">Agregar foto</span> para sacarle una foto a la boleta o elegirla de la galería.</li>
+          <li><span class="ui">Guardar gasto</span>.</li>
+        </ol>
+      </div>
+      <div class="shots">
+        <figure><span class="phone"><img loading="lazy" src="img/09-dinero.webp" alt="Saldo disponible y acciones de dinero"></span><figcaption>Saldo y acciones</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/10-dinero-categorias.webp" alt="Gastos por categoría y por persona"></span><figcaption>Por categoría y por persona</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/12-gasto.webp" alt="Formulario de gasto con monto y categoría"></span><figcaption>Nuevo gasto</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/13-gasto-foto.webp" alt="Foto de la boleta adjunta al gasto"></span><figcaption>Foto de la boleta</figcaption></figure>
+      </div>
+    </div>
+
+    <div class="split rev">
+      <div>
+        <h3>Dividir la cuenta</h3>
+        <p>En el bar o el restaurante, toca <span class="ui">Dividir</span>: escribe el total, elige la propina y entre cuántos. Muestra cuánto paga cada uno y, con <span class="ui">Registrar como gasto</span>, queda anotado.</p>
+        <h3>Cuentas claras: quién le debe a quién</h3>
+        <p>Si alguien pagó algo con su plata, Viajapp reparte esos gastos en partes iguales entre los participantes y te dice <b>las transferencias justas</b> para quedar a mano (por ejemplo, "Diego → Pedro $15.623"). Lo pagado con el <b>Fondo común</b> no entra en este cálculo. Con <span class="ui">Copiar</span> lo pegas en WhatsApp.</p>
+        <h3>Gastos solo entre algunos (opcional)</h3>
+        <p>¿Las cervezas fueron solo de 3? En el gasto, bajo <span class="ui">Pagado por</span>, está <span class="ui">¿Entre quiénes se reparte?</span>: por defecto dice <b>Todos</b>; toca solo a quienes participaron y verás cuánto le toca a cada uno. Cuentas claras cobra ese gasto solo a ellos y muestra <b>su parte</b> de cada persona. En Movimientos el gasto aparece con "entre 3", y el Excel trae la columna <b>Repartido entre</b>. Para volver a repartirlo entre todos, toca <span class="ui">Todos</span>.</p>
+      </div>
+      <div class="shots">
+        <figure><span class="phone"><img loading="lazy" src="img/32-gasto-entre-algunos.webp" alt="Elegir entre quiénes se reparte un gasto"></span><figcaption>Gasto solo entre algunos</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/14-dividir.webp" alt="Calculadora para dividir la cuenta"></span><figcaption>Dividir la cuenta con propina</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/11-cuentas-claras.webp" alt="Cuentas claras con saldos y transferencias"></span><figcaption>Cuentas claras</figcaption></figure>
+      </div>
+    </div>
+
+    <h3>La carta financiera (rendición de gastos)</h3>
+    <p>Toca <span class="ui">Carta PDF</span> y se genera un documento listo para entregar a la entidad. Incluye:</p>
+    <ul class="dots">
+      <li>Datos del viaje, la entidad, <b>todos los responsables con su RUT</b> y una carta formal de rendición.</li>
+      <li>Fondos asignados, total rendido y el saldo a devolver (o el monto a reembolsar).</li>
+      <li>El detalle de cada gasto con su comprobante y un resumen por categoría.</li>
+      <li><b>Una línea de firma por cada responsable</b>, más la de recepción de la entidad.</li>
+      <li>Un <b>anexo con las fotos de las boletas</b>, numeradas igual que en el detalle.</li>
+    </ul>
+    <p>Con <span class="ui">Excel</span> descargas los gastos en una planilla (CSV) por si la entidad la pide.</p>
+    <div class="shots wide">
+      <figure class="doc"><img loading="lazy" src="img/export-carta-1.webp" alt="Página 1 de la carta financiera"><figcaption>Carta y detalle de gastos</figcaption></figure>
+      <figure class="doc"><img loading="lazy" src="img/export-carta-2.webp" alt="Página 2 de la carta financiera"><figcaption>Firmas de los responsables</figcaption></figure>
+      <figure class="doc"><img loading="lazy" src="img/export-carta-3.webp" alt="Anexo de comprobantes con la foto de la boleta"><figcaption>Anexo con las boletas</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 6. Agenda -->
+  <section id="agenda">
+    <div class="sec-head"><span class="sec-num" style="--c:linear-gradient(135deg,#22d3ee,#8b5cf6)">8</span><h2>Agenda de comidas y planes</h2></div>
+    <p class="lead">Organiza desayunos, almuerzos, onces, cenas, picoteos y actividades, con horario, lugar y quién se encarga.</p>
+    <div class="split">
+      <div>
+        <ol class="steps">
+          <li>Elige un día en el calendario. Los días del viaje aparecen destacados y los puntos de colores indican qué hay planeado.</li>
+          <li>Toca un tipo (<span class="ui">Desayuno</span> <span class="ui">Almuerzo</span> <span class="ui">Once</span> <span class="ui">Cena</span>…): la hora se sugiere sola.</li>
+          <li>Escribe qué van a comer o hacer, el lugar y quién cocina.</li>
+          <li>Toca un plan de la línea de tiempo para editarlo o eliminarlo.</li>
+        </ol>
+        <div class="tip"><b>Receta vinculada:</b> si agendas desde una receta, el plan queda unido a ella. Desde el plan puedes <span class="ui">Ver receta</span>, mandar sus <span class="ui">Ingredientes a la lista</span> (solo lo que falta en la despensa) y, después de comer, <span class="ui">Marcar como cocinado</span> para descontar los ingredientes de la despensa. Si la receta no sirve para alguien, la agenda lo avisa ("no apta: Diego").</div>
+        <p>El botón de documento (arriba a la derecha) exporta la agenda completa en PDF.</p>
+      </div>
+      <div class="shots">
+        <figure><span class="phone"><img loading="lazy" src="img/15-agenda.webp" alt="Calendario mensual con días del viaje"></span><figcaption>Calendario del viaje</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/16-agenda-dia.webp" alt="Línea de tiempo con las comidas del día"></span><figcaption>Las comidas del día</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/17-evento-receta.webp" alt="Plan de almuerzo vinculado a la receta de asado"></span><figcaption>Plan con receta vinculada</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tu grupo -->
+  <section id="grupo">
+    <div class="sec-head"><span class="sec-num" style="--c:linear-gradient(135deg,#ff8a00,#8b5cf6)">9</span><h2>Tu grupo</h2></div>
+    <p class="lead">Lo que organiza al grupo más allá de la comida y la plata. Se abre desde la tarjeta <b>Tu grupo</b> en Inicio y tiene tres pestañas: <span class="ui">Cosas</span>, <span class="ui">Piezas</span> y <span class="ui">Bitácora</span>. Con el botón de flecha vuelves a Inicio.</p>
+    <div class="shots" style="margin-bottom:10px">
+      <figure><span class="phone"><img loading="lazy" src="img/26-grupo-inicio.webp" alt="Tarjeta Tu grupo en Inicio"></span><figcaption>La tarjeta en Inicio</figcaption></figure>
+    </div>
+
+    <div class="split">
+      <div>
+        <h3>¿Quién lleva qué?</h3>
+        <p>Para que no lleguen tres parlantes y ninguna olla.</p>
+        <ol class="steps">
+          <li>Agrega las cosas compartidas tocando las <b>sugerencias</b> (parlante, cooler, parrilla, juegos, botiquín…) o escribiéndolas.</li>
+          <li>Cada uno toca <span class="ui">Lo llevo yo</span> en lo que va a llevar. Con el lápiz puedes asignarlo a otra persona, indicar la cantidad o dejar una nota.</li>
+          <li>Lo que nadie ha tomado queda arriba en <b>"Falta quien lo lleve"</b>.</li>
+          <li>Al armar la mochila, marca cada cosa: el contador muestra cuántas están listas.</li>
+          <li>Al terminar el viaje, cambia a <span class="ui">Al volver: devoluciones</span> y marca lo que ya volvió a su dueño. Así no se pierde nada.</li>
+        </ol>
+        <div class="tip"><b>Compartir:</b> <span class="ui">Copiar para WhatsApp</span> arma el resumen "Ana: parlante, botiquín · Pedro: cooler…".</div>
+      </div>
+      <div class="shots">
+        <figure><span class="phone"><img loading="lazy" src="img/27-grupo-cosas.webp" alt="Lista de cosas compartidas por persona"></span><figcaption>Lo que lleva cada uno</figcaption></figure>
+      </div>
+    </div>
+
+    <div class="split rev">
+      <div>
+        <h3>Habitaciones y camas</h3>
+        <ol class="steps">
+          <li>Arma las piezas de la cabaña con <span class="ui">+ Pieza</span>, o parte con <span class="ui">Usar un ejemplo</span> y ajústalo. Con el lápiz cambias el nombre y agregas o quitas camas: 2 plazas, single, litera arriba o abajo, sofá cama o colchón.</li>
+          <li>En <span class="ui">Juntos</span> indica parejas o amigos que quieren dormir juntos.</li>
+          <li>Toca <span class="ui">Sortear camas</span>: una ruleta reparte a todos. Las parejas quedan en la misma cama doble o en la misma pieza.</li>
+          <li>¿Alguien quiere una cama en particular? Tócala, elige a la persona y marca <span class="ui">Fijar esta cama</span>: los siguientes sorteos no la cambian.</li>
+        </ol>
+        <div class="tip warn"><b>Si faltan camas</b>, la app lo avisa y muestra quién quedó "sin cama" para que agreguen un colchón o un sofá.</div>
+      </div>
+      <div class="shots">
+        <figure><span class="phone"><img loading="lazy" src="img/28-grupo-piezas.webp" alt="Resumen de camas y botón de sorteo"></span><figcaption>Resumen y sorteo</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/29-grupo-piezas-plano.webp" alt="Plano de las piezas con las camas asignadas"></span><figcaption>El plano de la cabaña</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/30-grupo-cama.webp" alt="Asignar personas a una cama"></span><figcaption>Asignar y fijar una cama</figcaption></figure>
+      </div>
+    </div>
+
+    <div class="split">
+      <div>
+        <h3>Bitácora del grupo</h3>
+        <p>Un registro automático de lo que hace cada persona: <i>"Pedro registró un gasto de $45.990"</i>, <i>"Cami marcó 6 productos como comprados"</i>, <i>"Ana sorteó las camas"</i>. Nadie tiene que anotar nada.</p>
+        <ul class="dots">
+          <li>Se registran gastos, compras, despensa, agenda, recetas, dietas, cosas y piezas.</li>
+          <li>Las acciones seguidas se juntan en una línea para que se lea fácil.</li>
+          <li>Puedes filtrar por módulo (Dinero, Súper, Agenda…) o por persona.</li>
+          <li>Con el viaje compartido, cuando otra persona hace algo te llega un aviso en vivo arriba de la pantalla.</li>
+        </ul>
+        <div class="tip"><b>Útil para la rendición:</b> queda claro quién registró cada gasto y cuándo.</div>
+      </div>
+      <div class="shots">
+        <figure><span class="phone"><img loading="lazy" src="img/31-grupo-bitacora.webp" alt="Bitácora con los movimientos del grupo"></span><figcaption>Bitácora con filtros</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Viaje compartido -->
+  <section id="compartido">
+    <div class="sec-head"><span class="sec-num" style="--c:linear-gradient(135deg,#8b5cf6,#ff3d8b)">10</span><h2>Viaje compartido</h2></div>
+    <p class="lead">Todo el grupo ve lo mismo y en tiempo real: alguien marca "comprado" en el súper y los demás lo ven al instante. También se comparten los gastos con sus fotos, la agenda, las recetas, la despensa, las dietas, ¿quién lleva qué?, las piezas y la bitácora.</p>
+    <div class="split rev">
+      <div>
+        <h3>Crear el viaje compartido (una sola persona)</h3>
+        <ol class="steps">
+          <li>En Inicio toca <span class="ui">Compartir con mi grupo</span>.</li>
+          <li>Escribe tu nombre y toca <span class="ui">Crear viaje compartido</span>. Se suben los datos que ya tenías.</li>
+          <li>Aparece un <b>código QR</b> y un enlace: muéstralo o envíalo por WhatsApp con <span class="ui">Compartir</span>.</li>
+        </ol>
+        <h3>Unirse (el resto del grupo)</h3>
+        <ol class="steps">
+          <li>Abre el enlace o escanea el QR con la cámara. Se abre la hoja <b>Te invitaron a un viaje</b> con el código ya puesto (crear uno propio queda abajo, como alternativa).</li>
+          <li>Escribe tu nombre y toca <span class="ui">Unirme al viaje</span>. ¡Listo!</li>
+          <li>Si tu celular ya estaba en <b>otro</b> viaje compartido, aparece <span class="ui">Cambiarme al viaje nuevo</span>: sales del anterior y entras al que te invitaron.</li>
+        </ol>
+        <div class="tip"><b>¿En qué viaje estoy?</b> La hoja Viaje compartido muestra arriba <b>Conectado a</b> con el nombre del viaje, y la lista de integrantes.</div>
+        <div class="tip"><b>Sin señal:</b> puedes seguir usando la app normalmente. Los cambios se guardan en tu celular y se envían solos cuando vuelve la conexión. El punto verde de Inicio indica que estás en línea.</div>
+        <div class="tip warn"><b>Al unirte</b> a un viaje, lo que tenías antes en tu celular se guarda como respaldo y vuelve si sales del viaje compartido con <span class="ui">Salir del viaje compartido</span>.</div>
+      </div>
+      <div class="shots">
+        <figure><span class="phone"><img loading="lazy" src="img/20-compartir-crear.webp" alt="Crear o unirse a un viaje compartido"></span><figcaption>Crear o unirse</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/22-compartir-qr.webp" alt="Integrantes y código QR de invitación"></span><figcaption>Integrantes e invitación con QR</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/21-inicio-compartido.webp" alt="Inicio mostrando el viaje compartido con 4 personas"></span><figcaption>En Inicio: compartido con 4 personas</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Tus datos -->
+  <section id="datos">
+    <div class="sec-head"><span class="sec-num" style="--c:linear-gradient(135deg,#3ef08a,#8b5cf6)">11</span><h2>Tus datos</h2></div>
+    <p class="lead">Si no usas el viaje compartido, todo se guarda solo en tu celular. En la hoja del viaje (botón de ajustes en Inicio) tienes:</p>
+    <ul class="dots">
+      <li><span class="ui">Respaldo</span>: descarga un archivo con todo (lista, gastos con fotos, agenda y recetas) para guardarlo o pasarlo a otro celular.</li>
+      <li><span class="ui">Restaurar</span>: carga un respaldo.</li>
+      <li><span class="ui">Borrar todo</span>: deja la app en blanco (pide confirmación con un segundo toque).</li>
+      <li><span class="ui">Manual de uso</span>: abre esta guía.</li>
+    </ul>
+  </section>
+
+  <!-- 9. FAQ -->
+  <section id="faq" class="faq">
+    <div class="sec-head"><span class="sec-num">?</span><h2>Preguntas frecuentes</h2></div>
+    <details><summary>¿Necesito internet para usar Viajapp?</summary><p>No. Una vez abierta (o instalada), funciona sin conexión. Solo necesitas internet para crear o unirte a un viaje compartido; después los cambios se sincronizan cuando vuelve la señal.</p></details>
+    <details><summary>¿Se pierden mis datos si cierro la app?</summary><p>No, todo se guarda al instante en tu celular. Si estás en un viaje compartido, además queda respaldado en la nube para todo el grupo. Si vas a borrar la app o cambiar de celular sin viaje compartido, haz antes un Respaldo.</p></details>
+    <details><summary>¿Cómo agrego a alguien que no aparece en "Pagado por"?</summary><p>Agrégalo en Participantes, dentro de la hoja del viaje (botón de ajustes en Inicio), separado por coma.</p></details>
+    <details><summary>¿Qué diferencia hay entre "Fondo común" y una persona?</summary><p>"Fondo común" es la plata que entregó la entidad: se descuenta del saldo pero no entra en Cuentas claras. Si una persona paga de su bolsillo, ese gasto se reparte entre todos (o solo entre quienes elijas en "¿Entre quiénes se reparte?") para calcular quién le debe a quién.</p></details>
+    <details><summary>Algo lo compraron solo algunos, ¿cómo lo anoto?</summary><p>Registra el gasto normal y, en "¿Entre quiénes se reparte?", toca solo a esas personas. Cuentas claras se lo cobra solo a ellas; al resto no le cuenta.</p></details>
+    <details><summary>¿Puedo poner más de un responsable en la carta financiera?</summary><p>Sí. En la hoja del viaje, en Responsables, toca "Agregar responsable" las veces que necesites. Todos aparecen en la carta con su RUT y su propia línea de firma.</p></details>
+    <details><summary>Agregué una receta y las cantidades son muchas o pocas</summary><p>Las cantidades dependen de las personas elegidas. Cambia el número en "¿Para cuántas personas?" antes de agregar, o ajusta la cantidad después en Mi lista con los botones − y +.</p></details>
+    <details><summary>¿La despensa se actualiza sola?</summary><p>Sí: suma lo que marcas como comprado y descuenta lo que cocinan cuando marcas un plan con receta como "cocinado". Lo que traigan de sus casas o lo que se use sin receta lo ajustas a mano con − y +.</p></details>
+    <details><summary>Alguien del grupo es celíaco o vegetariano, ¿qué hago?</summary><p>Anótalo en Dietas y alergias. Las recetas te dirán cuáles sirven para todos y cuáles se pueden adaptar, y al agregar una receta se compra solo para esa persona la versión apta (por ejemplo, fideos sin gluten).</p></details>
+    <details><summary>La app dice "sin reemplazo", ¿qué significa?</summary><p>Que ese ingrediente no tiene una versión apta en el catálogo (por ejemplo, la carne del asado para alguien vegetariano). Prepárale una alternativa: puedes buscarla en el filtro "Aptas para el grupo".</p></details>
+    <details><summary>¿El sorteo de camas es justo?</summary><p>Sí: es al azar cada vez. Solo respeta lo que ustedes definan: las parejas de "Juntos" y las camas fijadas. Si no les gusta el resultado, sorteen de nuevo o ajusten a mano.</p></details>
+    <details><summary>¿Quién puede ver la bitácora?</summary><p>Todos los integrantes del viaje compartido. Sin viaje compartido, solo registra lo que haces en tu celular.</p></details>
+    <details><summary>Me uní con el QR pero no veo el viaje del grupo</summary><p>Revisa dos cosas. 1) Abre Viaje compartido y mira <b>Conectado a</b>: si dice otro viaje, abre de nuevo el enlace y toca "Cambiarme al viaje nuevo". 2) Si tienes la app instalada, el QR a veces se abre en otro navegador (el de la cámara o Safari en iPhone), que guarda sus datos aparte: copia el enlace, abre la app instalada y pégalo en "Enlace o código de invitación".</p></details>
+    <details><summary>En iPhone no veo el botón "Instalar"</summary><p>En iPhone se instala desde Safari: botón Compartir → "Agregar a pantalla de inicio".</p></details>
+  </section>
+</main>
+
+<footer>
+  <img src="../icons/logo-mark-256.png" alt="">
+  <div>Viajapp · <a href="../">viajapp-trip.web.app</a></div>
+</footer>
+
+</body>
+</html>

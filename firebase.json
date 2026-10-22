@@ -1,0 +1,29 @@
+{
+  "hosting": [
+    {
+      "target": "app",
+      "public": ".",
+      "ignore": [
+        "firebase.json", ".firebaserc", "firestore.rules",
+        "CLAUDE.md", "CONTEXTO.md", "LEEME.md", "logo Viajapp.png",
+        "tests/**", "legacy/**", ".claude/**", "**/.*", "**/.*/**", "**/node_modules/**",
+        ".tmp.drive*", ".tmp.drive*/**", "**/.tmp.drive*/**", "desktop.ini", "**/desktop.ini"
+      ],
+      "headers": [
+        { "source": "sw.js", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] },
+        { "source": "index.html", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] },
+        { "source": "**/*.@(js|css|html|webmanifest)", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] }
+      ]
+    },
+    {
+      "target": "legacy",
+      "public": "legacy",
+      "redirects": [
+        { "source": "/:path*", "destination": "https://viajapp-trip.web.app/:path*", "type": 301 }
+      ]
+    }
+  ],
+  "firestore": {
+    "rules": "firestore.rules"
+  }
+}

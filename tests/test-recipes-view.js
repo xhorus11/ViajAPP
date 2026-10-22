@@ -1,0 +1,35 @@
+/* E2E: recetario compacto + recetas nuevas.  Uso: node tests/test-recipes-view.js [URL] */
+const puppeteer = require('puppeteer-core');
+const URL = process.argv[2] || 'http://127.0.0.1:8765/index.html';
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+let fails = 0;
+const ok = (c, l) => { console.log((c ? '✅ ' : '❌ ') + l); if (!c) fails++; };
+(async () => {
+  const browser = await puppeteer.launch({ executablePath: 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe', headless: 'new', args: ['--no-sandbox'] });
+  const page = await browser.newPage();
+  await page.setViewport({ width: 400, height: 860, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+  const errs = []; page.on('pageerror', e => errs.push(e.message));
+  const click = async (s, w = 500) => { await page.waitForSelector(s, { visible: true, timeout: 8000 }); await page.$eval(s, e => e.scrollIntoView({ block: 'center' })); await sleep(120); await page.click(s); await sleep(w); };
+  await page.goto(URL, { waitUntil: 'networkidle0' });
+  await click('.tab[data-tab="recipes"]', 900);
+  ok(/120 recetas/.test(await page.$eval('.eyebrow', e => e.textContent)), 'El recetario tiene 120 recetas');
+  const counts = await page.$$eval('.cat-section', els => els.map(s => s.querySelectorAll('[data-act="cook"]').length));
+  ok(counts.every(n => n <= 6), `Vista compacta: máximo 6 recetas por categoría (${counts.join(',')})`);
+  ok(!!(await page.$('.more-card[data-c="chilena"]')), 'Cocina chilena tiene "Ver las N recetas"');
+  ok(!!(await page.$('[data-act="rcat"][data-c="asia"]')) && !!(await page.$('[data-act="rcat"][data-c="europa"]')), 'Categorías nuevas: Asia y Europa');
+  await click('.more-card[data-c="chilena"]', 800);
+  const chil = await page.$$eval('[data-act="cook"]', els => els.map(e => e.dataset.id));
+  ok(chil.length === 17 && chil.includes('curanto') && chil.includes('moteconhuesillo'), `"Ver las recetas" abre toda la categoría (${chil.length})`);
+  ok(await page.$eval('#recChips .chip.active', e => e.dataset.c) === 'chilena', 'El chip de la categoría queda marcado');
+  await page.type('#recSearch', 'sushi'); await sleep(500);
+  ok((await page.$$('[data-act="cook"]')).length >= 1, 'La búsqueda encuentra "sushi" aunque esté abierta otra categoría');
+  await click('[data-act="cook"][data-id="sushi"]', 800);
+  const rows = await page.$$eval('.variant-row', els => els.map(e => e.textContent.replace(/\s+/g, ' ')));
+  ok(rows.some(r => /Algas nori/.test(r)) && rows.some(r => /Arroz · Para sushi/.test(r)), 'Sushi usa nori y arroz para sushi del catálogo');
+  await click('[data-act="cookAdd"]', 800);
+  const sel = await page.evaluate(() => Object.keys(Store.state.shop.sel));
+  ok(sel.includes('despensa|Algas nori|') && sel.includes('pescados|Salmón|Filete'), 'Los ingredientes del sushi pasan a la lista');
+  console.log('Errores:', errs.length ? errs.join(' / ') : 'ninguno'); if (errs.length) fails++;
+  console.log(fails ? `FALLARON ${fails}` : 'TODO OK');
+  await browser.close(); process.exit(fails ? 1 : 0);
+})().catch(e => { console.error('FAIL', e); process.exit(1); });

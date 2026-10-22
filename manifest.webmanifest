@@ -1,0 +1,17 @@
+{
+  "name": "Viajapp · Organizador de viajes",
+  "short_name": "Viajapp",
+  "description": "Lista del súper, gastos con boletas, carta financiera y agenda de comidas para tus viajes.",
+  "lang": "es",
+  "start_url": "./index.html#home",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#140c33",
+  "theme_color": "#140c33",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

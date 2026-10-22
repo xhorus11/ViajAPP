@@ -1,0 +1,13 @@
+{
+  "projects": {
+    "default": "viajapp-e589e"
+  },
+  "targets": {
+    "viajapp-e589e": {
+      "hosting": {
+        "app": ["viajapp-trip"],
+        "legacy": ["viajapp-e589e"]
+      }
+    }
+  }
+}
