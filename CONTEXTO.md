@@ -174,5 +174,9 @@ Otras: modo "en el súper", precios → gasto automático, OCR de boletas, multi
 - Pruebas: `tests/test-among.js` 14/14 (local y publicada), test2, test-sync real, grupo (arreglada una falla al azar del test: Sofía ya quedaba en el sofá), dietas/despensa OK. Se borraron viajes huérfanos sin miembros (incluido un "Mi viaje" sin miembros, inaccesible).
 - Manual: sección "Gastos solo entre algunos", captura 32, FAQ; `shots.js` con gasto e3 entre 3. SW → `viajapp-v12`. Publicado.
 
+### Sesión 11 · 2026-10-22
+- El piloto en Temuco funcionó; comentario: la app puede ser **poco intuitiva**. Propuesto: checklist "Primeros pasos" en Inicio, botón "?" con ayuda por pantalla (+ enlace al manual), bienvenida de 3 pantallas, íconos con nombre. Recomendado 1+2; pendiente que el usuario elija y cuente qué les costó.
+- **GitHub**: repo privado **https://github.com/xhorus11/ViajAPP** (rama `main`), autor Matías Gajardo con correo noreply. `gh` instalado (winget, `C:\Program Files\GitHub CLI\gh.exe`) y logueado como xhorus11; `gh auth setup-git` deja a git usar esa sesión. `README.md` y `.gitignore` nuevos (excluye `.claude/`, `.firebase/`, salidas de tests y un PDF personal de una beca que está en la carpeta). Regla nueva en `CLAUDE.md`/`AGENTS.md`: cada cambio termina con commit + push.
+
 ### (nota sesión 5)
 - El usuario tenía la app en **Vercel**: ya no es necesaria si se publica en Firebase Hosting (recomendado: misma cuenta, dominio ya autorizado). Ojo: los datos locales son por dominio; para pasar datos usar el viaje compartido o Respaldo/Restaurar.
