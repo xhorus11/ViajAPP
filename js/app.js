@@ -47,6 +47,8 @@
     box: '<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
     leaf: '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.9-5.4 5.2-6"/>',
     back: '<path d="M15 18l-6-6 6-6"/>',
+    help: '<circle cx="12" cy="12" r="9.5"/><path d="M9.4 9.3a2.7 2.7 0 0 1 5.2 1c0 1.9-2.6 2.3-2.6 4"/><path d="M12 17.4v.1"/>',
+    text: '<path d="M4 7V5h11v2M9.5 5v14M7 19h5M14 12v-1.5h7V12M17.5 10.5V19M16 19h3"/>',
     shuffle: '<path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>',
     lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'
   };
@@ -218,11 +220,84 @@
     const p0 = S().trip.people[0];
     return Sync.savedName() || (p0 && p0 !== 'Yo' ? p0 : 'Tú');
   }
+  const helpBtn = s => `<button class="icon-btn help-btn" data-act="help" data-s="${s}" aria-label="Ayuda: ¿cómo se usa?" style="--i:3">${ic('help')}</button>`;
   const header = (eyebrow, title, btn) => `
     <header class="top stagger">
       <div class="grow" style="--i:0"><div class="eyebrow">${eyebrow}</div><h1 class="title">${title}</h1></div>
-      ${btn || ''}
+      ${btn || ''}${helpBtn(ui.tab)}
     </header>`;
+
+  /* ================= AYUDA SIMPLE (para todas las edades) =================
+     Un botón "?" por pantalla con 3 pasos cortos, una guía de "próximo paso" en Inicio
+     y tamaño de letra por celular. Nada aparece si no se pide (salvo la guía, que se va sola). */
+  const HELP = {
+    home: { t: 'Inicio', m: 'inicio', s: [
+      ['settings', 'Toca el <b>engranaje</b> para poner el nombre del viaje, las fechas y quiénes van.'],
+      ['users', 'Con <b>Compartir con mi grupo</b> todos ven lo mismo en su celular.'],
+      ['list', 'Abajo tienes las pestañas: <b>Súper, Recetas, Dinero y Agenda</b>.']] },
+    shop: { t: 'Súper', m: 'super', s: [
+      ['cart', 'En <b>Catálogo</b> toca lo que hay que comprar. Si tiene tipos (marca, tamaño), eliges uno.'],
+      ['check', 'En <b>Mi lista</b> marca con el visto lo que ya compraste.'],
+      ['pot', 'En <b>Despensa</b> queda lo que ya tienen en la cabaña.']] },
+    recipes: { t: 'Recetas', m: 'recetas', s: [
+      ['search', 'Busca un plato o elige una categoría.'],
+      ['users', 'Toca la receta y elige <b>para cuántas personas</b>.'],
+      ['cart', 'Toca <b>Agregar a la lista</b> y los ingredientes pasan al súper.']] },
+    money: { t: 'Dinero', m: 'dinero', s: [
+      ['plus', 'Toca el botón <b>+</b> para anotar un gasto: cuánto, en qué y quién pagó.'],
+      ['camera', 'Puedes sacarle una <b>foto a la boleta</b> para no perderla.'],
+      ['wallet', 'En <b>Cuentas claras</b> la app dice quién le debe a quién.']] },
+    agenda: { t: 'Agenda', m: 'agenda', s: [
+      ['calendar', 'Toca un <b>día</b> del calendario.'],
+      ['plus', 'Toca <b>+</b> y elige: desayuno, almuerzo, once, cena o actividad.'],
+      ['book', 'Si eliges una receta, sus ingredientes pueden ir directo al súper.']] },
+    group: { t: 'Tu grupo', m: 'grupo', s: [
+      ['list', '<b>Cosas</b>: anoten quién lleva el parlante, la parrilla, el cargador…'],
+      ['users', '<b>Piezas</b>: repartan las camas a mano o con un sorteo.'],
+      ['book', '<b>Bitácora</b>: aquí se ve lo que hizo cada uno.']] }
+  };
+  const LS = { get: (k, d) => { try { return localStorage.getItem(k) || d; } catch (e) { return d; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* bloqueado */ } } };
+  const FONT = [['1', 'Normal'], ['1.15', 'Grande'], ['1.3', 'Muy grande']];
+  const applyFont = () => { document.documentElement.style.zoom = LS.get('viajapp-font', '1'); };
+  applyFont();
+  const fontHTML = () => `<div class="field"><span>${ic('text')} Tamaño de letra en este celular</span><div class="chips wrap">${FONT.map(([v, n], i) =>
+    `<button class="chip ${LS.get('viajapp-font', '1') === v ? 'active' : ''}" style="--c:#22d3ee;font-size:${14 + i * 2}px" data-act="fontSize" data-v="${v}">${n}</button>`).join('')}</div></div>`;
+  function helpHTML() {
+    const h = HELP[draft.s] || HELP.home;
+    return `<div class="sheet-title"><span class="st-ico" style="--c:var(--grad-sea)">${ic('help')}</span><div><h2>¿Cómo se usa ${esc(h.t)}?</h2><p>En 3 pasos</p></div></div>
+      <ol class="help-steps">${h.s.map(([i, txt], n) => `<li><span class="hs-n">${n + 1}</span><span class="hs-ic">${ic(i)}</span><span>${txt}</span></li>`).join('')}</ol>
+      ${fontHTML()}
+      ${draft.s === 'home' && guideOff() ? `<button class="btn block" data-act="guideShow">${ic('arrow')} Mostrar otra vez la guía de inicio</button>` : ''}
+      <a class="btn block help-link" href="manual/#${h.m}" target="_blank" rel="noopener">${ic('book')} Ver más en el manual</a>
+      <button class="btn primary block" style="margin-top:10px" data-act="close">Entendido</button>`;
+  }
+  /* Guía de inicio: un solo paso a la vez, se marca solo al hacerlo */
+  const guideOff = () => LS.get('viajapp-guide', '') === 'off';
+  function guideSteps() {
+    const s = S(), t = s.trip;
+    return [
+      { ic: 'edit', t: 'Ponle nombre y fechas a tu viaje', b: 'Escribir', a: 'data-act="trip"', ok: t.name && t.name !== 'Mi viaje' },
+      { ic: 'users', t: 'Anota quiénes van al viaje', b: 'Agregar personas', a: 'data-act="trip"', ok: t.people.length > 1 },
+      { ic: 'share', t: 'Invita a tu grupo para ver todo juntos', b: 'Invitar', a: 'data-act="sync"', ok: Sync.active },
+      { ic: 'cart', t: 'Elige lo que hay que comprar', b: 'Ir al súper', a: 'data-act="go" data-to="shop"', ok: Object.keys(s.shop.sel).length > 0 || Object.keys(P_().items).length > 0 },
+      { ic: 'calendar', t: 'Planea la primera comida', b: 'Planear', a: 'data-act="newEvent" data-type="almuerzo"', ok: s.events.length > 0 },
+      { ic: 'wallet', t: 'Anota el primer gasto', b: 'Anotar gasto', a: 'data-act="newExpense"', ok: s.expenses.length > 0 }
+    ];
+  }
+  function guideHTML() {
+    if (guideOff()) return '';
+    const st = guideSteps(), i = st.findIndex(x => !x.ok);
+    if (i < 0) return '';
+    const x = st[i];
+    return `<section class="guide card" style="--i:2">
+      <div class="g-top"><span class="eyebrow">Tu próximo paso · ${i + 1} de ${st.length}</span>
+        <span class="g-dots">${st.map(s => `<i class="${s.ok ? 'on' : ''}"></i>`).join('')}</span></div>
+      <div class="g-main"><span class="g-ic">${ic(x.ic)}</span><b>${x.t}</b></div>
+      <button class="btn primary block shine" ${x.a}>${x.b}</button>
+      ${!Sync.active && i < 2 ? `<button class="link g-join" data-act="sync">${ic('users')} ¿Te invitaron a un viaje? Únete aquí</button>` : ''}
+      <button class="link g-hide" data-act="guideHide">Ya sé usarla, ocultar guía</button>
+    </section>`;
+  }
 
   /* ================= Cálculos ================= */
   const spentTotal = () => S().expenses.reduce((s, e) => s + (+e.amount || 0), 0);
@@ -279,11 +354,13 @@
       ['pot', 'Recetas', 'go', 'data-to="recipes"', 'linear-gradient(135deg,#ffd23f,#ff3d8b)']
     ];
     const p0 = t.people[0], who = Sync.savedName() || (p0 && p0 !== 'Yo' ? p0 : '');
+    const guide = guideHTML();   // si la guía está visible, ella misma invita a compartir
     return `<div class="page">
       <header class="top stagger home-top">
         <img class="brand-mark" src="icons/logo-mark-256.png" alt="Viajapp" style="--i:0">
         <div class="grow" style="--i:1"><div class="eyebrow">${esc(cap(fmtDay(Store.today())))}</div><h1 class="title">${greet}${who ? ', ' + esc(who) : ''}</h1></div>
         <button class="icon-btn" data-act="trip" aria-label="Configurar viaje" style="--i:2">${ic('settings')}</button>
+        ${helpBtn('home')}
       </header>
       <div class="stagger">
         <section class="hero" style="--i:1" data-act="trip">
@@ -294,6 +371,7 @@
           <div class="countdown">${tripStatus()}</div>
           ${Sync.active ? `<button class="sync-pill" data-act="sync">${syncDot()} Compartido · ${Sync.members.length} ${Sync.members.length === 1 ? 'persona' : 'personas'}</button>` : ''}
         </section>
+        ${guide}
         <div class="stats" style="--i:2">
           <div class="stat" data-act="go" data-to="shop" role="button">
             <i class="s-glow" style="background:#3ef08a"></i><div class="s-ico">${ic('cart')}</div>
@@ -314,7 +392,7 @@
         </div>
       </div>
       ${ui.installEvt ? `<button class="btn sea block shine" style="margin-top:14px" data-act="install">${ic('phone')} Instalar Viajapp en este celular</button>` : ''}
-      ${!Sync.active ? `<button class="btn block share-cta" style="margin-top:14px" data-act="sync"><span>${ic('users')} Compartir con mi grupo</span><small>En vivo</small></button>` : ''}
+      ${!Sync.active && !guide ? `<button class="btn block share-cta" style="margin-top:14px" data-act="sync"><span>${ic('users')} Compartir con mi grupo</span><small>En vivo</small></button>` : ''}
       ${G.homeCard()}
       <div class="section-title"><h2>Accesos rápidos</h2></div>
       <div class="quick stagger">
@@ -769,6 +847,8 @@
         <button class="btn sm" data-act="rpAdd">${ic('plus')} Agregar responsable</button>
       </div>
       <button class="btn primary block shine" data-act="saveTrip">Guardar</button>
+      <div class="section-title"><h2 style="font-size:18px">Lectura</h2></div>
+      ${fontHTML()}
       <div class="section-title"><h2 style="font-size:18px">Tus datos</h2></div>
       <p class="hint" style="margin-top:-4px">Todo se guarda solo en este equipo. Haz un respaldo para pasarlo a otro celular.</p>
       <div class="btn-row">
@@ -1504,6 +1584,14 @@
         $('#evTitle').placeholder = PH[v] || '';
       }
     },
+    help: el => { draft = { _kind: 'help', s: el.dataset.s || ui.tab }; openSheet(helpHTML, releaseDraft(draft)); },
+    fontSize: el => {
+      LS.set('viajapp-font', el.dataset.v); applyFont(); buzz(8);
+      $$('[data-act="fontSize"]').forEach(c => c.classList.toggle('active', c === el));
+      placeSeg();
+    },
+    guideHide: () => { LS.set('viajapp-guide', 'off'); render(false); toast('Guía oculta. Puedes volver a verla con el botón ?'); },
+    guideShow: () => { LS.set('viajapp-guide', ''); closeSheet(); render(true); },
     amongAll: () => { if (!draft) return; draft.among = []; buzz(6); refreshAmong(); },
     amongTog: el => {
       if (!draft) return;

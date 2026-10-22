@@ -176,6 +176,12 @@ Otras: modo "en el súper", precios → gasto automático, OCR de boletas, multi
 
 ### Sesión 11 · 2026-10-22
 - El piloto en Temuco funcionó; comentario: la app puede ser **poco intuitiva**. Propuesto: checklist "Primeros pasos" en Inicio, botón "?" con ayuda por pantalla (+ enlace al manual), bienvenida de 3 pantallas, íconos con nombre. Recomendado 1+2; pendiente que el usuario elija y cuente qué les costó.
+- El usuario pidió algo **fácil para 10 a 90 años sin saturar la pantalla** y confió el diseño. Hecho ("Ayuda simple", todo en `app.js` junto a `header()`):
+  - **Botón ?** (`helpBtn(s)`, ícono `help`) en el encabezado de todas las pantallas (`header()` lo agrega con `ui.tab`; Inicio y `group.js` a mano) → hoja `helpHTML()` con 3 pasos cortos de `HELP[s]` (íconos + texto simple), tamaño de letra, enlace a `manual/#sección` y "Entendido".
+  - **Tu próximo paso** en Inicio (`guideHTML()`/`guideSteps()`): un paso a la vez (nombre del viaje → quiénes van → invitar → súper → comida → gasto), se marcan solos según los datos, puntos de progreso, se va al completar. "Ya sé usarla, ocultar guía" (`viajapp-guide`='off' en localStorage, por celular) y se reactiva desde el ? de Inicio. Mientras se ve, oculta el botón "Compartir con mi grupo"; en los pasos 1–2 muestra "¿Te invitaron a un viaje? Únete aquí".
+  - **Tamaño de letra** Normal/Grande/Muy grande (`viajapp-font` = 1/1.15/1.3 aplicado con `zoom` en `<html>`, por celular) en el ? y en ⚙️ Viaje (sección "Lectura"). Probado sin scroll horizontal.
+  - Prueba `tests/test-help.js` 22/22 (local y publicada); regresión completa OK (among, group, diet-pantry, recipes-view, resp, test2, sync real, join-trip). Manual: "¿No sabes qué hacer? La app te guía" en Primeros pasos (capturas 33–35), 2 FAQ; `shots.js` deja la guía oculta y la fotografía aparte. SW → `viajapp-v13`. Publicado.
+  - El `puppeteer-core` del scratchpad se había borrado: se reinstaló (`npm i puppeteer-core@22.15.0` en `scratchpad/e2e`).
 - **GitHub**: repo privado **https://github.com/xhorus11/ViajAPP** (rama `main`), autor Matías Gajardo con correo noreply. `gh` instalado (winget, `C:\Program Files\GitHub CLI\gh.exe`) y logueado como xhorus11; `gh auth setup-git` deja a git usar esa sesión. `README.md` y `.gitignore` nuevos (excluye `.claude/`, `.firebase/`, salidas de tests y un PDF personal de una beca que está en la carpeta). Regla nueva en `CLAUDE.md`/`AGENTS.md`: cada cambio termina con commit + push.
 
 ### (nota sesión 5)

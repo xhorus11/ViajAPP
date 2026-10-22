@@ -293,6 +293,7 @@ window.GroupModule = function (A) {
       <header class="top stagger">
         <button class="icon-btn" data-act="go" data-to="home" aria-label="Volver a Inicio" style="--i:0">${ic('back')}</button>
         <div class="grow" style="--i:1"><div class="eyebrow">Tu grupo</div><h1 class="title">${TITLES[ui.mode]}</h1></div>
+        <button class="icon-btn help-btn" data-act="help" data-s="group" aria-label="Ayuda: ¿cómo se usa?" style="--i:2">${ic('help')}</button>
       </header>
       <div class="seg seg3" id="groupSeg"><span class="seg-ind"></span>
         <button class="${ui.mode === 'gear' ? 'active' : ''}" data-act="gMode" data-m="gear">Cosas${nNo ? ` (${nNo})` : ''}</button>

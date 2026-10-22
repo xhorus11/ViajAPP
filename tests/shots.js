@@ -123,6 +123,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       L(1500, 'Diego', 'money', 'registró un gasto de $240.000 (Cabaña 3 noches)')
     ];
     localStorage.setItem('viajapp-name', '"Ana"');
+    localStorage.setItem('viajapp-guide', 'off');   // la guía se fotografía aparte (33)
     Store.save();
   });
   await page.reload({ waitUntil: 'load' }); await sleep(1800);
@@ -138,6 +139,18 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await click('.bed.taken', 900); await shot('30-grupo-cama', 700); await esc();
   await click('[data-act="gMode"][data-m="log"]', 1100); await page.evaluate(() => scrollTo(0, 0)); await shot('31-grupo-bitacora');
   await click('.tab[data-tab="home"]', 900);
+  // Ayuda simple: guía de próximo paso, botón ? y letra grande
+  await page.evaluate(() => { localStorage.setItem('viajapp-guide', ''); location.hash = '#agenda'; });
+  await sleep(400); await page.evaluate(() => { location.hash = '#home'; }); await sleep(1200);
+  await page.evaluate(() => { const g = document.querySelector('.guide'); g.scrollIntoView({ block: 'center' }); });
+  await shot('33-guia-inicio', 800);
+  await page.evaluate(() => { localStorage.setItem('viajapp-guide', 'off'); scrollTo(0, 0); location.hash = '#agenda'; });
+  await sleep(400); await page.evaluate(() => { location.hash = '#home'; }); await sleep(900);
+  await click('.help-btn[data-s="home"]', 900); await shot('34-ayuda', 700);
+  await click('[data-act="fontSize"][data-v="1.3"]', 500); await esc();
+  await page.evaluate(() => scrollTo(0, 0)); await shot('35-letra-grande', 900);
+  await page.evaluate(() => { localStorage.setItem('viajapp-font', '1'); document.documentElement.style.zoom = '1'; });
+  await sleep(400);
 
   // ---------- Súper ----------
   await tab('super'.replace('super', 'shop'));
