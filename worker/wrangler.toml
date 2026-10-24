@@ -1,0 +1,22 @@
+# Intermediario de ViajAPP para leer boletas (ver index.mjs).
+# Publicar: cd worker; npx wrangler@4 deploy
+# Clave de Gemini (secreta, NO va en este archivo): npx wrangler@4 secret put GEMINI_API_KEY
+name = "viajapp-boletas"
+main = "index.mjs"
+compatibility_date = "2026-10-01"
+
+[vars]
+ALLOWED_ORIGINS = "https://viajapp-trip.web.app,http://localhost:8765,http://127.0.0.1:8765"
+FIREBASE_PROJECT = "viajapp-e589e"
+LIMIT_PER_USER = "40"
+LIMIT_TOTAL = "600"
+
+[ai]
+binding = "AI"
+
+[[kv_namespaces]]
+binding = "LIMITS"
+id = "6e604807deae424087e448a20234680f"
+
+[observability]
+enabled = true

@@ -343,6 +343,11 @@
     const m = s.match(/viaje=([A-Za-z0-9]{10,40})/) || s.match(/^([A-Za-z0-9]{10,40})$/);
     return m ? m[1] : null;
   }
+  /* Sesión de Firebase para servicios propios (ej. lector de boletas): no conecta ni cambia el viaje compartido */
+  async function idToken() {
+    await boot();
+    return withTimeout(auth.currentUser.getIdToken(), 20000);
+  }
   const inviteLink = () => `${location.origin}${location.pathname}?viaje=${Sync.tripId}`;
   const savedTrip = () => (ls.get(SESSION, null) || {}).tripId || null;
   const savedName = () => ls.get(NAME, '');
@@ -350,5 +355,5 @@
   addEventListener('online', () => { if (Sync.active && Sync.status === 'offline') setStatus('connecting'); });
   addEventListener('offline', () => { if (Sync.active) setStatus('offline'); });
 
-  window.Sync = Object.assign(Sync, { init, create, join, leave, push, flush, parseCode, inviteLink, savedTrip, savedName });
+  window.Sync = Object.assign(Sync, { init, create, join, leave, push, flush, parseCode, inviteLink, savedTrip, savedName, idToken });
 })();

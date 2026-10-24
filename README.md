@@ -10,6 +10,9 @@ Organizador de viajes en grupo, pensado para el celular: lista del súper con ca
 - Datos locales (`localStorage` + IndexedDB) y viaje compartido con Firebase (Auth anónima + Firestore, plan gratuito).
 - Exportaciones con html2canvas y jsPDF (en `vendor/`).
 
+## Lector de boletas con IA
+La app manda la foto de la boleta a un intermediario en Cloudflare Workers (`worker/`), que guarda la clave de la IA (Gemini, con Workers AI de respaldo), verifica la sesión de Firebase y devuelve los productos y precios. Publicar el intermediario: `cd worker; npx wrangler@4 deploy`. La clave se carga como secreto (`wrangler secret put GEMINI_API_KEY`), nunca en el código.
+
 ## Correr en local
 ```
 python -m http.server 8765

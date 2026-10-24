@@ -19,7 +19,23 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   const esc = async () => { await page.keyboard.press('Escape'); await sleep(450); };
   const scrollTo = async sel => { await page.$eval(sel, e => e.scrollIntoView({ block: 'start' })); await page.evaluate(() => scrollBy(0, -20)); };
 
+  // Lector de boletas: respuesta fija (no gasta cuota de IA), igual a la boleta de ejemplo dibujada abajo
+  const ayer = (() => { const x = new Date(); x.setDate(x.getDate() - 1); return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`; })();
+  const BOL = { proveedor: 'Supermercado Sur', razonSocial: '', rut: '', fecha: ayer, nDoc: '4512', tipoDoc: 'Boleta', medioPago: 'Débito', categoria: 'super', detalle: 'Víveres para el asado',
+    items: [['Fideos spaghetti', 'Fideos spaghetti x4', 4, 1490, 5960], ['Salsa pesto', 'Salsa pesto x2', 2, 3990, 7980], ['Queso parmesano', 'Queso parmesano', 1, 6490, 6490], ['Asado de tira', 'Asado de tira 1,5kg', 1.5, 15933, 23900], ['Chorizo', 'Chorizo x8', 8, 950, 7600], ['Pan marraqueta', 'Pan marraqueta 2kg', 2, 2100, 4200], ['Bebida 3 L', 'Bebidas 3L x4', 4, 2990, 11960], ['Carbón 5 kg', 'Carbón 5kg', 1, 6990, 6990], ['Tomate y cebolla', 'Tomate / cebolla', 1, 4270, 4270], ['Hielo 2 kg', 'Hielo 2kg', 1, 3000, 3000]]
+      .map(([nombre, orig, cant, pUnit, total]) => ({ nombre, orig, cant, unidad: /kg/.test(orig) && cant % 1 ? 'kg' : 'un', pUnit, total })),
+    neto: 69202, iva: 13148, propina: 0, total: 82350, legible: true, avisos: [] };
+  await page.setRequestInterception(true);
+  page.on('request', r => {
+    if (/viajapp-boletas\..*workers\.dev\/leer/.test(r.url())) {
+      const h = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'authorization, content-type', 'content-type': 'application/json' };
+      if (r.method() === 'OPTIONS') return r.respond({ status: 204, headers: h });
+      return setTimeout(() => r.respond({ status: 200, headers: h, body: JSON.stringify({ ok: true, model: 'demo', data: BOL, check: { sum: 82350, diff: 0 } }) }), 1500);
+    }
+    r.continue();
+  });
   await page.goto(URL, { waitUntil: 'load' }); await sleep(1500);
+  await page.evaluate(() => { Sync.idToken = async () => 'demo'; });
 
   // ---------- Datos de ejemplo ----------
   await page.evaluate(async () => {
@@ -191,6 +207,19 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await page.evaluate(() => scrollTo(0, 0));
   await click('.exp-row[data-id="e2"]', 1000); await page.evaluate(() => { document.getElementById('sheetBody').scrollTop = 0; }); await shot('12-gasto', 800);
   await page.evaluate(() => { const p = document.getElementById('exPhotos'); p.scrollIntoView({ block: 'center' }); }); await shot('13-gasto-foto', 800); await esc();
+  // Analizador de boletas
+  await click('.exp-row[data-id="e2"]', 1000);
+  await page.evaluate(() => { document.getElementById('bolBox').scrollIntoView({ block: 'center' }); }); await shot('36-boleta-boton', 700);
+  await click('[data-act="bolRead"]', 600); await shot('37-boleta-leyendo', 200);
+  await page.waitForSelector('#bolRows', { timeout: 15000 }); await page.evaluate(() => { document.getElementById('sheetBody').scrollTop = 0; });
+  await shot('38-boleta-revisa', 700);
+  await page.evaluate(() => { const b = document.getElementById('sheetBody'); b.scrollTop = b.scrollHeight; }); await shot('39-boleta-usar', 600);
+  await click('[data-act="bolUse"]', 900); await page.evaluate(() => { document.getElementById('bolBox').scrollIntoView({ block: 'center' }); }); await shot('40-boleta-lista', 900);
+  await click('[data-act="saveExpense"]', 1000);
+  await page.evaluate(() => scrollTo(0, 0));
+  await click('[data-act="planilla"]', 900); await shot('41-planilla', 600);
+  await click('[data-act="planillaGo"][data-k="xlsx"]', 3500);
+  await click('[data-act="planilla"]', 900); await click('[data-act="planillaGo"][data-k="docx"]', 3500);
   await click('.exp-row[data-id="e3"]', 1000); await page.evaluate(() => { document.getElementById('exAmong').scrollIntoView({ block: 'center' }); }); await shot('32-gasto-entre-algunos', 800); await esc();
   await click('.act[data-act="split"]', 800);
   await page.type('#spTotal', '68000'); await click('[data-act="pick"][data-g="tip"][data-v="10"]', 300);

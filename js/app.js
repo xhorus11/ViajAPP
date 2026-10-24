@@ -714,6 +714,7 @@
           <button class="act" data-act="exp" data-k="financePDF"><span style="background:var(--grad-sun)">${ic('file')}</span>Carta PDF</button>
           <button class="act" data-act="exp" data-k="financeCSV"><span style="background:var(--grad-lime)">${ic('sheet')}</span>Excel</button>
         </div>
+        ${ex.length ? BOL.planillaLink() : ''}
       </div>
       ${byCat.length ? `
         <div class="section-title"><h2>¿En qué se va la plata?</h2></div>
@@ -752,6 +753,7 @@
     }).join('')}</div>`;
   }
   function expenseHTML() {
+    if (draft._bol) return BOL.reviewHTML();   // hoja "Revisa tu boleta" (analizador de boletas)
     const d = draft, t = S().trip;
     return `<div class="sheet-title"><span class="st-ico">${ic('wallet')}</span><div><h2>${d.id ? 'Editar gasto' : 'Nuevo gasto'}</h2><p>Queda listo para la carta financiera</p></div></div>
       <div class="amount"><input id="exAmount" inputmode="decimal" placeholder="0" value="${esc(d.amount)}" autocomplete="off" aria-label="Monto">
@@ -768,6 +770,7 @@
       <div id="exAmong">${amongHTML()}</div>
       <div class="field"><span>Medio de pago</span>${chipGroup('method', PAY_METHODS, d.method, () => '#22b8d4')}</div>
       <div class="field"><span>Fotos de boleta / comprobante</span><div class="photos" id="exPhotos">${photosHTML()}</div></div>
+      <div id="bolBox">${BOL.buttonHTML()}</div>
       <label class="field"><span>Notas</span><textarea id="exNotes" placeholder="Opcional">${esc(d.notes)}</textarea></label>
       <button class="btn primary block shine" data-act="saveExpense">Guardar gasto</button>
       ${d.id ? `<button class="btn danger block" style="margin-top:10px" data-act="delExpense">Eliminar gasto</button>` : ''}`;
@@ -1391,6 +1394,11 @@
   });
   const log = G.log;
 
+  /* Analizador de boletas (js/boletas.js): leer boleta con IA en el gasto + planilla Excel/Word */
+  const BOL = BoletaModule({
+    S, esc, ic, toast, money, buzz, confetti, refreshSheet, openSheet, closeSheet, $, $$, getDraft: () => draft, photoCache
+  });
+
   const RENDER = { home: renderHome, shop: renderShop, recipes: renderRecipes, money: renderMoney, agenda: renderAgenda, group: G.render };
 
   /* ================= Acciones ================= */
@@ -1607,6 +1615,7 @@
       if (draft._added.includes(id)) { draft._added = draft._added.filter(p => p !== id); Store.photos.del(id); }
       else draft._removed.push(id);
       $('#exPhotos').innerHTML = photosHTML(); loadThumbs(); buzz(10);
+      if ($('#bolBox')) $('#bolBox').innerHTML = BOL.buttonHTML();
     },
     saveExpense: () => {
       const amt = parseAmount($('#exAmount').value);
@@ -1623,6 +1632,7 @@
       };
       const among = d.payer === FUND ? [] : (d.among || []).filter(p => S().trip.people.includes(p));
       if (among.length && among.length < S().trip.people.length) clean.among = among;   // solo se guarda si es parcial
+      if (d.receipt) clean.receipt = d.receipt;   // productos leídos con el analizador de boletas
       d._removed.forEach(id => Store.photos.del(id));
       const list = S().expenses, i = list.findIndex(e => e.id === clean.id);
       if (i >= 0) list[i] = clean; else list.push(clean);
@@ -1932,6 +1942,7 @@
   };
 
   Object.assign(ACT, G.ACT);
+  Object.assign(ACT, BOL.ACT);
 
   /* ================= Eventos globales ================= */
   document.addEventListener('click', e => {
@@ -1970,6 +1981,7 @@
 
   document.addEventListener('change', async e => {
     const el = e.target;
+    if (el.dataset.change === 'bolPhoto') { BOL.onPhoto(el); return; }
     if (el.dataset.change === 'photos') {
       const files = [...el.files]; el.value = '';
       if (!files.length || !draft) return;
@@ -1986,6 +1998,7 @@
         } catch (err) { toast('No se pudo leer una imagen'); }
       }
       if (draft === mine && $('#exPhotos')) { $('#exPhotos').innerHTML = photosHTML(); loadThumbs(); buzz(15); }
+      if (draft === mine && $('#bolBox')) $('#bolBox').innerHTML = BOL.buttonHTML();
     } else if (el.id === 'importFile') {
       const f = el.files[0]; el.value = '';
       if (!f) return;
