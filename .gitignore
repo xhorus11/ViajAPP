@@ -3,6 +3,9 @@ a4241728-86f3-4dba-be82-4f5f11f00184.pdf
 
 # Herramientas locales
 .claude/
+.wrangler/
+**/.wrangler/
+.dev.vars
 .firebase/
 node_modules/
 **/node_modules/
