@@ -220,6 +220,15 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await click('[data-act="planilla"]', 900); await shot('41-planilla', 600);
   await click('[data-act="planillaGo"][data-k="xlsx"]', 3500);
   await click('[data-act="planilla"]', 900); await click('[data-act="planillaGo"][data-k="docx"]', 3500);
+  // Cuentas separadas (desde el gasto con la boleta leída)
+  await click('.exp-row[data-id="e2"]', 1000);
+  await click('[data-act="sepFromExpense"]', 900);
+  for (const [s, w] of [['[data-act="sepAll"][data-i="0"]'], ['[data-act="sepAll"][data-i="3"]'], ['[data-act="sepWho"][data-i="1"][data-p="Ana"]'], ['[data-act="sepWho"][data-i="1"][data-p="Cami"]'],
+    ['[data-act="sepWho"][data-i="2"][data-p="Pedro"]'], ['[data-act="sepWho"][data-i="4"][data-p="Diego"]'], ['[data-act="sepAll"][data-i="5"]'], ['[data-act="sepAll"][data-i="6"]'], ['[data-act="sepWho"][data-i="7"][data-p="Pedro"]'],
+    ['[data-act="sepAll"][data-i="8"]'], ['[data-act="sepAll"][data-i="9"]'], ['[data-act="sepPayer"][data-v="Pedro"]']]) await click(s, 250);
+  await page.evaluate(() => { document.getElementById('sheetBody').scrollTop = 0; }); await shot('42-separadas', 700);
+  await page.evaluate(() => { document.getElementById('sepRes').scrollIntoView({ block: 'start' }); document.getElementById('sheetBody').scrollTop -= 60; }); await shot('43-separadas-resultado', 700);
+  await esc();
   await click('.exp-row[data-id="e3"]', 1000); await page.evaluate(() => { document.getElementById('exAmong').scrollIntoView({ block: 'center' }); }); await shot('32-gasto-entre-algunos', 800); await esc();
   await click('.act[data-act="split"]', 800);
   await page.type('#spTotal', '68000'); await click('[data-act="pick"][data-g="tip"][data-v="10"]', 300);

@@ -714,7 +714,7 @@
           <button class="act" data-act="exp" data-k="financePDF"><span style="background:var(--grad-sun)">${ic('file')}</span>Carta PDF</button>
           <button class="act" data-act="exp" data-k="financeCSV"><span style="background:var(--grad-lime)">${ic('sheet')}</span>Excel</button>
         </div>
-        ${ex.length ? BOL.planillaLink() : ''}
+        <div class="money-links">${SEP.linkHTML()}${ex.length ? BOL.planillaLink() : ''}</div>
       </div>
       ${byCat.length ? `
         <div class="section-title"><h2>¿En qué se va la plata?</h2></div>
@@ -735,7 +735,7 @@
             <button class="exp-row" style="--c:${c.color};--i:${Math.min(i, 10)}" data-act="editExpense" data-id="${e.id}">
               <span class="ei">${c.emoji}</span>
               <span class="em"><span class="en">${esc(e.desc || c.name)}</span>
-                <span class="es">${esc(c.name)}${e.payer ? ' · ' + esc(e.payer) : ''}${isPartial(e) ? ' · ' + ic('users') + ' entre ' + sharersOf(e).length : ''}${(e.photos || []).length ? ' · ' + ic('camera') + ' ' + e.photos.length : ''}</span></span>
+                <span class="es">${esc(c.name)}${e.payer ? ' · ' + esc(e.payer) : ''}${isPartial(e) ? ' · ' + ic('users') + ' entre ' + sharersOf(e).length : ''}${e.split ? ' · ' + ic('users') + ' cuentas separadas' : ''}${(e.photos || []).length ? ' · ' + ic('camera') + ' ' + e.photos.length : ''}</span></span>
               <span class="ea">${money(e.amount)}<small>${esc(e.method || '')}</small></span>
             </button>`; }).join('')}`;
       }).join('') : `<div class="card empty"><span class="ee">${ic('receipt')}</span><b>Sin gastos todavía</b>Registra cada compra, sube la foto de la boleta y genera la carta financiera al final.</div>`}
@@ -754,6 +754,7 @@
   }
   function expenseHTML() {
     if (draft._bol) return BOL.reviewHTML();   // hoja "Revisa tu boleta" (analizador de boletas)
+    if (draft._split) return SEP.html();       // hoja "Cuentas separadas"
     const d = draft, t = S().trip;
     return `<div class="sheet-title"><span class="st-ico">${ic('wallet')}</span><div><h2>${d.id ? 'Editar gasto' : 'Nuevo gasto'}</h2><p>Queda listo para la carta financiera</p></div></div>
       <div class="amount"><input id="exAmount" inputmode="decimal" placeholder="0" value="${esc(d.amount)}" autocomplete="off" aria-label="Monto">
@@ -771,6 +772,7 @@
       <div class="field"><span>Medio de pago</span>${chipGroup('method', PAY_METHODS, d.method, () => '#22b8d4')}</div>
       <div class="field"><span>Fotos de boleta / comprobante</span><div class="photos" id="exPhotos">${photosHTML()}</div></div>
       <div id="bolBox">${BOL.buttonHTML()}</div>
+      ${SEP.expenseButtonHTML()}
       <label class="field"><span>Notas</span><textarea id="exNotes" placeholder="Opcional">${esc(d.notes)}</textarea></label>
       <button class="btn primary block shine" data-act="saveExpense">Guardar gasto</button>
       ${d.id ? `<button class="btn danger block" style="margin-top:10px" data-act="delExpense">Eliminar gasto</button>` : ''}`;
@@ -975,11 +977,12 @@
     const share = total / people.length, bal = {}, part = {};
     people.forEach(p => { bal[p] = 0; part[p] = 0; });
     ex.forEach(e => {
-      const amt = +e.amount || 0, who = sharersOf(e);
-      who.forEach(p => { bal[p] -= amt / who.length; part[p] += amt / who.length; });
+      const amt = +e.amount || 0, sep = SEP.shares(e);
+      if (sep) Object.entries(sep).forEach(([p, v]) => { bal[p] = (bal[p] || 0) - v; part[p] = (part[p] || 0) + v; });   // cuentas separadas
+      else { const who = sharersOf(e); who.forEach(p => { bal[p] -= amt / who.length; part[p] += amt / who.length; }); }
       bal[e.payer] = (bal[e.payer] || 0) + amt;
     });
-    const partial = ex.filter(isPartial).length;
+    const partial = ex.filter(e => isPartial(e) || SEP.shares(e)).length;
     const deb = Object.entries(bal).filter(([, b]) => b < -0.5).map(([p, b]) => ({ p, b: -b })).sort((a, b) => b.b - a.b);
     const cred = Object.entries(bal).filter(([, b]) => b > 0.5).map(([p, b]) => ({ p, b })).sort((a, b) => b.b - a.b);
     const tr = [];
@@ -1399,6 +1402,12 @@
     S, esc, ic, toast, money, buzz, confetti, refreshSheet, openSheet, closeSheet, $, $$, getDraft: () => draft, photoCache
   });
 
+  /* Cuentas separadas (js/cuentas.js): dividir una boleta por lo que consumió cada uno, con propina */
+  const SEP = SplitModule({
+    S, esc, ic, toast, money, buzz, confetti, refreshSheet, openSheet, closeSheet, $, $$, getDraft: () => draft, setDraft: v => { draft = v; },
+    photoCache, FUND, log, render: a => render(a), BOL
+  });
+
   const RENDER = { home: renderHome, shop: renderShop, recipes: renderRecipes, money: renderMoney, agenda: renderAgenda, group: G.render };
 
   /* ================= Acciones ================= */
@@ -1633,6 +1642,7 @@
       const among = d.payer === FUND ? [] : (d.among || []).filter(p => S().trip.people.includes(p));
       if (among.length && among.length < S().trip.people.length) clean.among = among;   // solo se guarda si es parcial
       if (d.receipt) clean.receipt = d.receipt;   // productos leídos con el analizador de boletas
+      if (d.split) clean.split = d.split;         // cuentas separadas
       d._removed.forEach(id => Store.photos.del(id));
       const list = S().expenses, i = list.findIndex(e => e.id === clean.id);
       if (i >= 0) list[i] = clean; else list.push(clean);
@@ -1943,6 +1953,7 @@
 
   Object.assign(ACT, G.ACT);
   Object.assign(ACT, BOL.ACT);
+  Object.assign(ACT, SEP.ACT);
 
   /* ================= Eventos globales ================= */
   document.addEventListener('click', e => {
@@ -1982,6 +1993,7 @@
   document.addEventListener('change', async e => {
     const el = e.target;
     if (el.dataset.change === 'bolPhoto') { BOL.onPhoto(el); return; }
+    if (el.dataset.change === 'sepPhoto') { SEP.onPhoto(el); return; }
     if (el.dataset.change === 'photos') {
       const files = [...el.files]; el.value = '';
       if (!files.length || !draft) return;

@@ -290,5 +290,7 @@ function BoletaModule(A) {
   }
 
   const planillaLink = () => `<button class="link bol-plink" data-act="planilla">${ic('sheet')} Planilla de gastos (Excel o Word)</button>`;
-  return { ACT, buttonHTML, reviewHTML, onPhoto, planillaLink };
+  /* Leer una foto ya guardada y devolver los datos (lo usa Cuentas separadas) */
+  const readPhoto = async id => (await read(photoCache[id] || await Store.photos.get(id))).data;
+  return { ACT, buttonHTML, reviewHTML, onPhoto, planillaLink, readPhoto };
 }

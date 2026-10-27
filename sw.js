@@ -1,9 +1,9 @@
 /* Service worker: la app funciona sin conexión */
-const CACHE = 'viajapp-v14';
+const CACHE = 'viajapp-v15';
 const SHELL = [
   './', './index.html', './manifest.webmanifest',
   './css/styles.css',
-  './js/firebase-config.js', './js/data.js', './js/recipes.js', './js/diets.js', './js/store.js', './js/export.js', './js/sync.js', './js/group.js', './js/boletas.js', './js/app.js',
+  './js/firebase-config.js', './js/data.js', './js/recipes.js', './js/diets.js', './js/store.js', './js/export.js', './js/sync.js', './js/group.js', './js/boletas.js', './js/cuentas.js', './js/app.js',
   './vendor/html2canvas.min.js', './vendor/jspdf.umd.min.js', './vendor/jspdf.plugin.autotable.min.js', './vendor/qrcode.min.js',
   './vendor/xlsx.mini.min.js', './vendor/jszip.min.js',
   './vendor/firebase-app-compat.js', './vendor/firebase-auth-compat.js', './vendor/firebase-firestore-compat.js',
@@ -41,12 +41,15 @@ self.addEventListener('fetch', e => {
 
   if (url.origin !== location.origin) return;
 
-  // Archivos propios: red primero, siempre revalidando con el servidor (no la caché HTTP); caché si no hay conexión
+  // Archivos propios: red primero, siempre revalidando con el servidor (no la caché HTTP); caché si no hay conexión.
+  // Si la red falla un instante se reintenta una vez; la página de inicio solo se usa como respaldo al ABRIR la app
+  // (nunca en lugar de un .js o .css: eso dejaba la app a medio cargar).
+  const net = () => fetch(req, { cache: 'no-cache' });
   e.respondWith(
-    fetch(req, { cache: 'no-cache' }).then(res => {
-      const copy = res.clone();
-      caches.open(CACHE).then(c => c.put(req, copy));
+    net().catch(() => net()).then(res => {
+      if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
       return res;
-    }).catch(() => caches.match(req, { ignoreSearch: true }).then(r => r || caches.match('./index.html')))
+    }).catch(() => caches.match(req, { ignoreSearch: true })
+      .then(r => r || (req.mode === 'navigate' ? caches.match('./index.html') : Response.error())))
   );
 });
