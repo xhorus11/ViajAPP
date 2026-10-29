@@ -215,5 +215,11 @@ Otras: modo "en el súper", precios → gasto automático, OCR de boletas, multi
 - Pruebas: `tests/test-cuentas.js` 23/23 (local ×4 y publicada; respuesta de IA fija), regresión completa OK (among, help, group, diet-pantry, recipes-view, resp, test2, boletas-app con Worker real, sync real). Manual: sección "Cuentas separadas" (capturas 42–43) + FAQ Dividir vs entre algunos vs separadas. SW → `viajapp-v15`. Publicado.
 - El borrado automático de viajes de prueba en Firestore (test-sync deja uno sin miembros) fue bloqueado por permisos: quedó pendiente, consultar al usuario.
 
+### Sesión 15 · 2026-10-29 — Lentitud en la versión web
+- Reporte: en el computador la app "va algo pegada". Mediciones (Edge visible en el PC del usuario + trazas de pintado): CPU de Edge ~3%; la GPU ya estaba en 32–36% **sin la app** (dwm 24% + otra pestaña de Chrome); con datos pesados (150 gastos con boletas, 400 de bitácora, 120 en la lista; 306 KB) todas las acciones < 0,15 s salvo la 1.ª apertura de Súper (~0,3 s, diseño de 211 tarjetas; la 2.ª 13 ms).
+- **Causa encontrada**: la tarjeta del viaje en Inicio animaba `background-position` (`partyBg`) → el navegador repintaba ~120 veces/s mientras Inicio estaba abierto. Arreglo: el degradado ahora es una capa `.hero::after` (300%×300%) que se mueve con `transform` (`partyMove`, mismo ritmo de 12 s) + `isolation: isolate` y `::before` con `z-index:-1`. Visualmente idéntico (diferencia media 0,5–3/255); repintados en reposo: 0 en todas las pantallas y hojas. `.rl-card` (ruleta, pocos segundos) mantiene `partyBg`.
+- Regla: **no animar background-position/box-shadow/tamaños en elementos que quedan en pantalla**; usar `transform`/`opacity`. Scripts de medición en el scratchpad (`perf*.js`: fps, GPU por WMI `Win32_PerfFormattedData_GPUPerformanceCounters_GPUEngine`, trazas `Paint`).
+- Sin cambios visibles → manual sin cambios. SW → `viajapp-v16`. Publicado y verificado en el sitio.
+
 ### (nota sesión 5)
 - El usuario tenía la app en **Vercel**: ya no es necesaria si se publica en Firebase Hosting (recomendado: misma cuenta, dominio ya autorizado). Ojo: los datos locales son por dominio; para pasar datos usar el viaje compartido o Respaldo/Restaurar.

@@ -141,11 +141,15 @@ h1, h2, h3 { font-family: var(--font-display); margin: 0; letter-spacing: -.02em
 /* ---------- Inicio ---------- */
 .hero {
   position: relative; overflow: hidden; border-radius: 30px; padding: 22px;
-  background: var(--grad-party); background-size: 300% 300%; animation: partyBg 12s ease infinite;
+  background: #ff8a00; isolation: isolate;
   box-shadow: 0 24px 60px -20px rgba(255, 61, 139, .65);
 }
 @keyframes partyBg { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-.hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20, 12, 51, .05), rgba(20, 12, 51, .55)); }
+/* El degradado se mueve como una capa (transform): la tarjeta gráfica solo la desplaza, sin repintar.
+   Antes se animaba background-position y el navegador repintaba la tarjeta ~120 veces por segundo. */
+.hero::after { content: ''; position: absolute; z-index: -2; left: 0; top: -100%; width: 300%; height: 300%; background: var(--grad-party); animation: partyMove 12s ease infinite; will-change: transform; pointer-events: none; }
+@keyframes partyMove { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-66.6667%); } }
+.hero::before { content: ''; position: absolute; z-index: -1; inset: 0; background: linear-gradient(180deg, rgba(20, 12, 51, .05), rgba(20, 12, 51, .55)); }
 .hero > * { position: relative; }
 .hero .trip-name { font-size: 30px; font-weight: 800; line-height: 1.05; text-shadow: 0 2px 12px rgba(0, 0, 0, .25); }
 .hero .trip-meta { margin-top: 6px; font-weight: 600; opacity: .95; }
