@@ -51,12 +51,12 @@ full.alpha_composite(logo, ((full.width - W0) // 2, (full.height - H0) // 2))
 full.resize((600, 600), Image.LANCZOS).save(os.path.join(out, 'logo-full-600.png'), optimize=True)
 
 def background(size, rounded):
-    """Fondo violeta oscuro con brillo rosado/cian (colores de la app)."""
-    bg = Image.new('RGBA', (size, size), (20, 12, 51, 255))
+    """Fondo azul marino con brillo celeste e índigo (paleta Día/Noche de la app)."""
+    bg = Image.new('RGBA', (size, size), (10, 22, 40, 255))
     glow = Image.new('RGBA', (size, size), (0, 0, 0, 0))
     g = ImageDraw.Draw(glow)
-    g.ellipse([-size * .25, -size * .3, size * .75, size * .6], fill=(139, 92, 246, 150))
-    g.ellipse([size * .35, size * .45, size * 1.3, size * 1.35], fill=(255, 61, 139, 120))
+    g.ellipse([-size * .25, -size * .3, size * .75, size * .6], fill=(14, 165, 233, 160))
+    g.ellipse([size * .35, size * .45, size * 1.3, size * 1.35], fill=(79, 70, 229, 130))
     glow = glow.filter(ImageFilter.GaussianBlur(size * .18))
     bg.alpha_composite(glow)
     if rounded:

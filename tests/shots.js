@@ -1,7 +1,8 @@
 /* Capturas para el manual de Viajapp (datos de ejemplo, sin tocar Firebase) */
 const puppeteer = require('puppeteer-core');
 const path = require('path'), fs = require('fs');
-const OUT = path.join(__dirname, 'shots'), DL = path.join(OUT, 'dl');
+const OUT = process.env.SHOTS_OUT || path.join(__dirname, 'shots'), DL = path.join(OUT, 'dl');
+const THEME = process.env.SHOTS_THEME || 'day';   // tema de las capturas (day | night)
 fs.rmSync(OUT, { recursive: true, force: true }); fs.mkdirSync(DL, { recursive: true });
 const URL = process.argv[2] || 'https://viajapp-trip.web.app/index.html';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -38,6 +39,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await page.evaluate(() => { Sync.idToken = async () => 'demo'; });
 
   // ---------- Datos de ejemplo ----------
+  await page.evaluate(t => localStorage.setItem('viajapp-theme', t), THEME);
   await page.evaluate(async () => {
     const d = n => { const x = new Date(); x.setDate(x.getDate() + n); return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`; };
     // Boleta de ejemplo dibujada
@@ -255,6 +257,12 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await page.evaluate(() => location.hash = 'agenda'); await sleep(400); await page.evaluate(() => location.hash = 'home'); await sleep(1600);
   await shot('21-inicio-compartido', 300);
   await click('.sync-pill', 900); await shot('22-compartir-qr', 900);
+  await esc();
+  // Tema Noche (las demás capturas usan el tema de SHOTS_THEME)
+  await page.evaluate(() => { localStorage.setItem('viajapp-theme', 'night'); document.documentElement.dataset.theme = 'night'; location.hash = '#agenda'; });
+  await sleep(300); await page.evaluate(() => { location.hash = '#home'; scrollTo(0, 0); }); await sleep(900);
+  await shot('44-tema-noche', 900);
+  await page.evaluate(t => { localStorage.setItem('viajapp-theme', t); document.documentElement.dataset.theme = t; }, THEME);
 
   await sleep(1000);
   console.log('Descargas:', fs.readdirSync(DL).join(', '));

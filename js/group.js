@@ -12,7 +12,7 @@ window.GroupModule = function (A) {
   const save = () => Store.save();
   const shuffle = arr => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const listAnd = xs => xs.length > 1 ? xs.slice(0, -1).join(', ') + ' y ' + xs[xs.length - 1] : (xs[0] || '');
-  const PAL = ['#ff3d8b', '#22d3ee', '#ffd23f', '#3ef08a', '#8b5cf6', '#ff8a00', '#5eead4', '#fb7185'];
+  const PAL = ['var(--pink)', 'var(--cyan)', 'var(--yellow)', 'var(--lime)', 'var(--violet)', 'var(--orange)', 'var(--teal)', 'var(--rose)'];
   const colorOf = name => PAL[[...String(name)].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7) % PAL.length];
 
   /* ======================= BITÁCORA ======================= */
@@ -65,11 +65,11 @@ window.GroupModule = function (A) {
     return `
       <p class="hint" style="margin:0 4px 12px">Se registra solo lo que hace cada persona: gastos, compras, agenda, despensa, cosas y piezas. Con el viaje compartido ves también lo del resto del grupo.</p>
       <div class="chips" style="margin-bottom:4px">
-        <button class="chip ${ui.logK === 'all' ? 'active' : ''}" data-act="gLogK" data-k="all" style="--c:#ff3d8b">Todo</button>
-        ${Object.entries(LOG_K).map(([k, v]) => `<button class="chip ${ui.logK === k ? 'active' : ''}" data-act="gLogK" data-k="${k}" style="--c:#8b5cf6">${ic(v[1])} ${v[0]}</button>`).join('')}
+        <button class="chip ${ui.logK === 'all' ? 'active' : ''}" data-act="gLogK" data-k="all" style="--c:var(--pink)">Todo</button>
+        ${Object.entries(LOG_K).map(([k, v]) => `<button class="chip ${ui.logK === k ? 'active' : ''}" data-act="gLogK" data-k="${k}" style="--c:var(--violet)">${ic(v[1])} ${v[0]}</button>`).join('')}
       </div>
       ${whos.length > 1 ? `<div class="chips">
-        <button class="chip ${ui.logWho === 'all' ? 'active' : ''}" data-act="gLogWho" data-w="all" style="--c:#22b8d4">Todos</button>
+        <button class="chip ${ui.logWho === 'all' ? 'active' : ''}" data-act="gLogWho" data-w="all" style="--c:var(--cyan)">Todos</button>
         ${whos.map(w => `<button class="chip ${ui.logWho === w ? 'active' : ''}" data-act="gLogWho" data-w="${esc(w)}" style="--c:${colorOf(w)}">${esc(w)}</button>`).join('')}
       </div>` : ''}
       ${rows || `<div class="card empty" style="margin-top:12px"><span class="ee">${ic('list')}</span><b>Aún no hay movimientos</b>Cuando alguien registre un gasto, marque compras o agende un plan, aparecerá aquí.</div>`}`;
@@ -91,7 +91,7 @@ window.GroupModule = function (A) {
       <button class="check ${on ? 'on' : ''}" data-act="gCheck" data-id="${x.id}" aria-label="${ida ? 'Marcar llevado' : 'Marcar devuelto'}">${CHECK}</button>
       <span class="ge">${x.e || '📦'}</span>
       <div class="rm"><div class="rn">${esc(x.name)}${x.qty > 1 ? ` <small>x${x.qty}</small>` : ''}</div>
-        <div class="rv">${x.owner ? `lleva <b style="color:#fff">${esc(x.owner)}</b>` : '<span class="dw-inline">nadie lo lleva todavía</span>'}${x.note ? ' · ' + esc(x.note) : ''}</div></div>
+        <div class="rv">${x.owner ? `lleva <b style="color:var(--strong)">${esc(x.owner)}</b>` : '<span class="dw-inline">nadie lo lleva todavía</span>'}${x.note ? ' · ' + esc(x.note) : ''}</div></div>
       ${!x.owner && ida ? `<button class="btn sm sea mine" data-act="gMine" data-id="${x.id}">Lo llevo yo</button>` : ''}
       <button class="del" data-act="gEdit" data-id="${x.id}" aria-label="Editar">${ic('edit')}</button>
     </div>`;
@@ -109,16 +109,16 @@ window.GroupModule = function (A) {
         <div class="list-summary"><div><div class="eyebrow">${ida ? 'Antes del viaje' : 'Al volver'}</div><span class="big">${done}</span> / ${pool.length} ${ida ? 'ya en la mochila' : 'devueltas a su dueño'}</div><span class="sum-ic">${ic('box')}</span></div>
         <div class="progress"><i data-w="${pool.length ? done / pool.length * 100 : 0}%"></i></div>
         <div class="chips wrap" style="margin-top:12px">
-          <button class="chip ${ida ? 'active' : ''}" data-act="gPhase" data-p="ida" style="--c:#ff8a00">Antes del viaje</button>
-          <button class="chip ${!ida ? 'active' : ''}" data-act="gPhase" data-p="vuelta" style="--c:#3ef08a">Al volver: devoluciones</button>
+          <button class="chip ${ida ? 'active' : ''}" data-act="gPhase" data-p="ida" style="--c:var(--orange)">Antes del viaje</button>
+          <button class="chip ${!ida ? 'active' : ''}" data-act="gPhase" data-p="vuelta" style="--c:var(--lime)">Al volver: devoluciones</button>
         </div>
       </div>
       ${ida ? `<div class="pantry-add gear-add">
         <input id="gName" placeholder="Agregar: ej. parlante, cooler, juegos…" autocomplete="off" enterkeyhint="done">
         <button class="btn sea" data-act="gAdd" aria-label="Agregar">${ic('plus')}</button>
       </div>
-      <div class="chips gear-sug">${SUGGEST.filter(s => !used.has(norm(s[0]))).map(s => `<button class="chip" data-act="gSug" data-n="${esc(s[0])}" style="--c:#ff8a00">${s[1]} ${esc(s[0])}</button>`).join('')}</div>` : ''}
-      ${ida && noOwner.length ? `<div class="list-group" style="--c:#ffb37a"><div class="list-group-h">${ic('alert')} Falta quien lo lleve <span style="color:var(--dim)">(${noOwner.length})</span></div>${noOwner.map(x => gearRow(x, ida)).join('')}</div>` : ''}
+      <div class="chips gear-sug">${SUGGEST.filter(s => !used.has(norm(s[0]))).map(s => `<button class="chip" data-act="gSug" data-n="${esc(s[0])}" style="--c:var(--orange)">${s[1]} ${esc(s[0])}</button>`).join('')}</div>` : ''}
+      ${ida && noOwner.length ? `<div class="list-group" style="--c:var(--warn-t)"><div class="list-group-h">${ic('alert')} Falta quien lo lleve <span style="color:var(--dim)">(${noOwner.length})</span></div>${noOwner.map(x => gearRow(x, ida)).join('')}</div>` : ''}
       ${groups.map(g => `<div class="list-group" style="--c:${colorOf(g.o)}"><div class="list-group-h">${avatar(g.o)} ${esc(g.o)} lleva <span style="color:var(--dim)">(${g.rows.length})</span></div>${g.rows.map(x => gearRow(x, ida)).join('')}</div>`).join('')}
       ${!items.length ? `<div class="card empty" style="margin-top:14px"><span class="ee">${ic('box')}</span><b>¿Qué llevamos?</b>Toca las sugerencias o escribe una cosa. Después cada uno elige lo que lleva y así no llegan tres parlantes y ninguna olla.</div>` : ''}
       ${items.length ? `<div class="btn-row" style="margin-top:16px"><button class="btn sm" data-act="gCopy">${ic('copy')} Copiar para WhatsApp</button></div>` : ''}`;
@@ -136,9 +136,9 @@ window.GroupModule = function (A) {
   let gEditId = null;
   function gearEditHTML() {
     const x = G_().items[gEditId]; if (!x) return '';
-    return `<div class="sheet-title"><span class="st-ico" style="--c:linear-gradient(135deg,#ff8a00,#ffd23f)"><span style="font-size:28px">${x.e || '📦'}</span></span><div><h2>${esc(x.name)}</h2><p>¿Quién lo lleva?</p></div></div>
+    return `<div class="sheet-title"><span class="st-ico" style="--c:linear-gradient(135deg,var(--orange),var(--yellow))"><span style="font-size:28px">${x.e || '📦'}</span></span><div><h2>${esc(x.name)}</h2><p>¿Quién lo lleva?</p></div></div>
       <div class="field"><span>Lo lleva</span><div class="chips wrap" id="gOwners">
-        <button class="chip ${!x.owner ? 'active' : ''}" data-act="gOwnerPick" data-v="" style="--c:#94a3b8">Nadie todavía</button>
+        <button class="chip ${!x.owner ? 'active' : ''}" data-act="gOwnerPick" data-v="" style="--c:var(--slate)">Nadie todavía</button>
         ${people().map(p => `<button class="chip ${x.owner === p ? 'active' : ''}" data-act="gOwnerPick" data-v="${esc(p)}" style="--c:${colorOf(p)}">${esc(p)}</button>`).join('')}
       </div></div>
       <div class="field-row">
@@ -175,9 +175,9 @@ window.GroupModule = function (A) {
     }
     return `
       <div class="card">
-        <div class="list-summary"><div><div class="eyebrow">Camas</div><span class="big">${assigned.length}</span> / ${ppl.length} con cama</div><span class="sum-ic" style="color:#c4b5fd;background:rgba(139,92,246,.15)">${bedSvg('double')}</span></div>
+        <div class="list-summary"><div><div class="eyebrow">Camas</div><span class="big">${assigned.length}</span> / ${ppl.length} con cama</div><span class="sum-ic" style="color:var(--lilac);background:rgba(139,92,246,.15)">${bedSvg('double')}</span></div>
         <div class="progress"><i data-w="${ppl.length ? assigned.length / ppl.length * 100 : 0}%"></i></div>
-        <p class="hint" style="margin:10px 0 0">${R.list.length} ${R.list.length === 1 ? 'pieza' : 'piezas'} · ${spots} lugares · ${Math.max(0, spots - used)} libres${spots < ppl.length ? ` · <b style="color:#ffb37a">faltan ${ppl.length - spots} lugares</b>` : ''}</p>
+        <p class="hint" style="margin:10px 0 0">${R.list.length} ${R.list.length === 1 ? 'pieza' : 'piezas'} · ${spots} lugares · ${Math.max(0, spots - used)} libres${spots < ppl.length ? ` · <b style="color:var(--warn-t)">faltan ${ppl.length - spots} lugares</b>` : ''}</p>
       </div>
       <div class="btn-row" style="margin-top:12px">
         <button class="btn primary shine" data-act="gRaffle">${ic('shuffle')} Sortear camas</button>
@@ -199,12 +199,12 @@ window.GroupModule = function (A) {
   const roomById = id => R_().list.find(r => r.id === id);
   function roomEditHTML() {
     const r = roomById(roomEdit); if (!r) return '';
-    return `<div class="sheet-title"><span class="st-ico" style="--c:linear-gradient(135deg,#8b5cf6,#22d3ee)">${bedSvg('single')}</span><div><h2>${esc(r.name)}</h2><p>Nombre de la pieza y sus camas</p></div></div>
+    return `<div class="sheet-title"><span class="st-ico" style="--c:linear-gradient(135deg,var(--violet),var(--cyan))">${bedSvg('single')}</span><div><h2>${esc(r.name)}</h2><p>Nombre de la pieza y sus camas</p></div></div>
       <label class="field"><span>Nombre</span><input id="rmName" value="${esc(r.name)}" autocomplete="off"></label>
       <div class="field"><span>Camas (${r.beds.length})</span>
         ${r.beds.map(b => `<div class="list-row"><span class="ge">${bedSvg(b.type)}</span><div class="rm"><div class="rn">${bedName(b)}</div><div class="rv">${b.who.length ? esc(listAnd(b.who)) : 'libre'}</div></div><button class="del" data-act="gBedDel" data-b="${b.id}" aria-label="Quitar cama">✕</button></div>`).join('') || '<p class="hint">Todavía no tiene camas.</p>'}
       </div>
-      <div class="field"><span>Agregar cama</span><div class="chips wrap">${Object.entries(BED).map(([t, v]) => `<button class="chip" data-act="gBedAdd" data-t="${t}" style="--c:#8b5cf6">+ ${v[0]}</button>`).join('')}</div></div>
+      <div class="field"><span>Agregar cama</span><div class="chips wrap">${Object.entries(BED).map(([t, v]) => `<button class="chip" data-act="gBedAdd" data-t="${t}" style="--c:var(--violet)">+ ${v[0]}</button>`).join('')}</div></div>
       <button class="btn primary block" data-act="gRoomSave">Listo</button>
       <button class="btn danger block" style="margin-top:10px" data-act="gRoomDel">Eliminar pieza</button>`;
   }
@@ -212,7 +212,7 @@ window.GroupModule = function (A) {
     const r = roomById(bedEdit && bedEdit.r), b = r && r.beds.find(x => x.id === bedEdit.b);
     if (!b) return '';
     const capN = bedCap(b);
-    return `<div class="sheet-title"><span class="st-ico" style="--c:linear-gradient(135deg,#8b5cf6,#ff3d8b)">${bedSvg(b.type)}</span><div><h2>${esc(r.name)} · ${bedName(b)}</h2><p>${capN === 1 ? '1 persona' : capN + ' personas'}</p></div></div>
+    return `<div class="sheet-title"><span class="st-ico" style="--c:linear-gradient(135deg,var(--violet),var(--pink))">${bedSvg(b.type)}</span><div><h2>${esc(r.name)} · ${bedName(b)}</h2><p>${capN === 1 ? '1 persona' : capN + ' personas'}</p></div></div>
       <div class="field"><span>¿Quién duerme aquí?</span><div class="chips wrap">
         ${people().map(p => { const w = whereIs(p), here = b.who.includes(p); return `<button class="chip ${here ? 'active' : ''}" data-act="gBedWho" data-p="${esc(p)}" style="--c:${colorOf(p)}">${esc(p)}${w && !here ? ` <small style="opacity:.7">· ${esc(w.r.name)}</small>` : ''}</button>`; }).join('')}
       </div></div>
@@ -221,7 +221,7 @@ window.GroupModule = function (A) {
   }
   function prefsHTML() {
     const R = R_(), ppl = people();
-    return `<div class="sheet-title"><span class="st-ico" style="--c:linear-gradient(135deg,#ff3d8b,#8b5cf6)">${ic('users')}</span><div><h2>Siempre juntos</h2><p>Parejas o amigos que el sorteo deja en la misma cama doble o pieza</p></div></div>
+    return `<div class="sheet-title"><span class="st-ico" style="--c:linear-gradient(135deg,var(--pink),var(--violet))">${ic('users')}</span><div><h2>Siempre juntos</h2><p>Parejas o amigos que el sorteo deja en la misma cama doble o pieza</p></div></div>
       ${R.together.map((t, i) => `<div class="list-row"><div class="rm"><div class="rn">${esc(t.a)} + ${esc(t.b)}</div></div><button class="del" data-act="gPairDel" data-i="${i}" aria-label="Quitar">✕</button></div>`).join('') || '<p class="hint">Aún no hay parejas.</p>'}
       <div class="field-row" style="align-items:flex-end;margin-top:8px">
         <label class="field"><span>Persona</span><select id="pA">${ppl.map(p => `<option>${esc(p)}</option>`).join('')}</select></label>
@@ -309,9 +309,9 @@ window.GroupModule = function (A) {
     const short = s => s.length > 34 ? s.slice(0, 33) + '…' : s;
     return `<div class="section-title"><h2>Tu grupo</h2></div>
       <div class="group-tiles">
-        <button class="g-tile" data-act="gOpen" data-m="gear" style="--c:#ff8a00">${ic('box')}<b>¿Quién lleva qué?</b><small>${items.length ? (noOwner ? `${noOwner} sin dueño` : `${items.length} cosas repartidas`) : 'Lo que lleva cada uno'}</small></button>
-        <button class="g-tile" data-act="gOpen" data-m="rooms" style="--c:#8b5cf6">${bedSvg('double')}<b>Habitaciones</b><small>${R_().list.length ? `${withBed}/${ppl.length} con cama` : 'Piezas, camas y sorteo'}</small></button>
-        <button class="g-tile" data-act="gOpen" data-m="log" style="--c:#22d3ee">${ic('list')}<b>Bitácora</b><small>${last ? esc(short(`${last.who} ${last.text}`)) : 'Lo que hace cada uno'}</small></button>
+        <button class="g-tile" data-act="gOpen" data-m="gear" style="--c:var(--orange)">${ic('box')}<b>¿Quién lleva qué?</b><small>${items.length ? (noOwner ? `${noOwner} sin dueño` : `${items.length} cosas repartidas`) : 'Lo que lleva cada uno'}</small></button>
+        <button class="g-tile" data-act="gOpen" data-m="rooms" style="--c:var(--violet)">${bedSvg('double')}<b>Habitaciones</b><small>${R_().list.length ? `${withBed}/${ppl.length} con cama` : 'Piezas, camas y sorteo'}</small></button>
+        <button class="g-tile" data-act="gOpen" data-m="log" style="--c:var(--cyan)">${ic('list')}<b>Bitácora</b><small>${last ? esc(short(`${last.who} ${last.text}`)) : 'Lo que hace cada uno'}</small></button>
       </div>`;
   }
   function switchMode(m) {

@@ -64,7 +64,7 @@ function SplitModule(A) {
   }
 
   /* ---------- Vista ---------- */
-  const chip = (on, label, act, data, c) => `<button class="chip ${on ? 'active' : ''}" style="--c:${c || '#22d3ee'}" data-act="${act}" ${data}>${label}</button>`;
+  const chip = (on, label, act, data, c) => `<button class="chip ${on ? 'active' : ''}" style="--c:${c || 'var(--cyan)'}" data-act="${act}" ${data}>${label}</button>`;
   function resHTML(s) {
     const c = calc(s), payer = s.payer;
     const rows = s.people.filter(p => c.per[p].total > 0.5).map(p => `<div class="sep-res-row"><span><b>${esc(p)}</b><small>${money(c.per[p].sub)}${s.tip ? ` + propina ${money(c.per[p].tip)}` : ''}</small></span><b>${money(c.per[p].rt)}</b></div>`).join('');
@@ -89,7 +89,7 @@ function SplitModule(A) {
         <button class="del" data-act="sepDel" data-i="${i}" aria-label="Quitar producto">✕</button>
       </div>
       <div class="chips wrap sep-who">
-        ${chip(all, 'Todos', 'sepAll', `data-i="${i}"`, '#3ef08a')}
+        ${chip(all, 'Todos', 'sepAll', `data-i="${i}"`, 'var(--lime)')}
         ${s.people.map(p => chip(it.who.includes(p), esc(p), 'sepWho', `data-i="${i}" data-p="${esc(p)}"`)).join('')}
         ${split ? `<button class="link sep-unit" data-act="sepUnits" data-i="${i}">Separar en ${it.q}</button>` : ''}
       </div>
@@ -112,7 +112,7 @@ function SplitModule(A) {
       </div>
       ${s.err ? `<div class="bol-check warn">${ic('alert')} ${esc(s.err)}</div>` : ''}
       <div class="field"><span>¿Quiénes estaban?</span><div class="chips wrap">
-        ${S().trip.people.concat(s.people.filter(x => !S().trip.people.includes(x))).map(p => chip(s.people.includes(p), esc(p), 'sepPerson', `data-p="${esc(p)}"`, '#8b5cf6')).join('')}
+        ${S().trip.people.concat(s.people.filter(x => !S().trip.people.includes(x))).map(p => chip(s.people.includes(p), esc(p), 'sepPerson', `data-p="${esc(p)}"`, 'var(--violet)')).join('')}
       </div>
       <div class="sep-add"><input id="sepNewP" placeholder="Agregar otra persona" autocomplete="off"><button class="btn sm" data-act="sepAddP">${ic('plus')}</button></div></div>
       <div class="field"><span>¿Qué consumió cada uno? <i class="among-n">toca los nombres</i></span>
@@ -120,13 +120,13 @@ function SplitModule(A) {
         <button class="btn sm" data-act="sepAddI" style="margin-top:8px">${ic('plus')} Agregar producto</button>
       </div>
       <div class="field"><span>Propina</span><div class="chips wrap">
-        ${TIPS.map(t => chip(+s.tip === t, t ? t + '%' : 'Sin propina', 'sepTip', `data-v="${t}"`, '#ffd23f')).join('')}
+        ${TIPS.map(t => chip(+s.tip === t, t ? t + '%' : 'Sin propina', 'sepTip', `data-v="${t}"`, 'var(--yellow)')).join('')}
         <label class="sep-tip-other ${TIPS.includes(+s.tip) ? '' : 'on'}"><input id="sepTipO" inputmode="decimal" value="${TIPS.includes(+s.tip) ? '' : s.tip}" placeholder="Otro">%</label>
       </div></div>
       <div class="field"><span>¿Quién pagó la cuenta?</span><div class="chips wrap">
-        ${s.people.map(p => chip(s.payer === p, esc(p), 'sepPayer', `data-v="${esc(p)}"`, '#ff3d8b')).join('')}
-        ${chip(s.payer === FUND, FUND, 'sepPayer', `data-v="${FUND}"`, '#8b5cf6')}
-        ${chip(s.payer === EACH, 'Cada uno lo suyo', 'sepPayer', `data-v="${EACH}"`, '#94a3b8')}
+        ${s.people.map(p => chip(s.payer === p, esc(p), 'sepPayer', `data-v="${esc(p)}"`, 'var(--pink)')).join('')}
+        ${chip(s.payer === FUND, FUND, 'sepPayer', `data-v="${FUND}"`, 'var(--violet)')}
+        ${chip(s.payer === EACH, 'Cada uno lo suyo', 'sepPayer', `data-v="${EACH}"`, 'var(--slate)')}
       </div></div>
       <div class="eyebrow" style="margin:6px 2px 8px">Cuánto paga cada uno</div>
       <div id="sepRes">${resHTML(s)}</div>

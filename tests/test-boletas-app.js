@@ -80,6 +80,7 @@ const ok = (c, l) => { console.log((c ? '✅ ' : '❌ ') + l); if (!c) fails++; 
   ok(!ex.among && ex.payer, 'No cambia el reparto ni el pagador (funciones existentes intactas)');
 
   // Volver a editar desde el gasto guardado
+  await p.$eval(`.exp-row[data-id="${ex.id}"]`, e => e.scrollIntoView({ block: 'center' })); await sleep(300);
   await p.click(`.exp-row[data-id="${ex.id}"]`); await sleep(800);
   await p.click('[data-act="bolEdit"]'); await sleep(600);
   ok(await p.$$eval('.bol-row', r => r.length) === 18, '"Ver y editar" reabre la tabla guardada');

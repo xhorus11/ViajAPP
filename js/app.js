@@ -47,6 +47,9 @@
     box: '<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
     leaf: '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.9-5.4 5.2-6"/>',
     back: '<path d="M15 18l-6-6 6-6"/>',
+    sun: '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/>',
+    moon: '<path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z"/>',
+    auto: '<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/>',
     help: '<circle cx="12" cy="12" r="9.5"/><path d="M9.4 9.3a2.7 2.7 0 0 1 5.2 1c0 1.9-2.6 2.3-2.6 4"/><path d="M12 17.4v.1"/>',
     text: '<path d="M4 7V5h11v2M9.5 5v14M7 19h5M14 12v-1.5h7V12M17.5 10.5V19M16 19h3"/>',
     shuffle: '<path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>',
@@ -75,7 +78,7 @@
   /* ================= Confeti ================= */
   const cv = $('#confetti'), cx = cv.getContext('2d');
   let parts = [], raf = 0;
-  const COLORS = ['#ff3d8b', '#ff8a00', '#ffd23f', '#3ef08a', '#22d3ee', '#8b5cf6', '#ffffff'];
+  const COLORS = ['#7dd3fc', '#0ea5e9', '#2dd4bf', '#a5b4fc', '#6366f1', '#fdba74', '#ffffff'];   // confeti (lienzo: colores reales)
   function sizeCv() { cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio; }
   sizeCv(); addEventListener('resize', sizeCv);
   function confetti(x, y, n, spread) {
@@ -163,7 +166,7 @@
   }
 
   /* ================= Navegación ================= */
-  const TAB_GRAD = { home: 'var(--grad-hot)', shop: 'var(--grad-lime)', recipes: 'linear-gradient(135deg,#ffd23f,#ff3d8b)', money: 'var(--grad-sun)', agenda: 'var(--grad-sea)' };
+  const TAB_GRAD = { home: 'var(--g-sky)', shop: 'var(--g-teal)', recipes: 'var(--g-peach)', money: 'var(--g-indigo)', agenda: 'var(--g-lilac)' };   // un color por módulo
   const TAB_OF = { group: 'home' };   // pantallas sin pestaña propia: se marca la pestaña de la que dependen
   function moveIndicator() {
     const tab = TAB_OF[ui.tab] || ui.tab;
@@ -260,8 +263,20 @@
   const FONT = [['1', 'Normal'], ['1.15', 'Grande'], ['1.3', 'Muy grande']];
   const applyFont = () => { document.documentElement.style.zoom = LS.get('viajapp-font', '1'); };
   applyFont();
-  const fontHTML = () => `<div class="field"><span>${ic('text')} Tamaño de letra en este celular</span><div class="chips wrap">${FONT.map(([v, n], i) =>
-    `<button class="chip ${LS.get('viajapp-font', '1') === v ? 'active' : ''}" style="--c:#22d3ee;font-size:${14 + i * 2}px" data-act="fontSize" data-v="${v}">${n}</button>`).join('')}</div></div>`;
+  /* Apariencia: Día (claro celeste), Noche (azul profundo) o Automático (según el equipo). Se guarda por equipo. */
+  const THEMES = [['auto', 'Automático', 'auto'], ['day', 'Día', 'sun'], ['night', 'Noche', 'moon']];
+  const mqDark = matchMedia('(prefers-color-scheme: dark)');
+  function applyTheme() {
+    const v = LS.get('viajapp-theme', 'auto'), t = v === 'auto' ? (mqDark.matches ? 'night' : 'day') : v;
+    document.documentElement.dataset.theme = t;
+    const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = t === 'day' ? '#f2f8fd' : '#0a1628';
+  }
+  applyTheme();
+  if (mqDark.addEventListener) mqDark.addEventListener('change', () => { if (LS.get('viajapp-theme', 'auto') === 'auto') applyTheme(); });
+  const themeHTML = () => `<div class="field"><span>${ic('sun')} Apariencia en este equipo</span><div class="chips wrap theme-row">${THEMES.map(([v, n, i]) =>
+    `<button class="chip ${LS.get('viajapp-theme', 'auto') === v ? 'active' : ''}" style="--c:var(--pink)" data-act="setTheme" data-v="${v}">${ic(i)} ${n}</button>`).join('')}</div></div>`;
+  const fontHTML = () => `${themeHTML()}<div class="field"><span>${ic('text')} Tamaño de letra en este celular</span><div class="chips wrap">${FONT.map(([v, n], i) =>
+    `<button class="chip ${LS.get('viajapp-font', '1') === v ? 'active' : ''}" style="--c:var(--cyan);font-size:${14 + i * 2}px" data-act="fontSize" data-v="${v}">${n}</button>`).join('')}</div></div>`;
   function helpHTML() {
     const h = HELP[draft.s] || HELP.home;
     return `<div class="sheet-title"><span class="st-ico" style="--c:var(--grad-sea)">${ic('help')}</span><div><h2>¿Cómo se usa ${esc(h.t)}?</h2><p>En 3 pasos</p></div></div>
@@ -346,12 +361,12 @@
     const nx = nextEvent();
     const todays = S().events.filter(e => e.date === Store.today()).sort((a, b) => (a.time || '').localeCompare(b.time || ''));
     const tiles = [
-      ['cart', 'Lista súper', 'go', 'data-to="shop"', 'var(--grad-lime)'],
-      ['wallet', 'Nuevo gasto', 'newExpense', '', 'var(--grad-hot)'],
-      ['calendar', 'Planear comida', 'newEvent', 'data-type="almuerzo"', 'var(--grad-sea)'],
-      ['calculator', 'Dividir cuenta', 'split', '', 'linear-gradient(135deg,#8b5cf6,#ff3d8b)'],
-      ['file', 'Carta financiera', 'exp', 'data-k="financePDF"', 'var(--grad-sun)'],
-      ['pot', 'Recetas', 'go', 'data-to="recipes"', 'linear-gradient(135deg,#ffd23f,#ff3d8b)']
+      ['cart', 'Lista súper', 'go', 'data-to="shop"', 'var(--g-teal)'],
+      ['wallet', 'Nuevo gasto', 'newExpense', '', 'var(--g-indigo)'],
+      ['calendar', 'Planear comida', 'newEvent', 'data-type="almuerzo"', 'var(--g-lilac)'],
+      ['calculator', 'Dividir cuenta', 'split', '', 'var(--grad-sea)'],
+      ['file', 'Carta financiera', 'exp', 'data-k="financePDF"', 'var(--g-sky)'],
+      ['pot', 'Recetas', 'go', 'data-to="recipes"', 'var(--g-peach)']
     ];
     const p0 = t.people[0], who = Sync.savedName() || (p0 && p0 !== 'Yo' ? p0 : '');
     const guide = guideHTML();   // si la guía está visible, ella misma invita a compartir
@@ -374,16 +389,16 @@
         ${guide}
         <div class="stats" style="--i:2">
           <div class="stat" data-act="go" data-to="shop" role="button">
-            <i class="s-glow" style="background:#3ef08a"></i><div class="s-ico">${ic('cart')}</div>
+            <i class="s-glow" style="background:var(--lime)"></i><div class="s-ico">${ic('cart')}</div>
             <div class="s-val">${done}/${sel.length}</div><div class="s-lbl">productos comprados</div>
           </div>
           <div class="stat" data-act="go" data-to="money" role="button">
-            <i class="s-glow" style="background:#ff8a00"></i><div class="s-ico">${ic('wallet')}</div>
+            <i class="s-glow" style="background:var(--orange)"></i><div class="s-ico">${ic('wallet')}</div>
             <div class="s-val" data-count="${spent}">${money(spent)}</div>
             <div class="s-lbl">${budget ? `gastado de ${money(budget)}` : 'gastado en total'}</div>
           </div>
           <div class="stat wide" data-act="go" data-to="agenda" role="button">
-            <i class="s-glow" style="background:#8b5cf6"></i>
+            <i class="s-glow" style="background:var(--violet)"></i>
             <div class="s-lbl">Próximo plan</div>
             ${nx ? `<div class="s-val">${esc(nx.title || typeOf(nx.type).name)}</div>
               <div class="s-lbl">${nx.date === Store.today() ? 'Hoy' : esc(fmtDay(nx.date))} · ${esc(nx.time || '')}${nx.place ? ' · ' + esc(nx.place) : ''}</div>`
@@ -435,7 +450,7 @@
   function shopChips() {
     const cnt = c => Object.values(S().shop.sel).filter(r => r.c === c).length;
     return `<div class="chips" id="shopChips">
-      <button class="chip ${ui.shopCat === 'all' ? 'active' : ''}" data-act="cat" data-c="all" style="--c:#ff3d8b">Todas</button>
+      <button class="chip ${ui.shopCat === 'all' ? 'active' : ''}" data-act="cat" data-c="all" style="--c:var(--pink)">Todas</button>
       ${CATALOG.map(c => { const n = cnt(c.id); return `<button class="chip ${ui.shopCat === c.id ? 'active' : ''}" data-act="cat" data-c="${c.id}" style="--c:${c.color}">${c.emoji} ${esc(c.name)}${n ? ` <b>· ${n}</b>` : ''}</button>`; }).join('')}
     </div>`;
   }
@@ -484,7 +499,7 @@
           ${g.rows.map(r => { const k = key(r.c, r.i, r.v); return `
             <div class="list-row ${r.done ? 'done' : ''}">
               <button class="check ${r.done ? 'on' : ''}" data-act="done" data-k="${esc(k)}" aria-label="Marcar comprado">${CHECK}</button>
-              <div class="rm"><div class="rn">${esc(r.i)}</div><div class="rv">${esc(r.v || 'Sin especificar')}${r.u ? ` · <b style="color:#fff">${esc(U.amt(r.n, r.u))}</b>` : ''}</div>
+              <div class="rm"><div class="rn">${esc(r.i)}</div><div class="rv">${esc(r.v || 'Sin especificar')}${r.u ? ` · <b style="color:var(--strong)">${esc(U.amt(r.n, r.u))}</b>` : ''}</div>
                 ${(r.src || []).length ? `<div class="rs">${ic('pot')} ${esc(r.src.join(', '))}</div>` : ''}${dietWarnHTML(r)}</div>
               <div class="stepper"><button data-act="qty" data-k="${esc(k)}" data-d="-1">−</button><b>${r.q}</b><button data-act="qty" data-k="${esc(k)}" data-d="1">+</button></div>
               <button class="del" data-act="delRow" data-k="${esc(k)}" aria-label="Quitar">✕</button>
@@ -545,7 +560,7 @@
     if (!ingIndex) buildIngIndex();
     const groups = CATALOG.map(c => ({ c, rows: items.filter(e => e.c === c.id) })).filter(g => g.rows.length);
     const others = items.filter(e => !CATALOG.some(c => c.id === e.c));
-    if (others.length) groups.push({ c: { id: 'otros', name: 'Otros', emoji: '', color: '#94a3b8' }, rows: others });
+    if (others.length) groups.push({ c: { id: 'otros', name: 'Otros', emoji: '', color: 'var(--slate)' }, rows: others });
     return `
       <div class="card pantry-intro">
         <div class="list-summary"><div><div class="eyebrow">En la cabaña</div><span class="big">${items.length}</span> ${items.length === 1 ? 'producto' : 'productos'}</div><span class="sum-ic">${ic('box')}</span></div>
@@ -563,7 +578,7 @@
           <div class="list-group-h">${g.c.emoji} ${esc(g.c.name)} <span style="color:var(--dim)">(${g.rows.length})</span></div>
           ${g.rows.sort((a, b) => a.i.localeCompare(b.i, 'es')).map(e => { const k = key(e.c, e.i, e.v), u = Object.keys(e.a)[0]; return `
             <div class="list-row pantry-row">
-              <div class="rm"><div class="rn">${esc(e.i)}</div><div class="rv">${esc(e.v || 'Sin especificar')} · <b style="color:#fff">${esc(pantryText(e))}</b></div>${dietWarnHTML(e)}</div>
+              <div class="rm"><div class="rn">${esc(e.i)}</div><div class="rv">${esc(e.v || 'Sin especificar')} · <b style="color:var(--strong)">${esc(pantryText(e))}</b></div>${dietWarnHTML(e)}</div>
               <div class="stepper"><button data-act="pStep" data-k="${esc(k)}" data-u="${u}" data-d="-1" aria-label="Menos">−</button><button data-act="pStep" data-k="${esc(k)}" data-u="${u}" data-d="1" aria-label="Más">+</button></div>
               <button class="del" data-act="pToList" data-k="${esc(k)}" aria-label="Se acabó: pasar a la lista">${ic('cart')}</button>
               <button class="del" data-act="pDel" data-k="${esc(k)}" aria-label="Quitar de la despensa">✕</button>
@@ -602,12 +617,12 @@
   }
   function dietsHTML() {
     const people = S().trip.people;
-    return `<div class="sheet-title"><span class="st-ico" style="--c:linear-gradient(135deg,#3ef08a,#22d3ee)">${ic('leaf')}</span><div><h2>Dietas y alergias</h2><p>Las recetas avisan y se adaptan para cada persona</p></div></div>
+    return `<div class="sheet-title"><span class="st-ico" style="--c:linear-gradient(135deg,var(--lime),var(--cyan))">${ic('leaf')}</span><div><h2>Dietas y alergias</h2><p>Las recetas avisan y se adaptan para cada persona</p></div></div>
       ${people.length === 1 && people[0] === 'Yo' ? `<p class="tip-inline">${ic('alert')} Primero agrega a los participantes en la configuración del viaje.</p>` : ''}
       ${people.map(n => { const d = diets()[n] || {}, tags = d.tags || []; return `
         <div class="diet-person">
           <div class="dp-name">${esc(n)}${tags.length ? ` <small>${tags.length} ${tags.length === 1 ? 'restricción' : 'restricciones'}</small>` : ''}</div>
-          <div class="chips wrap">${Diet.DIETS.map(t => `<button class="chip ${tags.includes(t.id) ? 'active' : ''}" style="--c:#22b8a0" data-act="dietTog" data-p="${esc(n)}" data-t="${t.id}">${esc(t.name)}</button>`).join('')}</div>
+          <div class="chips wrap">${Diet.DIETS.map(t => `<button class="chip ${tags.includes(t.id) ? 'active' : ''}" style="--c:var(--teal)" data-act="dietTog" data-p="${esc(n)}" data-t="${t.id}">${esc(t.name)}</button>`).join('')}</div>
           <input class="diet-note" data-p="${esc(n)}" value="${esc(d.note || '')}" placeholder="Otra restricción o nota (ej. no le gusta el cilantro)" autocomplete="off">
         </div>`; }).join('')}
       <button class="btn primary block" style="margin-top:6px" data-act="close">Listo</button>`;
@@ -687,7 +702,7 @@
     const payers = {};
     ex.forEach(e => { const p = e.payer || 'Sin asignar'; payers[p] = (payers[p] || 0) + (+e.amount || 0); });
     const pp = Object.entries(payers).sort((a, b) => b[1] - a[1]);
-    const PCOL = ['#ff3d8b', '#22d3ee', '#ffd23f', '#3ef08a', '#8b5cf6', '#ff8a00'];
+    const PCOL = ['var(--pink)', 'var(--cyan)', 'var(--yellow)', 'var(--lime)', 'var(--violet)', 'var(--orange)'];
     const dates = [...new Set(ex.map(e => e.date))].sort().reverse();
 
     return `<div class="page">
@@ -701,7 +716,7 @@
           </div>
           <div class="ring">
             <svg viewBox="0 0 100 100"><defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="${over ? '#ff4d5e' : '#ffd23f'}"/><stop offset="1" stop-color="${over ? '#ff8a00' : '#3ef08a'}"/></linearGradient></defs>
+              <stop offset="0" stop-color="${over ? '#fecaca' : '#ffffff'}"/><stop offset="1" stop-color="${over ? '#fca5a5' : '#c7d2fe'}"/></linearGradient></defs>
               <circle class="rbg" cx="50" cy="50" r="44"/>
               <circle class="rfg" cx="50" cy="50" r="44" stroke-dasharray="${C}" stroke-dashoffset="${C}" data-off="${off}"/></svg>
             <div class="rl"><div>${budget ? Math.round(pct * 100) + '%' : '—'}<small>${budget ? 'usado' : 'sin fondos'}</small></div></div>
@@ -766,10 +781,10 @@
         <label class="field"><span>N° documento</span><input id="exDocNum" value="${esc(d.docNum)}" placeholder="Ej: 004512" autocomplete="off"></label>
       </div>
       <div class="field"><span>Tipo de comprobante</span>${chipGroup('docType', DOC_TYPES, d.docType)}</div>
-      <div class="field"><span>Pagado por</span>${chipGroup('payer', [FUND].concat(t.people), d.payer, o => o === FUND ? '#8b5cf6' : '#ff3d8b')}</div>
+      <div class="field"><span>Pagado por</span>${chipGroup('payer', [FUND].concat(t.people), d.payer, o => o === FUND ? 'var(--violet)' : 'var(--pink)')}</div>
       <p class="hint">¿Falta alguien? Agrégalo en la configuración del viaje.</p>
       <div id="exAmong">${amongHTML()}</div>
-      <div class="field"><span>Medio de pago</span>${chipGroup('method', PAY_METHODS, d.method, () => '#22b8d4')}</div>
+      <div class="field"><span>Medio de pago</span>${chipGroup('method', PAY_METHODS, d.method, () => 'var(--cyan)')}</div>
       <div class="field"><span>Fotos de boleta / comprobante</span><div class="photos" id="exPhotos">${photosHTML()}</div></div>
       <div id="bolBox">${BOL.buttonHTML()}</div>
       ${SEP.expenseButtonHTML()}
@@ -785,8 +800,8 @@
     const n = all ? people.length : sel.length;
     return `<div class="field"><span>¿Entre quiénes se reparte? <i class="among-n">${all ? 'Todos' : n} · ${money(parseAmount($('#exAmount') ? $('#exAmount').value : d.amount) / n)} c/u</i></span>
       <div class="chips wrap">
-        <button class="chip ${all ? 'active' : ''}" style="--c:#3ef08a" data-act="amongAll">Todos</button>
-        ${people.map(p => `<button class="chip ${sel.includes(p) ? 'active' : ''}" style="--c:#22d3ee" data-act="amongTog" data-p="${esc(p)}">${esc(p)}</button>`).join('')}
+        <button class="chip ${all ? 'active' : ''}" style="--c:var(--lime)" data-act="amongAll">Todos</button>
+        ${people.map(p => `<button class="chip ${sel.includes(p) ? 'active' : ''}" style="--c:var(--cyan)" data-act="amongTog" data-p="${esc(p)}">${esc(p)}</button>`).join('')}
       </div></div>
       <p class="hint" style="margin-top:-6px">Opcional: si fue solo de algunos (ej. cervezas), tócalos. Cuentas claras lo reparte solo entre ellos.</p>`;
   }
@@ -810,10 +825,10 @@
     const d = draft;
     return `<div class="sheet-title"><span class="st-ico" style="--c:var(--grad-sea)">${ic('calculator')}</span><div><h2>Dividir cuenta</h2><p>Ideal para el bar o el restaurante</p></div></div>
       <div class="amount"><input id="spTotal" inputmode="decimal" placeholder="0" value="${esc(d.total)}" autocomplete="off" aria-label="Total de la cuenta"><small>Total de la cuenta</small></div>
-      <div class="field"><span>Propina</span>${chipGroup('tip', ['0', '10', '15', '20'].map(x => ({ id: x, name: x === '0' ? 'Sin propina' : x + '%' })), d.tip, () => '#22d3ee')}</div>
+      <div class="field"><span>Propina</span>${chipGroup('tip', ['0', '10', '15', '20'].map(x => ({ id: x, name: x === '0' ? 'Sin propina' : x + '%' })), d.tip, () => 'var(--cyan)')}</div>
       <div class="field"><span>¿Entre cuántos?</span>
         <div class="stepper" style="padding:6px"><button data-act="spN" data-d="-1">−</button><b id="spN" style="min-width:44px;font-size:22px">${d.n}</b><button data-act="spN" data-d="1">+</button></div></div>
-      <div class="split-out"><div class="eyebrow" style="color:#0a4a30">Cada uno paga</div><div class="pp" id="spPP">${money(0)}</div><div id="spTot" style="font-weight:700">Total con propina ${money(0)}</div></div>
+      <div class="split-out"><div class="eyebrow" style="color:rgba(255,255,255,.85)">Cada uno paga</div><div class="pp" id="spPP">${money(0)}</div><div id="spTot" style="font-weight:700">Total con propina ${money(0)}</div></div>
       <button class="btn lime block" data-act="splitToExpense">Registrar como gasto</button>`;
   }
   function splitCalc() {
@@ -852,7 +867,7 @@
         <button class="btn sm" data-act="rpAdd">${ic('plus')} Agregar responsable</button>
       </div>
       <button class="btn primary block shine" data-act="saveTrip">Guardar</button>
-      <div class="section-title"><h2 style="font-size:18px">Lectura</h2></div>
+      <div class="section-title"><h2 style="font-size:18px">Apariencia y lectura</h2></div>
       ${fontHTML()}
       <div class="section-title"><h2 style="font-size:18px">Tus datos</h2></div>
       <p class="hint" style="margin-top:-4px">Todo se guarda solo en este equipo. Haz un respaldo para pasarlo a otro celular.</p>
@@ -1003,7 +1018,7 @@
       <div class="card">
         <p class="hint" style="margin:0 0 10px">${st.partial
           ? `Gastos pagados por personas: ${money(st.total)}. ${st.partial === 1 ? '1 gasto se reparte' : st.partial + ' gastos se reparten'} solo entre algunos, así que a cada uno le toca su parte.`
-          : `Gastos pagados por personas: ${money(st.total)} ÷ ${S().trip.people.length} = <b style="color:#fff">${money(st.share)}</b> c/u.`} No incluye lo pagado con “${FUND}”.</p>
+          : `Gastos pagados por personas: ${money(st.total)} ÷ ${S().trip.people.length} = <b style="color:var(--strong)">${money(st.share)}</b> c/u.`} No incluye lo pagado con “${FUND}”.</p>
         ${Object.entries(st.bal).map(([p, b]) => `<div class="settle-row"><span>${esc(p)}${st.partial && st.part[p] !== undefined ? `<small class="sr-part">su parte ${money(st.part[p])}</small>` : ''}</span><b class="${b >= -0.5 ? 'pos' : 'neg'}">${b >= -0.5 ? '+' : '−'}${money(Math.abs(b))}</b></div>`).join('')}
         ${st.tr.length ? st.tr.map(t => `<div class="transfer"><span>${esc(t.from)}</span><span class="arrow">${ic('arrow')}</span><span>${esc(t.to)}</span><b>${money(t.amt)}</b></div>`).join('')
           : `<div class="transfer" style="justify-content:center">${ic('check')} Están a mano</div>`}
@@ -1142,9 +1157,9 @@
   function recChips() {
     const mine = Object.keys(R_().custom).length;
     return `<div class="chips" id="recChips">
-      <button class="chip ${ui.recCat === 'all' ? 'active' : ''}" data-act="rcat" data-c="all" style="--c:#ff3d8b">Todas</button>
-      ${dietPeople().length ? `<button class="chip ${ui.recCat === 'apt' ? 'active' : ''}" data-act="rcat" data-c="apt" style="--c:#22b8a0">${ic('leaf')} Aptas para el grupo</button>` : ''}
-      <button class="chip ${ui.recCat === 'mine' ? 'active' : ''}" data-act="rcat" data-c="mine" style="--c:#e8a33d">${ic('star')} Mías${mine ? ' · ' + mine : ''}</button>
+      <button class="chip ${ui.recCat === 'all' ? 'active' : ''}" data-act="rcat" data-c="all" style="--c:var(--pink)">Todas</button>
+      ${dietPeople().length ? `<button class="chip ${ui.recCat === 'apt' ? 'active' : ''}" data-act="rcat" data-c="apt" style="--c:var(--teal)">${ic('leaf')} Aptas para el grupo</button>` : ''}
+      <button class="chip ${ui.recCat === 'mine' ? 'active' : ''}" data-act="rcat" data-c="mine" style="--c:var(--yellow)">${ic('star')} Mías${mine ? ' · ' + mine : ''}</button>
       ${RECIPE_CATS.map(c => `<button class="chip ${ui.recCat === c.id ? 'active' : ''}" data-act="rcat" data-c="${c.id}" style="--c:${c.color}">${c.emoji} ${esc(c.name)}</button>`).join('')}
     </div>`;
   }
@@ -1190,7 +1205,7 @@
       ${pl.adapts.map(a => `<div class="db-line">${names(a.who)}: ${prodName(a.g.i, a.g.v)} → <b>${prodName(a.sub.i, a.sub.v)}</b>${d.mode === 'portion' ? ' (porción aparte)' : ''}</div>`).join('')}
       ${issuesByPerson(pl.issues).map(x => `<div class="db-line bad">${ic('alert')} <b>${esc(x.name)}</b> no puede comer ${x.prods.join(', ')} (${esc(whyText(x.why))})${d.mode === 'none' ? '' : ': sin reemplazo, prepárale algo aparte'}.</div>`).join('')}
       <div class="chips wrap" style="margin-top:10px">${[['portion', 'Porción aparte'], ['all', 'Todo el plato apto'], ['none', 'Sin adaptar']].map(([m, l]) =>
-        `<button class="chip ${d.mode === m ? 'active' : ''}" style="--c:#22b8a0" data-act="cookMode" data-m="${m}">${l}</button>`).join('')}</div>
+        `<button class="chip ${d.mode === m ? 'active' : ''}" style="--c:var(--teal)" data-act="cookMode" data-m="${m}">${l}</button>`).join('')}</div>
     </div>`;
   }
   function cookHTML() {
@@ -1358,7 +1373,7 @@
       ${switchBox}
       <div class="field"><span>Conectado a</span><div class="sy-trip">${esc(S().trip.name)}</div></div>
       <div class="field"><span>Integrantes (${Sync.members.length})</span><div class="chips wrap">
-        ${Sync.members.map(u => `<span class="chip ${u === me ? 'active' : ''}" style="--c:#8b5cf6">${esc(Sync.names[u] || 'Invitado')}${u === me ? ' (tú)' : ''}</span>`).join('')}</div></div>
+        ${Sync.members.map(u => `<span class="chip ${u === me ? 'active' : ''}" style="--c:var(--violet)">${esc(Sync.names[u] || 'Invitado')}${u === me ? ' (tú)' : ''}</span>`).join('')}</div></div>
       <div class="field"><span>Invita a tu grupo: escanea o comparte el enlace</span>
         <div class="qr-box">${qr}</div><div class="sy-link">${esc(link)}</div></div>
       ${local ? '<p class="hint">El enlace funcionará en otros celulares cuando la app esté publicada (por ejemplo en Netlify).</p>' : ''}
@@ -1600,6 +1615,10 @@
         if (!draft._timeTouched) $('#evTime').value = tt.time;
         $('#evTitle').placeholder = PH[v] || '';
       }
+    },
+    setTheme: el => {
+      LS.set('viajapp-theme', el.dataset.v); applyTheme(); buzz(8);
+      $$('[data-act="setTheme"]').forEach(c => c.classList.toggle('active', c === el));
     },
     help: el => { draft = { _kind: 'help', s: el.dataset.s || ui.tab }; openSheet(helpHTML, releaseDraft(draft)); },
     fontSize: el => {

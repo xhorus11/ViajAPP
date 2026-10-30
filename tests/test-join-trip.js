@@ -44,7 +44,9 @@ const ok = (c, l) => { console.log((c ? '✅ ' : '❌ ') + l); if (!c) fails++; 
     location.hash = '#home'; await new Promise(r => setTimeout(r, 400));
     const home = document.querySelector('.hero') ? document.querySelector('.hero').textContent.replace(/\s+/g, ' ') : '';
     location.hash = '#agenda'; await new Promise(r => setTimeout(r, 400));
-    const tripDays = document.querySelectorAll('.cal-day.trip').length;
+    // días del viaje visibles en el mes mostrado (el viaje puede cruzar a otro mes)
+    const t = Store.state.trip, vis = [...document.querySelectorAll('.cal-day')].filter(c => c.dataset.d >= t.start && c.dataset.d <= t.end);
+    const tripDays = vis.length && vis.every(c => c.classList.contains('trip')) ? Math.round((new Date(t.end) - new Date(t.start)) / 864e5) + 1 : 0;
     location.hash = '#home';
     return { home, tripDays };
   });
