@@ -379,10 +379,10 @@
       </header>
       <div class="stagger">
         <section class="hero" style="--i:1" data-act="trip">
-          <img class="hero-logo" src="icons/logo-badge.png" alt="">
+          <img class="hero-dog" src="icons/perro-guino.webp" alt="">
           <div class="eyebrow" style="color:#fff;opacity:.9">Tu viaje</div>
           <div class="trip-name">${esc(t.name)}</div>
-          <div class="trip-meta">${ic('calendar')} ${U.dmy(t.start)} → ${U.dmy(t.end)}${t.people.length ? ` · ${ic('users')} ${t.people.length}` : ''}</div>
+          <div class="trip-meta"><span class="nw">${ic('calendar')} ${U.dmy(t.start)} →</span> <span class="nw">${U.dmy(t.end)}</span>${t.people.length ? ` <span class="nw">· ${ic('users')} ${t.people.length}</span>` : ''}</div>
           <div class="countdown">${tripStatus()}</div>
           ${Sync.active ? `<button class="sync-pill" data-act="sync">${syncDot()} Compartido · ${Sync.members.length} ${Sync.members.length === 1 ? 'persona' : 'personas'}</button>` : ''}
         </section>

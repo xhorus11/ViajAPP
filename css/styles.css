@@ -235,8 +235,11 @@ h1, h2, h3 { font-family: var(--font-display); margin: 0; letter-spacing: -.02em
 .hero > * { position: relative; }
 .hero .trip-name { font-size: 30px; font-weight: 800; line-height: 1.05; text-shadow: 0 2px 12px rgba(0, 0, 0, .25); }
 .hero .trip-meta { margin-top: 6px; font-weight: 600; opacity: .95; }
-.hero { padding-right: 112px; }
-.hero .hero-logo { position: absolute; right: 8px; top: 10px; width: 96px; height: 96px; object-fit: contain; border-radius: 50%; animation: bob 3.6s ease-in-out infinite; filter: drop-shadow(0 10px 16px rgba(3, 30, 60, .35)); }
+.hero { padding-right: 132px; min-height: 196px; }
+/* Perrito guiñando el ojo: se asoma desde el borde inferior derecho con las patitas apoyadas */
+.hero .hero-dog { position: absolute; right: 16px; bottom: 0; width: 148px; height: auto; pointer-events: none; transform-origin: 60% 100%; animation: peek 5s ease-in-out infinite; filter: drop-shadow(0 -4px 12px rgba(3, 30, 60, .25)); }
+@keyframes peek { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px) rotate(-1.5deg); } }
+.hero .sync-pill { z-index: 1; }
 .hero .trip-meta .ic { width: 1em; height: 1em; }
 @keyframes bob { 50% { transform: translateY(-10px) rotate(8deg); } }
 .hero .countdown { display: inline-flex; align-items: baseline; gap: 6px; margin-top: 16px; padding: 8px 14px; border-radius: 999px; background: rgba(3, 30, 60, .26); font-weight: 700; }
@@ -829,9 +832,10 @@ html[data-theme="day"] .variant-row, html[data-theme="day"] .icon-btn, html[data
 html[data-theme="day"] .diet-person, html[data-theme="day"] .sep-item, html[data-theme="day"] .sep-bol, html[data-theme="day"] .help-steps li,
 html[data-theme="day"] .search input, html[data-theme="day"] .bol-fmt, html[data-theme="day"] .g-tile { box-shadow: var(--card-shadow); }
 html[data-theme="day"] .stat .s-glow { opacity: .35; }
-html[data-theme="day"] .brand-mark, html[data-theme="day"] .hero .hero-logo { filter: drop-shadow(0 6px 14px rgba(15, 39, 66, .2)); }
+html[data-theme="day"] .brand-mark { filter: drop-shadow(0 6px 14px rgba(15, 39, 66, .2)); }
 html[data-theme="day"] .act span { box-shadow: 0 10px 22px -12px rgba(15, 39, 66, .45); }
 html[data-theme="day"] .quick-tile { box-shadow: 0 12px 26px -14px rgba(15, 39, 66, .45); }
 .theme-row .chip .ic { width: 1.05em; height: 1.05em; }
 /* Texto blanco fijo sobre degradados (en el tema Día el texto general es oscuro) */
 .btn.primary, .btn.sea, .fab, .cta-float, .hero, .balance, .sheet-title .st-ico, .act span, .rl-card, .quick-tile, .split-out { color: #fff; }
+.hero .trip-meta .nw { white-space: nowrap; }

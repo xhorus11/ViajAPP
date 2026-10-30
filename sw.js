@@ -1,5 +1,5 @@
 /* Service worker: la app funciona sin conexión */
-const CACHE = 'viajapp-v19';
+const CACHE = 'viajapp-v20';
 const SHELL = [
   './', './index.html', './manifest.webmanifest',
   './css/styles.css',
@@ -7,7 +7,7 @@ const SHELL = [
   './vendor/html2canvas.min.js', './vendor/jspdf.umd.min.js', './vendor/jspdf.plugin.autotable.min.js', './vendor/qrcode.min.js',
   './vendor/xlsx.mini.min.js', './vendor/jszip.min.js',
   './vendor/firebase-app-compat.js', './vendor/firebase-auth-compat.js', './vendor/firebase-firestore-compat.js',
-  './icons/icon-192.png', './icons/icon-512.png', './icons/logo-badge.png', './icons/favicon-64.png', './icons/apple-touch-icon.png'
+  './icons/icon-192.png', './icons/icon-512.png', './icons/logo-badge.png', './icons/perro-guino.webp', './icons/favicon-64.png', './icons/apple-touch-icon.png'
 ];
 
 self.addEventListener('install', e => {
