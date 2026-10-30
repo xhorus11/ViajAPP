@@ -5,7 +5,7 @@
       "public": ".",
       "ignore": [
         "firebase.json", ".firebaserc", "firestore.rules",
-        "CLAUDE.md", "CONTEXTO.md", "LEEME.md", "logo Viajapp.png",
+        "CLAUDE.md", "CONTEXTO.md", "LEEME.md", "logo Viajapp*.png",
         "tests/**", "legacy/**", "worker/**", "README.md", "AGENTS.md", ".gitignore", ".claude/**", "**/.*", "**/.*/**", "**/node_modules/**",
         ".tmp.drive*", ".tmp.drive*/**", "**/.tmp.drive*/**", "desktop.ini", "**/desktop.ini"
       ],

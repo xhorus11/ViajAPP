@@ -1,5 +1,5 @@
 /* Service worker: la app funciona sin conexión */
-const CACHE = 'viajapp-v16';
+const CACHE = 'viajapp-v17';
 const SHELL = [
   './', './index.html', './manifest.webmanifest',
   './css/styles.css',
