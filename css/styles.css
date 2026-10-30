@@ -236,7 +236,7 @@ h1, h2, h3 { font-family: var(--font-display); margin: 0; letter-spacing: -.02em
 .hero .trip-name { font-size: 30px; font-weight: 800; line-height: 1.05; text-shadow: 0 2px 12px rgba(0, 0, 0, .25); }
 .hero .trip-meta { margin-top: 6px; font-weight: 600; opacity: .95; }
 .hero { padding-right: 112px; }
-.hero .hero-logo { position: absolute; right: 4px; top: 8px; width: 100px; height: 100px; object-fit: contain; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 255, 255, .55), rgba(255, 255, 255, 0)); animation: bob 3.6s ease-in-out infinite; filter: drop-shadow(0 12px 20px rgba(0, 0, 0, .35)); }
+.hero .hero-logo { position: absolute; right: 8px; top: 10px; width: 96px; height: 96px; object-fit: contain; border-radius: 50%; animation: bob 3.6s ease-in-out infinite; filter: drop-shadow(0 10px 16px rgba(3, 30, 60, .35)); }
 .hero .trip-meta .ic { width: 1em; height: 1em; }
 @keyframes bob { 50% { transform: translateY(-10px) rotate(8deg); } }
 .hero .countdown { display: inline-flex; align-items: baseline; gap: 6px; margin-top: 16px; padding: 8px 14px; border-radius: 999px; background: rgba(3, 30, 60, .26); font-weight: 700; }

@@ -24,7 +24,7 @@ Servidor de la app (desde la raíz del proyecto): `python -m http.server 8765 --
 1. `node tests/shots.js https://viajapp-trip.web.app/index.html` → 22 capturas con datos de ejemplo en `tests/shots/` (+ PNG y PDF exportados en `shots/dl`). No toca Firebase (simula el viaje compartido).
 2. `python tests/make_manual_imgs.py tests/shots manual/img` → convierte a WebP (también páginas de la carta).
 3. Con el servidor local: `node tests/manual-pdf.js http://127.0.0.1:8765/manual/index.html manual/Manual-Viajapp.pdf tests` → PDF del manual (abre las preguntas frecuentes antes de imprimir).
-Otros: `test-resp.js` (varios responsables + migración), `make_logo_icons.py` (íconos desde `logo Viajapp.png`).
+Otros: `test-resp.js` (varios responsables + migración), `make_logo_icons.py` (íconos e insignia circular `logo-badge.png` desde `logo Viajapp v2.png`).
 
 ## Sincronización con el emulador de Firebase
 Necesita Java 21 (Temurin) y `npm i -g firebase-tools@13.29.1`.

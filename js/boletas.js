@@ -260,11 +260,11 @@ function BoletaModule(A) {
     const run = (t, o = {}) => `<w:r><w:rPr>${o.b ? '<w:b/>' : ''}${o.sz ? `<w:sz w:val="${o.sz}"/>` : ''}${o.c ? `<w:color w:val="${o.c}"/>` : ''}</w:rPr><w:t xml:space="preserve">${x(t)}</w:t></w:r>`;
     const par = (t, o = {}) => `<w:p><w:pPr>${o.al ? `<w:jc w:val="${o.al}"/>` : ''}<w:spacing w:after="${o.after == null ? 80 : o.after}"/></w:pPr>${run(t, o)}</w:p>`;
     const cell = (t, w, o = {}) => `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${o.fill ? `<w:shd w:val="clear" w:color="auto" w:fill="${o.fill}"/>` : ''}</w:tcPr>${par(String(t), { b: o.b, sz: 18, al: o.al, after: 0, c: o.c })}</w:tc>`;
-    const table = (widths, head, body, foot) => `<w:tbl><w:tblPr><w:tblW w:w="${widths.reduce((a, b) => a + b, 0)}" w:type="dxa"/><w:tblBorders>${['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map(b => `<w:${b} w:val="single" w:sz="4" w:color="BBBBCC"/>`).join('')}</w:tblBorders><w:tblCellMar><w:left w:w="70" w:type="dxa"/><w:right w:w="70" w:type="dxa"/></w:tblCellMar></w:tblPr>
+    const table = (widths, head, body, foot) => `<w:tbl><w:tblPr><w:tblW w:w="${widths.reduce((a, b) => a + b, 0)}" w:type="dxa"/><w:tblBorders>${['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map(b => `<w:${b} w:val="single" w:sz="4" w:color="C9DCEE"/>`).join('')}</w:tblBorders><w:tblCellMar><w:left w:w="70" w:type="dxa"/><w:right w:w="70" w:type="dxa"/></w:tblCellMar></w:tblPr>
       <w:tblGrid>${widths.map(w => `<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>
-      <w:tr><w:trPr><w:tblHeader/></w:trPr>${head.map((h, i) => cell(h, widths[i], { b: true, fill: '2A1B5C', c: 'FFFFFF' })).join('')}</w:tr>
+      <w:tr><w:trPr><w:tblHeader/></w:trPr>${head.map((h, i) => cell(h, widths[i], { b: true, fill: '0F2742', c: 'FFFFFF' })).join('')}</w:tr>
       ${body.map(r => `<w:tr>${r.map((v, i) => cell(v, widths[i], { al: typeof v === 'number' || /^\$/.test(v) ? 'right' : null })).join('')}</w:tr>`).join('')}
-      ${foot ? `<w:tr>${foot.map((v, i) => cell(v, widths[i], { b: true, fill: 'EDE9FB', al: i === foot.length - 1 ? 'right' : null })).join('')}</w:tr>` : ''}</w:tbl>`;
+      ${foot ? `<w:tr>${foot.map((v, i) => cell(v, widths[i], { b: true, fill: 'E0F2FE', al: i === foot.length - 1 ? 'right' : null })).join('')}</w:tr>` : ''}</w:tbl>`;
     const $m = n => money(n);
     let body = par(P.title, { b: true, sz: 34, after: 120 }) + P.meta.map(m => par(m, { sz: 20 })).join('') + par('', {}) +
       par(`Resumen de gastos (${P.rows.length} documentos)`, { b: true, sz: 26, after: 120 }) +

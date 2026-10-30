@@ -69,36 +69,40 @@
     const cols = [[], []], weight = [0, 0];
     groups.forEach(g => { const k = weight[0] <= weight[1] ? 0 : 1; cols[k].push(g); weight[k] += g.rows.length + 2; });
 
+    const rgba = (h, a) => `rgba(${hex(h).join(',')},${a})`;
     const groupHTML = g => `
-      <div style="background:#ffffff;border-radius:28px;padding:22px 24px 12px;margin-bottom:22px">
-        <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px">
-          <div style="width:52px;height:52px;border-radius:16px;background:${g.cat.color};text-align:center;font-size:30px;line-height:52px">${g.cat.emoji}</div>
-          <div style="font-size:28px;font-weight:800;line-height:52px;color:#1b1040">${esc(g.cat.name)}</div>
+      <div style="background:#ffffff;border:2px solid #dbe8f5;border-radius:24px;padding:20px 24px 10px;margin-bottom:22px">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:8px">
+          <div style="width:52px;height:52px;border-radius:16px;background:${rgba(g.cat.color, .18)};text-align:center;font-size:30px;line-height:52px">${g.cat.emoji}</div>
+          <div style="font-family:'Plus Jakarta Sans',Inter,sans-serif;font-size:27px;font-weight:800;line-height:52px;color:#0f2742">${esc(g.cat.name)}</div>
         </div>
         ${g.rows.map(r => `
-          <div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-top:2px dashed #ece7f8;font-size:23px;line-height:32px;color:#1b1040">
-            <div style="width:30px;height:30px;border-radius:9px;flex:none;box-sizing:border-box;border:3px solid ${g.cat.color};background:${r.done ? g.cat.color : '#ffffff'};color:#ffffff;font-size:20px;line-height:24px;text-align:center;font-weight:900">${r.done ? '✓' : ''}</div>
-            <div style="flex:1;${r.done ? 'text-decoration:line-through;opacity:.55' : ''}"><b>${esc(r.i)}</b>${r.v ? ` <span style="color:#6b5fa3">· ${esc(r.v)}</span>` : ''}</div>
-            <div style="font-weight:800;color:${g.cat.color};font-size:22px;white-space:nowrap">${esc(qtyText(r))}</div>
+          <div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-top:2px solid #edf3fa;font-size:23px;line-height:32px;color:#0f2742">
+            <div style="width:30px;height:30px;border-radius:9px;flex:none;box-sizing:border-box;border:3px solid ${r.done ? '#0284c7' : '#9fc3e3'};background:${r.done ? '#0284c7' : '#ffffff'};color:#ffffff;font-size:20px;line-height:24px;text-align:center;font-weight:900">${r.done ? '✓' : ''}</div>
+            <div style="flex:1;${r.done ? 'text-decoration:line-through;opacity:.5' : ''}"><b>${esc(r.i)}</b>${r.v ? ` <span style="color:#5b7a99">· ${esc(r.v)}</span>` : ''}</div>
+            <div style="font-weight:800;color:#0369a1;font-size:22px;white-space:nowrap">${esc(qtyText(r))}</div>
           </div>`).join('')}
       </div>`;
 
     const stage = document.getElementById('exportStage');
     stage.innerHTML = `
-      <div id="pngNode" style="width:1080px;padding:56px 48px 40px;font-family:Outfit,system-ui,sans-serif;background:linear-gradient(160deg,#ff3d8b 0%,#ff8a00 35%,#8b5cf6 75%,#22d3ee 100%)">
-        <div style="color:#fff;margin-bottom:34px;display:flex;align-items:center;gap:20px">
-          <div style="flex:1">
-            <div style="font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;opacity:.9">${esc(trip.name)}</div>
-            <div style="font-family:'Bricolage Grotesque',Outfit,sans-serif;font-size:76px;font-weight:800;line-height:1.15;margin-top:8px">Lista del súper</div>
-            <div style="font-size:26px;font-weight:600;margin-top:14px;opacity:.95">${total} productos · ${longDate(Store.today())}</div>
+      <div id="pngNode" style="width:1080px;padding:0 0 36px;font-family:Inter,system-ui,sans-serif;background:#f2f8fd;color:#0f2742">
+        <div style="height:14px;background:linear-gradient(90deg,#38bdf8,#0284c7 55%,#6366f1)"></div>
+        <div style="padding:44px 48px 0">
+          <div style="display:flex;align-items:center;gap:24px;margin-bottom:34px">
+            <div style="flex:1">
+              <div style="font-size:24px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#0284c7">${esc(trip.name)}</div>
+              <div style="font-family:'Plus Jakarta Sans',Inter,sans-serif;font-size:72px;font-weight:800;line-height:1.15;margin-top:8px;color:#0f2742">Lista del súper</div>
+              <div style="font-size:25px;font-weight:600;margin-top:12px;color:#5b7a99">${total} productos · ${longDate(Store.today())}</div>
+            </div>
+            <img src="icons/logo-badge.png" alt="" style="width:180px;height:180px;flex:none">
           </div>
-          <img src="icons/logo-mark-256.png" alt="" style="width:190px;height:190px;flex:none">
+          <div style="display:flex;gap:22px;align-items:flex-start">
+            <div style="flex:1">${cols[0].map(groupHTML).join('')}</div>
+            <div style="flex:1">${cols[1].map(groupHTML).join('')}</div>
+          </div>
+          <div style="text-align:center;color:#5b7a99;font-size:20px;font-weight:600;margin-top:6px">Hecho con Viajapp</div>
         </div>
-        <div style="display:flex;gap:22px;align-items:flex-start">
-          <div style="flex:1">${cols[0].map(groupHTML).join('')}</div>
-          <div style="flex:1">${cols[1].map(groupHTML).join('')}</div>
-        </div>
-        <div style="text-align:center;color:#fff;font-size:20px;font-weight:600;opacity:.85;margin-top:8px">Hecho con Viajapp</div>
       </div>`;
     try {
       if (document.fonts && document.fonts.ready) await document.fonts.ready;
@@ -115,24 +119,27 @@
   async function loadLogo() {
     if (LOGO !== null) return LOGO;
     try {
-      const blob = await (await fetch('icons/logo-mark-256.png')).blob();
+      const blob = await (await fetch('icons/logo-badge.png')).blob();
       LOGO = await new Promise(res => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsDataURL(blob); });
     } catch (e) { LOGO = ''; }
     return LOGO;
   }
+  /* Paleta clara y formal de los documentos (celeste + azul marino) */
+  const NAVY = [15, 39, 66], MUTED = [91, 122, 153], LINE = [219, 232, 245], ALT = [242, 248, 253], SKY = [3, 105, 161];
+  const tint = (h, k) => hex(h).map(v => Math.round(255 - (255 - v) * k));
   function pdfHeader(doc, title, subtitle) {
     const W = doc.internal.pageSize.getWidth();
-    doc.setFillColor(...hex('#3b1d8f')); doc.rect(0, 0, W, 34, 'F');
-    doc.setFillColor(...hex('#ff3d8b')); doc.rect(0, 34, W * 0.5, 2.2, 'F');
-    doc.setFillColor(...hex('#ff8a00')); doc.rect(W * 0.5, 34, W * 0.3, 2.2, 'F');
-    doc.setFillColor(...hex('#22d3ee')); doc.rect(W * 0.8, 34, W * 0.2, 2.2, 'F');
-    doc.setTextColor(255, 255, 255);
+    doc.setFillColor(...hex('#38bdf8')); doc.rect(0, 0, W * 0.5, 2.2, 'F');
+    doc.setFillColor(...hex('#0284c7')); doc.rect(W * 0.5, 0, W * 0.3, 2.2, 'F');
+    doc.setFillColor(...hex('#6366f1')); doc.rect(W * 0.8, 0, W * 0.2, 2.2, 'F');
+    doc.setTextColor(...NAVY);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.text(title, 14, 16);
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.text(subtitle, 14, 25);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(...MUTED); doc.text(subtitle, 14, 25);
     const lx = LOGO ? W - 40 : W - 14;
     if (LOGO) doc.addImage(LOGO, 'PNG', W - 37, 3, 28, 28, 'viajapp-logo', 'FAST');
     doc.setFontSize(9); doc.text('Emitido: ' + dmy(Store.today()), lx, 16, { align: 'right' });
-    doc.setTextColor(27, 16, 64);
+    doc.setDrawColor(...LINE); doc.setLineWidth(0.5); doc.line(14, 35, W - 14, 35);
+    doc.setTextColor(...NAVY);
     return 46;
   }
   function pdfFooters(doc) {
@@ -140,7 +147,7 @@
     const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
     for (let i = 1; i <= n; i++) {
       doc.setPage(i);
-      doc.setFontSize(8); doc.setTextColor(140, 130, 180);
+      doc.setFontSize(8); doc.setTextColor(...MUTED);
       doc.text(`Página ${i} de ${n}`, W - 14, H - 8, { align: 'right' });
       doc.text(plain(Store.state.trip.name) + ' · Viajapp', 14, H - 8);
     }
@@ -158,8 +165,7 @@
     let y = pdfHeader(doc, 'Lista del supermercado', `${plain(trip.name)} · ${total} productos`);
     const body = [];
     groups.forEach(g => {
-      const [r, gr, b] = hex(g.cat.color), light = (r * 299 + gr * 587 + b * 114) / 1000 > 165;
-      body.push([{ content: plain(g.cat.name).toUpperCase(), colSpan: 4, styles: { fillColor: [r, gr, b], textColor: light ? [27, 16, 64] : 255, fontStyle: 'bold', fontSize: 10 } }]);
+      body.push([{ content: plain(g.cat.name).toUpperCase(), colSpan: 4, styles: { fillColor: tint(g.cat.color, .2), textColor: NAVY, fontStyle: 'bold', fontSize: 10 } }]);
       g.rows.forEach(r => body.push({ done: r.done, cells: ['', plain(r.i), plain(r.v) || '-', qtyText(r)] }));
     });
     doc.autoTable({
@@ -167,15 +173,15 @@
       head: [['', 'Producto', 'Variante', 'Cant.']],
       body: body.map(r => r.cells || r),
       theme: 'grid',
-      styles: { fontSize: 10, cellPadding: 2.6, lineColor: [230, 224, 245], textColor: [27, 16, 64] },
-      headStyles: { fillColor: hex('#1f1250'), textColor: 255 },
+      styles: { fontSize: 10, cellPadding: 2.6, lineColor: LINE, textColor: NAVY },
+      headStyles: { fillColor: NAVY, textColor: 255 },
       columnStyles: { 0: { cellWidth: 10 }, 3: { cellWidth: 28, halign: 'center', fontStyle: 'bold' } },
       didDrawCell: d => {
         if (d.section !== 'body' || d.column.index !== 0) return;
         const src = body[d.row.index];
         if (!src || !src.cells) return;
         const s = 4.4, x = d.cell.x + (d.cell.width - s) / 2, yy = d.cell.y + (d.cell.height - s) / 2;
-        doc.setDrawColor(139, 92, 246); doc.setLineWidth(0.4); doc.roundedRect(x, yy, s, s, 0.8, 0.8);
+        doc.setDrawColor(...SKY); doc.setLineWidth(0.4); doc.roundedRect(x, yy, s, s, 0.8, 0.8);
         if (src.done) { doc.setDrawColor(34, 160, 90); doc.setLineWidth(0.7); doc.line(x + 0.9, yy + 2.3, x + 1.9, yy + 3.4); doc.line(x + 1.9, yy + 3.4, x + 3.7, yy + 1); }
       },
       margin: { left: 14, right: 14, bottom: 16 }
@@ -214,8 +220,8 @@
     ];
     doc.autoTable({
       startY: y, body: info, theme: 'plain',
-      styles: { fontSize: 10, cellPadding: 1.4, textColor: [27, 16, 64] },
-      columnStyles: { 0: { fontStyle: 'bold', cellWidth: 34, textColor: [109, 40, 217] } },
+      styles: { fontSize: 10, cellPadding: 1.4, textColor: NAVY },
+      columnStyles: { 0: { fontStyle: 'bold', cellWidth: 34, textColor: SKY } },
       margin: { left: 14, right: 14 }
     });
     y = doc.lastAutoTable.finalY + 6;
@@ -232,19 +238,19 @@
 
     // Tarjetas de resumen
     const boxes = [
-      ['FONDOS ASIGNADOS', money(budget, cur), '#6d28d9'],
-      ['TOTAL RENDIDO', money(total, cur), '#ff3d8b'],
-      [diff >= 0 ? 'SALDO A DEVOLVER' : 'MONTO A REEMBOLSAR', money(Math.abs(diff), cur), diff >= 0 ? '#16a34a' : '#ea580c']
+      ['FONDOS ASIGNADOS', money(budget, cur), '#4f46e5'],
+      ['TOTAL RENDIDO', money(total, cur), '#0284c7'],
+      [diff >= 0 ? 'SALDO A DEVOLVER' : 'MONTO A REEMBOLSAR', money(Math.abs(diff), cur), diff >= 0 ? '#15803d' : '#c2410c']
     ];
     const bw = (W - 28 - 8) / 3;
     boxes.forEach((b, i) => {
       const x = 14 + i * (bw + 4);
-      doc.setFillColor(...hex(b[2])); doc.roundedRect(x, y, bw, 20, 3, 3, 'F');
-      doc.setTextColor(255, 255, 255); doc.setFontSize(7.5); doc.setFont('helvetica', 'bold');
+      doc.setFillColor(...tint(b[2], .1)); doc.setDrawColor(...tint(b[2], .35)); doc.setLineWidth(0.3); doc.roundedRect(x, y, bw, 20, 3, 3, 'FD');
+      doc.setTextColor(...hex(b[2])); doc.setFontSize(7.5); doc.setFont('helvetica', 'bold');
       doc.text(b[0], x + 4, y + 7);
-      doc.setFontSize(13); doc.text(b[1], x + 4, y + 15);
+      doc.setFontSize(13); doc.setTextColor(...NAVY); doc.text(b[1], x + 4, y + 15);
     });
-    doc.setTextColor(27, 16, 64);
+    doc.setTextColor(...NAVY);
     y += 28;
 
     // Detalle
@@ -259,10 +265,10 @@
       ]),
       foot: [[{ content: 'TOTAL', colSpan: 6, styles: { halign: 'right' } }, money(total, cur)]],
       theme: 'striped',
-      styles: { fontSize: 8.5, cellPadding: 2, textColor: [27, 16, 64], overflow: 'linebreak' },
-      headStyles: { fillColor: hex('#3b1d8f'), textColor: 255 },
-      footStyles: { fillColor: hex('#ff3d8b'), textColor: 255, fontStyle: 'bold' },
-      alternateRowStyles: { fillColor: [246, 243, 255] },
+      styles: { fontSize: 8.5, cellPadding: 2, textColor: NAVY, overflow: 'linebreak' },
+      headStyles: { fillColor: NAVY, textColor: 255 },
+      footStyles: { fillColor: hex('#0284c7'), textColor: 255, fontStyle: 'bold' },
+      alternateRowStyles: { fillColor: ALT },
       columnStyles: { 0: { cellWidth: 9, halign: 'center' }, 1: { cellWidth: 20 }, 6: { halign: 'right', cellWidth: 28, fontStyle: 'bold' } },
       didParseCell: d => { if (d.section === 'head' && d.column.index === 6) d.cell.styles.halign = 'right'; },
       margin: { left: 14, right: 14, bottom: 16 }
@@ -282,8 +288,8 @@
         head: [['Categoría', 'N° gastos', 'Monto', '%']],
         body: byCat.map(r => [r[0], r[1], money(r[2], cur), total ? (r[2] / total * 100).toFixed(1) + '%' : '0%']),
         theme: 'grid',
-        styles: { fontSize: 9, cellPadding: 2, textColor: [27, 16, 64], lineColor: [230, 224, 245] },
-        headStyles: { fillColor: hex('#6d28d9'), textColor: 255 },
+        styles: { fontSize: 9, cellPadding: 2, textColor: NAVY, lineColor: LINE },
+        headStyles: { fillColor: NAVY, textColor: 255 },
         columnStyles: { 1: { halign: 'center' }, 2: { halign: 'right' }, 3: { halign: 'right' } },
         margin: { left: 14, right: 14, bottom: 16 }
       });
@@ -300,7 +306,7 @@
     const fw = 70;
     signers.forEach((s, i) => {
       const cx = i % 2 ? W - 14 - fw / 2 : 14 + fw / 2, sy = y + Math.floor(i / 2) * rowH;
-      doc.setDrawColor(27, 16, 64); doc.setLineWidth(0.3); doc.line(cx - fw / 2, sy, cx + fw / 2, sy);
+      doc.setDrawColor(...NAVY); doc.setLineWidth(0.3); doc.line(cx - fw / 2, sy, cx + fw / 2, sy);
       doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.text(s[0], cx, sy + 5, { align: 'center' });
       doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.text(s[1], cx, sy + 10, { align: 'center' });
     });
@@ -316,17 +322,17 @@
           if (!url) continue;
           if (slot >= 2) { doc.addPage(); pdfHeader(doc, 'ANEXO · COMPROBANTES', plain(trip.name)); slot = 0; }
           const top = 44 + slot * (slotH + 4);
-          doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(109, 40, 217);
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(...SKY);
           const cap = `Comprobante N° ${n}${e.photos.length > 1 ? ` (${p + 1}/${e.photos.length})` : ''} · ${dmy(e.date)} · ${money(e.amount, cur)}`;
           doc.text(cap, 14, top);
-          doc.setFont('helvetica', 'normal'); doc.setTextColor(27, 16, 64); doc.setFontSize(9);
+          doc.setFont('helvetica', 'normal'); doc.setTextColor(...NAVY); doc.setFontSize(9);
           doc.text(doc.splitTextToSize(`${plain(catOf(e.cat).name)} - ${plain(e.desc) || ''}`, W - 28)[0], 14, top + 5);
           const props = doc.getImageProperties(url);
           const maxW = W - 28, maxH = slotH - 12;
           const k = Math.min(maxW / props.width, maxH / props.height);
           const iw = props.width * k, ih = props.height * k;
           doc.addImage(url, 'JPEG', 14 + (maxW - iw) / 2, top + 8, iw, ih, undefined, 'FAST');
-          doc.setDrawColor(230, 224, 245); doc.rect(14 + (maxW - iw) / 2, top + 8, iw, ih);
+          doc.setDrawColor(...LINE); doc.rect(14 + (maxW - iw) / 2, top + 8, iw, ih);
           slot++;
         }
       }
@@ -361,7 +367,7 @@
         last = e.date;
         const d = parseDate(e.date);
         const label = d.toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long' });
-        body.push([{ content: label.toUpperCase(), colSpan: 5, styles: { fillColor: hex('#3b1d8f'), textColor: 255, fontStyle: 'bold' } }]);
+        body.push([{ content: label.toUpperCase(), colSpan: 5, styles: { fillColor: tint('#0ea5e9', .15), textColor: NAVY, fontStyle: 'bold' } }]);
       }
       const t = EVENT_TYPES.find(x => x.id === e.type) || EVENT_TYPES[0];
       body.push([e.time || '-', plain(t.name), plain(e.title) || '-', plain(e.place) || '-', plain(e.who) || '-']);
@@ -371,8 +377,8 @@
       head: [['Hora', 'Tipo', 'Detalle', 'Lugar', 'Encargado']],
       body,
       theme: 'grid',
-      styles: { fontSize: 9.5, cellPadding: 2.4, textColor: [27, 16, 64], lineColor: [230, 224, 245] },
-      headStyles: { fillColor: hex('#ff3d8b'), textColor: 255 },
+      styles: { fontSize: 9.5, cellPadding: 2.4, textColor: NAVY, lineColor: LINE },
+      headStyles: { fillColor: NAVY, textColor: 255 },
       columnStyles: { 0: { cellWidth: 16, fontStyle: 'bold' }, 1: { cellWidth: 24 } },
       margin: { left: 14, right: 14, bottom: 16 }
     });

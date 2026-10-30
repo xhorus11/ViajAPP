@@ -372,14 +372,14 @@
     const guide = guideHTML();   // si la guía está visible, ella misma invita a compartir
     return `<div class="page">
       <header class="top stagger home-top">
-        <img class="brand-mark" src="icons/logo-mark-256.png" alt="Viajapp" style="--i:0">
+        <img class="brand-mark" src="icons/logo-badge.png" alt="Viajapp" style="--i:0">
         <div class="grow" style="--i:1"><div class="eyebrow">${esc(cap(fmtDay(Store.today())))}</div><h1 class="title">${greet}${who ? ', ' + esc(who) : ''}</h1></div>
         <button class="icon-btn" data-act="trip" aria-label="Configurar viaje" style="--i:2">${ic('settings')}</button>
         ${helpBtn('home')}
       </header>
       <div class="stagger">
         <section class="hero" style="--i:1" data-act="trip">
-          <img class="hero-logo" src="icons/logo-mark-256.png" alt="">
+          <img class="hero-logo" src="icons/logo-badge.png" alt="">
           <div class="eyebrow" style="color:#fff;opacity:.9">Tu viaje</div>
           <div class="trip-name">${esc(t.name)}</div>
           <div class="trip-meta">${ic('calendar')} ${U.dmy(t.start)} → ${U.dmy(t.end)}${t.people.length ? ` · ${ic('users')} ${t.people.length}` : ''}</div>
