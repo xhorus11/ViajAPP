@@ -236,9 +236,8 @@ h1, h2, h3 { font-family: var(--font-display); margin: 0; letter-spacing: -.02em
 .hero .trip-name { font-size: 30px; font-weight: 800; line-height: 1.05; text-shadow: 0 2px 12px rgba(0, 0, 0, .25); }
 .hero .trip-meta { margin-top: 6px; font-weight: 600; opacity: .95; }
 .hero { padding-right: 132px; min-height: 196px; }
-/* Perrito guiñando el ojo: se asoma desde el borde inferior derecho con las patitas apoyadas */
-.hero .hero-dog { position: absolute; right: 16px; bottom: 0; width: 148px; height: auto; pointer-events: none; transform-origin: 60% 100%; animation: peek 5s ease-in-out infinite; filter: drop-shadow(0 -4px 12px rgba(3, 30, 60, .25)); }
-@keyframes peek { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px) rotate(-1.5deg); } }
+/* Perrito guiñando el ojo: fijo, asomado en el borde inferior derecho con las patitas apoyadas */
+.hero .hero-dog { position: absolute; right: 16px; bottom: 0; width: 148px; height: auto; pointer-events: none; filter: drop-shadow(0 -4px 12px rgba(3, 30, 60, .25)); }
 .hero .sync-pill { z-index: 1; }
 .hero .trip-meta .ic { width: 1em; height: 1em; }
 @keyframes bob { 50% { transform: translateY(-10px) rotate(8deg); } }
