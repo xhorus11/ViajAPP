@@ -1,4 +1,5 @@
 /* Recetario base.
+   - big: rinde bien para grupos grandes (lista BIG al final).
    Ingredientes: "alias[/Variante][:cantidad unidad]" separados por ";".
    - La cantidad es POR PERSONA (g, ml, un, lata, pq, fr, bot, bolsa).
    - Sin cantidad = se compra una vez (sal, aceite, especias...).
@@ -35,7 +36,8 @@
     helado: 'congelados|Helado', prefritas: 'congelados|Papas pre-fritas', vercong: 'congelados|Verduras congeladas', empanada: 'congelados|Empanadas',
     carbon: 'asado|Carbón', encendedor: 'asado|Encendedor',
     congrio: 'pescados|Congrio', mote: 'despensa|Mote', huesillos: 'despensa|Huesillos', nori: 'despensa|Algas nori',
-    asiaticas: 'aceites|Salsas asiáticas', masas: 'panaderia|Masas'
+    asiaticas: 'aceites|Salsas asiáticas', masas: 'panaderia|Masas',
+    quesillo: 'lacteos|Quesillo', coco: 'frutas|Coco', chocpolvo: 'desayuno|Chocolate en polvo', aluminio: 'asado|Papel aluminio'
   };
 
   window.RECIPE_CATS = [
@@ -216,7 +218,8 @@
       'Napolitanas': 'empanada/Masa para empanadas:2un; queso/Mantecoso:40g; fiambre/Jamón de pierna:30g; tomate/Larga vida:0.4un; especia/Orégano',
       'De camarón queso': 'empanada/Masa para empanadas:2un; camaron/Cocidos:50g; queso/Mantecoso:40g',
       'De mariscos': 'empanada/Masa para empanadas:2un; mariscos:70g; queso/Mantecoso:30g; cebolla/Blanca:0.2un; aceite/Maravilla',
-      'Compradas listas': 'empanada/Pino:2un'
+      'Compradas listas': 'empanada/Pino:2un',
+      'Veganas de champiñón': 'empanada/Masa para empanadas:2un; champi/Laminado:80g; cebolla/Blanca:0.4un; pimenton/Rojo:0.15un; aceite/Maravilla; especia/Comino'
     }],
     ['sopaipillas', 'Sopaipillas', '🟠', 'chilena', 'zapallo/Camote:60g; harina/Con polvos:80g; mantequilla/Con sal:15g; aceite/Maravilla; sal/Fina', {
       'Con pebre': 'tomate/Larga vida:0.5un; cebolla/Blanca:0.2un; hierbas/Cilantro; aji/Verde',
@@ -525,8 +528,100 @@
     ['tiramisu', 'Tiramisú', '🍰', 'postres', 'galletas/Champaña:0.3un; queso/Mascarpone:70g; huevo:0.6un; azucar/Blanca:25g; cafe/Instantáneo; reposteria/Cacao amargo', {}],
     ['churros', 'Churros', '🥖', 'postres', 'harina/Sin polvos:60g; mantequilla/Sin sal:10g; aceite/Maravilla; azucar/Blanca:20g; especia/Canela', {
       'Con manjar': 'manjar/Normal:0.08un', 'Con chocolate': 'chocolate/Barra:0.15un; leche/Entera:50ml', 'Solos con azúcar': ''
-    }]
+    }],
+
+    /* ---------- PARA GRUPOS GRANDES / OLLA ÚNICA ---------- */
+    ['arrozpollo', 'Arroz con pollo', '🍗', 'arroz', 'arroz/Grado 1:90g; pollo/Trutro corto:1.5un; cebolla/Blanca:0.25un; pimenton/Rojo:0.25un; zanahoria:0.25un; vercong/Arvejas:30g; ajo/Cabeza; sopa/Caldos en cubo; especia/Ají de color; aceite/Maravilla', {
+      'Clásico': '', 'Verde con cilantro (a la peruana)': 'hierbas/Cilantro; choclo/Congelado:40g; cerveza/Lager:60ml', 'Con chorizo': 'embutido/Chorizo:0.4un'
+    }],
+    ['carbonada', 'Carbonada', '🍲', 'sopas', 'vacuno/Posta:120g; papa/Blanca:200g; zapallo/Trozo:80g; zanahoria:0.3un; cebolla/Blanca:0.25un; choclo/Congelado:30g; porverdes:30g; arroz/Grado 2:15g; hierbas/Perejil; especia/Orégano', {}],
+    ['pantrucas', 'Sopa de pantrucas', '🥣', 'sopas', 'harina/Sin polvos:60g; huevo:0.5un; zanahoria:0.3un; cebolla/Blanca:0.2un; sopa/Caldos en cubo; hierbas/Perejil', {
+      'Con carne': 'molida/7% grasa:60g', 'Vegetariana con zapallo': 'zapallo/Trozo:80g; papa/Blanca:100g'
+    }],
+    ['pastaalhorno', 'Pasta al horno', '🫕', 'pastas', 'fideos/Espirales:100g; queso/Mozzarella:50g; queso/Rallado:15g', {
+      'Boloñesa': 'molida/7% grasa:100g; salsatom/Tomate triturado:0.3un; cebolla/Blanca:0.2un; ajo/Cabeza',
+      'Jamón y queso con salsa blanca': 'fiambre/Jamón de pierna:40g; leche/Entera:120ml; mantequilla/Con sal:10g; harina/Sin polvos:10g',
+      'De verduras': 'zapallito:0.4un; pimenton/Rojo:0.3un; champi/Laminado:50g; salsatom/Pomarola:0.25un'
+    }],
+    ['cerdohorno', 'Pernil al horno', '🍖', 'carnes', 'cerdo/Pulpa:250g; ajo/Cabeza; especia/Comino; especia/Orégano; vino/Blanco:40ml; papa/Blanca:250g; aluminio', {
+      'Con papas al horno': '', 'Con puré': 'leche/Entera:50ml; mantequilla/Con sal:10g'
+    }],
+    ['estofado', 'Estofado de vacuno', '🥘', 'carnes', 'vacuno/Posta:180g; papa/Blanca:200g; zanahoria:0.4un; cebolla/Blanca:0.3un; pimenton/Rojo:0.25un; vino/Tinto:60ml; ajo/Cabeza; especia/Laurel; sopa/Caldos en cubo', {}],
+    ['chupe', 'Chupe de mariscos', '🦐', 'mar', 'mariscos:150g; pan/Marraqueta:0.5un; leche/Entera:120ml; cebolla/Blanca:0.25un; queso/Rallado:20g; crema/De leche:30ml; mantequilla/Con sal:10g; especia/Ají de color', {}],
+
+    /* ---------- MÁS ONCE ---------- */
+    ['kuchen', 'Kuchen casero', '🥧', 'once', 'harina/Con polvos:50g; mantequilla/Sin sal:20g; azucar/Blanca:30g; huevo:0.4un; leche/Entera:30ml', {
+      'De manzana': 'manzana/Verde:0.6un; especia/Canela', 'De durazno': 'durazno/Conserva:0.2un',
+      'De frutillas con crema': 'frutilla/Fresca:60g; crema/De leche:30ml', 'De plátano': 'platano/Maduro:0.5un'
+    }],
+    ['sandwichonce', 'Sándwiches para la once', '🥪', 'once', 'pan/Marraqueta:1.5un', {
+      'Barros Luco': 'vacuno/Posta:100g; queso/Gauda laminado:40g', 'Barros Jarpa': 'fiambre/Jamón de pierna:40g; queso/Gauda laminado:40g',
+      'Ave palta': 'pollo/Pechuga:80g; palta/Hass:0.3un; mayo/Normal', 'Aliado': 'fiambre/Jamón de pierna:30g; queso/Mantecoso:30g',
+      'Palta y tomate (vegano)': 'palta/Hass:0.4un; tomate/Larga vida:0.4un; sal/Fina'
+    }],
+    ['budin', 'Budín de pan', '🍮', 'once', 'pan/Marraqueta:1un; leche/Entera:150ml; huevo:0.7un; azucar/Blanca:30g; reposteria/Esencia de vainilla', {
+      'Clásico': '', 'Con pasas': 'frutosecos/Pasas:15g', 'Con plátano': 'platano/Maduro:0.5un'
+    }],
+    ['alfajores', 'Alfajores caseros', '🍪', 'once', 'harina/Maicena:30g; harina/Sin polvos:20g; mantequilla/Sin sal:20g; azucar/Flor:15g; huevo:0.3un; manjar/Normal:0.06un', {
+      'Clásicos': '', 'Con coco': 'coco/Rallado:10g', 'Bañados en chocolate': 'chocolate/Barra:0.15un'
+    }],
+    ['oncecampo', 'Once de campo', '🧺', 'once', 'te/Negro; cafe/Instantáneo; leche/Entera:100ml; azucar/Blanca; pan/Hallulla:1.5un', {
+      'Quesillo y mermelada': 'quesillo:0.2un; mermelada/Mora:0.05un', 'Palta y pebre': 'palta/Hass:0.3un; tomate/Larga vida:0.4un; cebolla/Blanca:0.1un; hierbas/Cilantro',
+      'Huevos de campo': 'huevo/De campo:1.5un; mantequilla/Con sal:10g'
+    }],
+    ['muffins', 'Muffins', '🧁', 'once', 'harina/Con polvos:50g; azucar/Blanca:30g; huevo:0.4un; leche/Entera:40ml; aceite/Maravilla', {
+      'De arándanos': 'arandano/Frescos:30g', 'Con chips de chocolate': 'reposteria/Chips de chocolate', 'De plátano y nuez': 'platano/Maduro:0.5un; frutosecos/Nueces:10g'
+    }],
+
+    /* ---------- MÁS DESAYUNOS ---------- */
+    ['chocolatecaliente', 'Chocolate caliente', '☕', 'desayuno', '', {
+      'Clásico': 'leche/Entera:250ml; chocpolvo/Milo', 'De barra, espeso': 'leche/Entera:250ml; chocolate/Barra:0.2un; especia/Canela',
+      'Vegano con leche de avena': 'leche/Avena:250ml; reposteria/Cacao amargo; azucar/Blanca'
+    }],
+    ['granola', 'Granola casera', '🥣', 'desayuno', 'avena/Tradicional:50g; frutosecos/Mix:15g; coco/Rallado:5g; aceite/Coco', {
+      'Con yogurt y miel': 'yogurt/Natural:1un; miel', 'Con leche': 'leche/Entera:200ml; azucar/Rubia',
+      'Vegana con leche de almendra': 'leche/Almendra:200ml; azucar/Rubia'
+    }],
+    ['desayunoamericano', 'Desayuno americano', '🥓', 'desayuno', 'huevo:2un; tocino/Laminado:40g; pan/Molde blanco:0.1un; mantequilla/Con sal:10g; jugo/Naranja:200ml; cafe/Instantáneo', {
+      'Clásico': '', 'Con pancakes y miel': 'harina/Con polvos:40g; leche/Entera:80ml; miel', 'Con papas salteadas': 'papa/Blanca:150g; aceite/Maravilla'
+    }],
+    ['pancakeavena', 'Pancakes de avena y plátano', '🥞', 'desayuno', 'avena/Tradicional:40g; platano/Maduro:1un; huevo:1un; especia/Canela', {
+      'Con miel': 'miel', 'Con frutos rojos': 'arandano/Frescos:40g', 'Con manjar': 'manjar/Normal:0.05un'
+    }],
+
+    /* ---------- MÁS VEGETARIANAS Y VEGANAS ---------- */
+    ['chilisincarne', 'Chili sin carne', '🌶️', 'mundo', 'legumbre/Porotos rojos:80g; legumbre/Porotos negros:40g; choclo/Conserva:0.2un; salsatom/Tomate triturado:0.3un; pimenton/Rojo:0.3un; cebolla/Blanca:0.3un; ajo/Cabeza; especia/Comino; especia/Paprika', {
+      'Con arroz': 'arroz/Grado 1:70g', 'Con nachos y palta': 'nachos/Nachos:0.3un; palta/Hass:0.3un'
+    }],
+    ['hamburguesaleg', 'Hamburguesas de legumbres', '🍔', 'arroz', 'panburger/Normal:1un; lechuga/Costina:0.1un; tomate/Larga vida:0.3un; panrallado/Tradicional:20g; cebolla/Blanca:0.2un; ajo/Cabeza; especia/Comino', {
+      'De lentejas': 'legumbre/Lentejas:70g', 'De garbanzos': 'legumbre/Garbanzos:70g', 'De porotos negros': 'legumbre/Porotos negros:70g; choclo/Conserva:0.1un'
+    }],
+    ['bowlvegano', 'Bowl vegano', '🥗', 'ensaladas', 'quinoa/Quinoa:60g; legumbre/Garbanzos:50g; palta/Hass:0.3un; zanahoria:0.3un; espinaca/Bolsa:0.15un; tomate/Cherry:0.1un; limon/Común:0.3un; aceite/Oliva extra virgen', {
+      'Clásico': '', 'Con camote asado': 'zapallo/Camote:120g'
+    }],
+    ['zapallitos', 'Zapallitos rellenos', '🥒', 'europa', 'zapallito:1un; cebolla/Blanca:0.2un; ajo/Cabeza; salsatom/Pomarola:0.15un', {
+      'Con carne': 'molida/7% grasa:80g; queso/Rallado:15g', 'Vegetarianos con choclo y queso': 'choclo/Conserva:0.15un; queso/Mozzarella:40g; huevo:0.3un',
+      'Veganos con quinoa': 'quinoa/Quinoa:40g; champi/Laminado:40g; pimenton/Rojo:0.2un'
+    }],
+    ['berenjenaparm', 'Berenjenas a la parmesana', '🍆', 'europa', 'berenjena:0.7un; salsatom/Salsa italiana:0.2un; queso/Mozzarella:60g; queso/Parmesano:20g; hierbas/Albahaca; aceite/Oliva extra virgen', {}],
+    ['tortillaverduras', 'Tortilla de verduras', '🥚', 'chilena', 'huevo:1.5un; cebolla/Blanca:0.2un; aceite/Maravilla; sal/Fina', {
+      'Zanahoria y porotos verdes': 'zanahoria:0.4un; porverdes:50g', 'De espinaca': 'espinaca/Bolsa:0.25un',
+      'De zapallo italiano': 'zapallito:0.5un', 'Papas y choclo': 'papa/Blanca:120g; choclo/Congelado:40g'
+    }],
+    ['quinotto', 'Quinotto de champiñones', '🍄', 'arroz', 'quinoa/Quinoa:70g; champi/Laminado:100g; cebolla/Blanca:0.25un; ajo/Cabeza; sopa/Caldos en cubo; vino/Blanco:30ml; queso/Parmesano:20g; mantequilla/Con sal:10g', {}],
+    ['ensaladalentejas', 'Ensalada de lentejas', '🥗', 'ensaladas', 'legumbre/Lentejas:60g; tomate/Larga vida:0.4un; cebolla/Morada:0.15un; pimenton/Rojo:0.2un; hierbas/Perejil; limon/Común:0.3un; aceite/Oliva extra virgen', {
+      'Clásica': '', 'Con choclo y palta': 'choclo/Conserva:0.15un; palta/Hass:0.3un', 'Con queso fresco': 'queso/Fresco:40g'
+    }],
+    ['currygarbanzos', 'Curry de garbanzos', '🍛', 'asia', 'legumbre/Garbanzos:70g; conserva/Leche de coco:0.25un; especia/Curry; cebolla/Blanca:0.25un; ajo/Cabeza; jengibre; tomate/Perita:0.5un; espinaca/Bolsa:0.15un; arroz/Basmati:70g', {}]
   ];
+
+  /* Recetas que rinden bien para grupos grandes (olla única, bandeja o fáciles de multiplicar) */
+  const BIG = new Set(['pastas', 'lasana', 'macqueso', 'pastafria', 'pastaalhorno', 'arroz', 'arrozpollo', 'porotos', 'lentejas', 'garbanzos', 'paella',
+    'cazuela', 'charquican', 'curanto', 'pastelchoclo', 'pastelpapas', 'empanadas', 'sopaipillas', 'pure', 'panamasado', 'tomatican', 'ajiaco',
+    'carbonada', 'pantrucas', 'asado', 'choripan', 'completos', 'costillar', 'mechada', 'albondigas', 'hamburguesas', 'cerdohorno', 'estofado',
+    'pollohorno', 'arvejado', 'curry', 'chili', 'chilisincarne', 'feijoada', 'tacos', 'burritos', 'chaufa', 'goulash', 'currygarbanzos',
+    'crema', 'sopa', 'papasmayo', 'chilena', 'mixta', 'ensaladalentejas', 'frutas', 'arrozleche', 'tortagalletas', 'kuchen', 'budin',
+    'once', 'oncecampo', 'sandwichonce', 'desayuno', 'pizza', 'tabla', 'piscola', 'sangria', 'terremoto', 'navegado']);
 
   function parse(str) {
     if (!str) return [];
@@ -542,7 +637,7 @@
   }
 
   window.RECIPES = R.map(([id, n, e, c, base, vars]) => ({
-    id, n, e, c, base: parse(base),
+    id, n, e, c, big: BIG.has(id), base: parse(base),
     vars: Object.entries(vars || {}).map(([vn, s]) => ({ n: vn, ing: parse(s) }))
   }));
 })();

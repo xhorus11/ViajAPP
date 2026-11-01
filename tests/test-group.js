@@ -22,7 +22,7 @@ const ok = (c, l) => { console.log((c ? '✅ ' : '❌ ') + l); if (!c) fails++; 
   await page.reload({ waitUntil: 'networkidle0' }); await sleep(800);
 
   // Inicio → tarjeta "Tu grupo"
-  ok((await page.$$('.g-tile')).length === 3, 'Inicio muestra las 3 tarjetas de "Tu grupo"');
+  ok((await page.$$('.g-tile')).length === 4, 'Inicio muestra las 4 tarjetas de "Tu grupo" (con ¿Quién lava la loza?)');
   await click('.g-tile[data-m="gear"]', 900);
   ok((await page.evaluate(() => location.hash)) === '#group', 'Abre la pantalla Tu grupo');
   ok(await page.$eval('.tab.active', e => e.dataset.tab) === 'home', 'La barra marca Inicio (sin pestaña nueva)');

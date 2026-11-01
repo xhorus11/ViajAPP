@@ -159,8 +159,8 @@ function TripsModule(A) {
   function fromTemplate(src, o) {
     const out = Store.DEFAULT(), t = src.trip;
     const len = t.start && t.end ? Math.max(0, daysBetween(t.start, t.end)) : 0, shift = t.start ? daysBetween(t.start, o.start) : 0;
-    Object.assign(out.trip, { name: o.name, start: o.start, end: addDays(o.start, len), currency: t.currency || 'CLP' });
-    if (o.people) Object.assign(out.trip, { people: (t.people || []).slice(), diets: t.diets || {} });
+    Object.assign(out.trip, { name: o.name, start: o.start, end: addDays(o.start, len), currency: t.currency || 'CLP', place: t.place || '' });
+    if (o.people) Object.assign(out.trip, { people: (t.people || []).slice(), diets: t.diets || {}, guests: t.guests || 0 });
     if (o.funds) ['entity', 'responsibles', 'responsible', 'rut', 'budget', 'brand'].forEach(k => { if (t[k] !== undefined) out.trip[k] = t[k]; });
     out.shop.custom = (src.shop && src.shop.custom) || {}; out.shop.extraVar = (src.shop && src.shop.extraVar) || {};
     if (o.shop) Object.entries((src.shop && src.shop.sel) || {}).forEach(([k, r]) => { const x = Object.assign({}, r, { done: false }); delete x.pa; out.shop.sel[k] = x; });

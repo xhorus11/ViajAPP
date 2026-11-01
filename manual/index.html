@@ -194,10 +194,11 @@
       <div>
         <ul class="dots">
           <li><b>Tarjeta del viaje:</b> nombre, fechas, participantes y el contador "Día 3 de 7". Tócala para editar el viaje.</li>
+          <li><b>Clima:</b> el botón de la tarjeta muestra la temperatura de hoy (o la del día que llegan). Ver <a href="#clima">Clima del destino</a>.</li>
           <li><b>Productos comprados</b> y <b>gastado de los fondos</b>: tócalos para ir directo al Súper o a Dinero.</li>
           <li><b>Próximo plan:</b> la siguiente comida o actividad de la agenda.</li>
           <li><b>Accesos rápidos:</b> lista del súper, nuevo gasto, planear comida, dividir cuenta, carta financiera y recetas.</li>
-          <li><b>Tu grupo:</b> acceso a <a href="#grupo">¿Quién lleva qué?, Habitaciones y Bitácora</a>, con un resumen de cada uno.</li>
+          <li><b>Tu grupo:</b> acceso a <a href="#grupo">¿Quién lleva qué?, Habitaciones, Bitácora y ¿Quién lava la loza?</a>, con un resumen de cada uno.</li>
           <li><b>Hoy:</b> la línea de tiempo con las comidas del día y quién cocina.</li>
         </ul>
         <p>Abajo siempre tienes la barra con los cinco módulos: <span class="ui">Inicio</span> <span class="ui">Súper</span> <span class="ui">Recetas</span> <span class="ui">Dinero</span> <span class="ui">Agenda</span>. El número amarillo sobre Súper indica cuántos productos faltan por comprar.</p>
@@ -205,6 +206,21 @@
       <div class="shots">
         <figure><span class="phone"><img loading="lazy" src="img/01-inicio.webp" alt="Pantalla de Inicio con la tarjeta del viaje y resúmenes"></span><figcaption>Resumen del viaje</figcaption></figure>
         <figure><span class="phone"><img loading="lazy" src="img/02-inicio-accesos.webp" alt="Accesos rápidos y comidas de hoy"></span><figcaption>Accesos rápidos y el día de hoy</figcaption></figure>
+      </div>
+    </div>
+    <div class="split" id="clima">
+      <div>
+        <h3>Clima del destino</h3>
+        <ol class="steps">
+          <li>En la hoja del viaje (engranaje) escribe el <b>Destino</b>, por ejemplo <i>Pucón</i>. También puedes escribirlo directo en la hoja del clima.</li>
+          <li>Toca el botón del clima en la tarjeta del viaje: aparece el pronóstico de <b>cada día del viaje</b> con la máxima, la mínima y la probabilidad de lluvia.</li>
+          <li>Arriba salen <b>consejos</b> según el pronóstico: paraguas si viene lluvia, ropa abrigada si las noches son frías, bloqueador si hace calor.</li>
+        </ol>
+        <p>El pronóstico llega hasta 16 días. Si el viaje es más adelante, la app muestra <b>cómo estuvo el clima en esas mismas fechas el año pasado</b>, para que sepan qué llevar.</p>
+        <div class="tip"><b>¿Hay dos lugares con el mismo nombre?</b> Agrega la región o el país después de una coma: <i>Mendoza, Argentina</i>. La hoja muestra la región encontrada para que confirmes.</div>
+      </div>
+      <div class="shots">
+        <figure><span class="phone"><img loading="lazy" src="img/49-clima.webp" alt="Pronóstico del clima para los días del viaje en Pucón"></span><figcaption>El clima de los días del viaje</figcaption></figure>
       </div>
     </div>
   </section>
@@ -276,22 +292,29 @@
   <!-- 5. Recetas -->
   <section id="recetas">
     <div class="sec-head"><span class="sec-num" style="--c:linear-gradient(135deg,#7dd3fc,#0ea5e9)">5</span><h2>Recetas</h2></div>
-    <p class="lead">120 recetas con más de 330 variantes en 18 categorías:
+    <p class="lead">146 recetas con 400 variantes en 18 categorías:
       <b>cocina chilena</b> (pastel de choclo, cazuela, curanto, caldillo de congrio, pastel de papas, plateada, mote con huesillo, calzones rotos…),
       <b>Latinoamérica</b> (tacos, arepas, ají de gallina, causa, feijoada, pollo a la brasa…),
       <b>Asia</b> (sushi, poke, pad thai, curry thai, teriyaki…),
       <b>Europa y Mediterráneo</b> (tortilla española, moussaka, quiche, shawarma, falafel…),
-      además de pastas, asados, ensaladas, desayunos, onces, postres, tragos y picoteo. Elige qué cocinar y los ingredientes pasan solos a la lista del súper.</p>
+      además de pastas, asados, ensaladas, desayunos (granola, chocolate caliente, pancakes de avena…), onces (kuchen, sándwiches Barros Luco y Jarpa, alfajores, budín…), postres, tragos y picoteo. Elige qué cocinar y los ingredientes pasan solos a la lista del súper.</p>
     <div class="split rev">
       <div>
         <h3>Cocinar una receta</h3>
         <ol class="steps">
           <li>Busca (la búsqueda recorre todo el recetario) o elige una categoría y toca la receta. En "Todas" cada categoría muestra unas pocas recetas; toca <span class="ui">Ver las N recetas</span> para ver el resto.</li>
           <li>Elige la <b>variante</b> (por ejemplo, Pastas → Pesto).</li>
-          <li>Indica <b>para cuántas personas</b>: las cantidades se recalculan solas.</li>
+          <li>Indica <b>para cuántas personas</b>: las cantidades se recalculan solas. Parte con todo el grupo: los de la lista más las <b>personas extra</b> (niños o visitas que comen pero no están en la lista). Puedes sumar o restar extra ahí mismo con − y +.</li>
           <li><b>Desmarca lo que ya tienes</b> (la sal, el aceite…). Lo que está en la despensa ya viene desmarcado ("en despensa") y lo que está en tu lista dice "en tu lista".</li>
           <li>Toca <span class="ui">Agregar ingredientes a la lista</span>, o <span class="ui">Agendar</span> para ponerla en el calendario.</li>
         </ol>
+        <h3>Filtros útiles</h3>
+        <ul class="dots">
+          <li><span class="ui">Para grupos grandes</span>: platos de olla o bandeja que rinden para muchos (arroz con pollo, porotos, cazuela, carbonada, pasta al horno, pernil, chili…).</li>
+          <li><span class="ui">Vegetarianas</span> y <span class="ui">Veganas</span>: la tarjeta dice qué variante sirve y, al abrirla, ya viene elegida.</li>
+          <li><span class="ui">Aptas para el grupo</span> aparece cuando alguien tiene una <a href="#dietas">dieta o alergia</a>.</li>
+        </ul>
+        <div class="tip"><b>Cocinar para muchos:</b> desde 11 personas, lo que se compra una sola vez (sal, aceite, especias, caldos) se calcula <b>1 por cada 10 personas</b>, para que no falte.</div>
         <h3>Crear o modificar recetas</h3>
         <ul class="dots">
           <li>Con el botón <span class="ui">+</span> creas tu propia receta: nombre, categoría, ingredientes base y variantes.</li>
@@ -299,10 +322,12 @@
           <li>Puedes elegir los productos del catálogo o escribir uno nuevo: se crea solo en el Súper.</li>
           <li>Puedes <span class="ui">Editar receta</span> en cualquiera de las incluidas sin perder la original: siempre está <span class="ui">Restaurar original</span>. También puedes <b>ocultar</b> las que no te sirvan.</li>
           <li>Tus recetas y las que modificaste aparecen en el filtro <span class="ui">Mías</span>, con una estrella.</li>
+          <li>Marca <span class="ui">Rinde para grupos grandes</span> para que tu receta aparezca en ese filtro.</li>
         </ul>
       </div>
       <div class="shots">
         <figure><span class="phone"><img loading="lazy" src="img/06-recetas.webp" alt="Recetario con categorías"></span><figcaption>El recetario</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/50-recetas-grupos.webp" alt="Filtro Para grupos grandes"></span><figcaption>Para grupos grandes</figcaption></figure>
         <figure><span class="phone"><img loading="lazy" src="img/07-receta-cocinar.webp" alt="Receta de pastas con variante pesto para 4 personas"></span><figcaption>Variante, personas e ingredientes</figcaption></figure>
         <figure><span class="phone"><img loading="lazy" src="img/08-receta-editor.webp" alt="Editor de recetas con ingredientes y variantes"></span><figcaption>Editor de recetas</figcaption></figure>
       </div>
@@ -495,7 +520,7 @@
   <!-- Tu grupo -->
   <section id="grupo">
     <div class="sec-head"><span class="sec-num" style="--c:linear-gradient(135deg,#6366f1,#818cf8)">9</span><h2>Tu grupo</h2></div>
-    <p class="lead">Lo que organiza al grupo más allá de la comida y el dinero. Se abre desde la tarjeta <b>Tu grupo</b> en Inicio y tiene tres pestañas: <span class="ui">Cosas</span>, <span class="ui">Piezas</span> y <span class="ui">Bitácora</span>. Con el botón de flecha vuelves a Inicio.</p>
+    <p class="lead">Lo que organiza al grupo más allá de la comida y el dinero. Se abre desde la tarjeta <b>Tu grupo</b> en Inicio y tiene tres pestañas: <span class="ui">Cosas</span>, <span class="ui">Piezas</span> y <span class="ui">Bitácora</span>. Con el botón de flecha vuelves a Inicio. La cuarta tarjeta, <b>¿Quién lava la loza?</b>, abre la ruleta de tareas.</p>
     <div class="shots" style="margin-bottom:10px">
       <figure><span class="phone"><img loading="lazy" src="img/26-grupo-inicio.webp" alt="Tarjeta Tu grupo en Inicio"></span><figcaption>La tarjeta en Inicio</figcaption></figure>
     </div>
@@ -550,6 +575,23 @@
       </div>
       <div class="shots">
         <figure><span class="phone"><img loading="lazy" src="img/31-grupo-bitacora.webp" alt="Bitácora con los movimientos del grupo"></span><figcaption>Bitácora con filtros</figcaption></figure>
+      </div>
+    </div>
+
+    <div class="split rev" id="loza">
+      <div>
+        <h3>¿Quién lava la loza?</h3>
+        <p>Una ruleta al azar para las tareas de la casa, sin discusiones.</p>
+        <ol class="steps">
+          <li>En Inicio, en Tu grupo, toca <span class="ui">¿Quién lava la loza?</span>.</li>
+          <li>Elige la tarea: <b>lavar la loza</b>, secar y guardar, sacar la basura, cocinar u ordenar.</li>
+          <li>Toca a las personas para sacarlas del sorteo (por ejemplo, quien cocinó).</li>
+          <li>Toca <span class="ui">Girar la ruleta</span>: los nombres giran y se detiene en a quien le toca.</li>
+        </ol>
+        <p>Con <b>Por turnos</b> activado, nadie repite hasta que a todos les haya tocado; al lado de cada nombre se ve cuántas veces le ha tocado. Cada sorteo queda en la Bitácora y en la tarjeta se ve a quién le tocó hoy.</p>
+      </div>
+      <div class="shots">
+        <figure><span class="phone"><img loading="lazy" src="img/48-ruleta-loza.webp" alt="Ruleta de tareas con el resultado"></span><figcaption>Le toca a…</figcaption></figure>
       </div>
     </div>
   </section>
@@ -640,6 +682,8 @@
     <details><summary>¿Puedo sacar la marca Viajapp de la carta financiera?</summary><p>Sí. En ⚙️ Viaje → "Logo en la carta financiera y los documentos" elige "Mi logo" para poner el de tu institución o empresa, o "Sin logo" para documentos sin marca.</p></details>
     <details><summary>¿Puedo poner más de un responsable en la carta financiera?</summary><p>Sí. En la hoja del viaje, en Responsables, toca "Agregar responsable" las veces que necesites. Todos aparecen en la carta con su RUT y su propia línea de firma.</p></details>
     <details><summary>Agregué una receta y las cantidades son muchas o pocas</summary><p>Las cantidades dependen de las personas elegidas. Cambia el número en "¿Para cuántas personas?" antes de agregar, o ajusta la cantidad después en Mi lista con los botones − y +.</p></details>
+    <details><summary>Vienen niños o visitas que no están en la lista, ¿cómo los cuento?</summary><p>En la hoja del viaje (engranaje) escribe cuántas son en <b>Personas extra</b>, o súmalas en la receta con − y + junto a "extra". Las recetas parten calculando para todos: los de la lista más los extra.</p></details>
+    <details><summary>¿De dónde sale el clima?</summary><p>De Open-Meteo, un servicio gratuito de pronóstico. Se necesita internet para consultarlo; sin conexión se muestra la última consulta. El pronóstico llega a 16 días; para fechas más lejanas se muestra cómo estuvo el clima el año pasado.</p></details>
     <details><summary>¿La despensa se actualiza sola?</summary><p>Sí: suma lo que marcas como comprado y descuenta lo que cocinan cuando marcas un plan con receta como "cocinado". Lo que traigan de sus casas o lo que se use sin receta lo ajustas a mano con − y +.</p></details>
     <details><summary>Alguien del grupo es celíaco o vegetariano, ¿qué hago?</summary><p>Anótalo en Dietas y alergias. Las recetas te dirán cuáles sirven para todos y cuáles se pueden adaptar, y al agregar una receta se compra solo para esa persona la versión apta (por ejemplo, fideos sin gluten).</p></details>
     <details><summary>La app dice "sin reemplazo", ¿qué significa?</summary><p>Que ese ingrediente no tiene una versión apta en el catálogo (por ejemplo, la carne del asado para alguien vegetariano). Prepárale una alternativa: puedes buscarla en el filtro "Aptas para el grupo".</p></details>

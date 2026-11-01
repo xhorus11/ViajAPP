@@ -55,7 +55,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
     const S = Store.state;
     Object.assign(S.trip, {
-      name: 'Gira de estudios Pucón', start: d(-2), end: d(4), people: ['Ana', 'Pedro', 'Cami', 'Diego'], budget: 600000, currency: 'CLP',
+      name: 'Gira de estudios Pucón', start: d(-2), end: d(4), people: ['Ana', 'Pedro', 'Cami', 'Diego'], place: 'Pucón', guests: 2, budget: 600000, currency: 'CLP',
       entity: 'Universidad Tecnológica Metropolitana',
       responsibles: [{ name: 'Ana Pérez Soto', rut: '12.345.678-9' }, { name: 'Pedro González Mora', rut: '13.456.789-0' }],
       responsible: 'Ana Pérez Soto, Pedro González Mora', rut: '12.345.678-9'
@@ -147,10 +147,16 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await page.reload({ waitUntil: 'load' }); await sleep(1800);
 
   // ---------- Inicio ----------
+  // Clima real (Open-Meteo): se espera a que el botón muestre la temperatura
+  await page.waitForFunction(() => /°/.test((document.getElementById('wxPill') || {}).textContent || ''), { timeout: 20000 }).catch(() => {});
   await shot('01-inicio', 1800);
+  await click('#wxPill', 900); await page.waitForSelector('.wx-day', { timeout: 20000 }).catch(() => {});
+  await shot('49-clima', 900); await esc();
   await scrollTo('.quick'); await shot('02-inicio-accesos', 900);
   await page.evaluate(() => { const g = document.querySelector('.group-tiles'); g.previousElementSibling.scrollIntoView({ block: 'start' }); scrollBy(0, -20); });
   await shot('26-grupo-inicio', 900);
+  await click('[data-act="gChore"]', 900); await click('[data-act="gChoreSpin"]', 300);
+  await page.waitForSelector('.chore-win', { timeout: 9000 }); await shot('48-ruleta-loza', 1300); await esc();
   await click('.g-tile[data-m="gear"]', 1200); await page.evaluate(() => scrollTo(0, 0)); await shot('27-grupo-cosas');
   await click('[data-act="gMode"][data-m="rooms"]', 1100); await page.evaluate(() => scrollTo(0, 0)); await shot('28-grupo-piezas');
   await page.evaluate(() => { const r = document.querySelectorAll('.room-card')[1]; if (r) r.scrollIntoView({ block: 'start' }); scrollBy(0, -20); }); await shot('29-grupo-piezas-plano', 700);
@@ -181,6 +187,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
   // ---------- Recetas ----------
   await tab('recipes'); await shot('06-recetas');
+  await click('[data-act="rcat"][data-c="big"]', 900); await shot('50-recetas-grupos', 700);
+  await click('[data-act="rcat"][data-c="all"]', 700); await page.evaluate(() => scrollTo(0, 0));
   await click('[data-act="cook"][data-id="pastas"]', 800);
   await click('[data-act="cookVar"][data-i="1"]', 400);
   await shot('07-receta-cocinar', 700); await esc();

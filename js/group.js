@@ -1,9 +1,9 @@
-/* Tu grupo: ¿Quién lleva qué? · Habitaciones y camas · Bitácora.
+/* Tu grupo: ¿Quién lleva qué? · Habitaciones y camas · Bitácora · Ruleta de tareas (¿quién lava la loza?).
    Módulo independiente: app.js le entrega sus herramientas (A) y recibe { render, homeCard, log, onRemote, ACT }. */
 window.GroupModule = function (A) {
   'use strict';
   const { S, esc, ic, CHECK, $, $$, buzz, toast, confetti, openSheet, refreshSheet, closeSheet, render, confirmTap, myName, bounce, norm, cap, go, placeSeg, fmtDay } = A;
-  const ui = { mode: 'gear', phase: 'ida', logK: 'all', logWho: 'all' };
+  const ui = { mode: 'gear', phase: 'ida', logK: 'all', logWho: 'all', chore: 'loza', choreOff: [], choreFair: true, choreWin: null };
   const uid = () => Store.uid();
   const G_ = () => { const s = S(); s.gear = s.gear || { items: {} }; s.gear.items = s.gear.items || {}; return s.gear; };
   const R_ = () => { const s = S(); s.rooms = s.rooms || { list: [], together: [] }; s.rooms.list = s.rooms.list || []; s.rooms.together = s.rooms.together || []; return s.rooms; };
@@ -22,7 +22,7 @@ window.GroupModule = function (A) {
   };
   /* Registra una acción. Con mk (clave de fusión) las acciones repetidas seguidas se juntan:
      "marcó 6 productos como comprados" en vez de seis líneas. text puede ser función (n) => texto. */
-  function log(k, text, mk) {
+  function log(k, text, mk, extra) {
     const l = L_(), who = myName(), now = Date.now();
     const txt = n => typeof text === 'function' ? text(n) : text;
     if (mk) {
@@ -30,7 +30,7 @@ window.GroupModule = function (A) {
       for (let i = l.length - 1; i >= 0; i--) if (l[i].who === who) { last = l[i]; break; }
       if (last && last.mk === mk && now - last.t < 5 * 60e3) { last.n = (last.n || 1) + 1; last.t = now; last.text = txt(last.n); save(); return; }
     }
-    l.push({ id: uid(), t: now, who, k, mk: mk || null, n: 1, text: txt(1) });
+    l.push(Object.assign({ id: uid(), t: now, who, k, mk: mk || null, n: 1, text: txt(1) }, extra || {}));
     if (l.length > 400) { l.sort((a, b) => a.t - b.t); l.splice(0, l.length - 400); }
     save();
   }
@@ -262,11 +262,11 @@ window.GroupModule = function (A) {
     });
     return left;
   }
-  function rouletteAnim(names, done) {
+  function rouletteAnim(names, done, label, winner) {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches || !names.length) { done(); return; }
     const ov = document.createElement('div');
     ov.className = 'roulette';
-    ov.innerHTML = `<div class="rl-card"><div class="rl-k">Sorteando camas…</div><div class="rl-name"></div><div class="rl-bar"><i></i></div></div>`;
+    ov.innerHTML = `<div class="rl-card"><div class="rl-k">${esc(label || 'Sorteando camas…')}</div><div class="rl-name"></div><div class="rl-bar"><i></i></div></div>`;
     document.body.appendChild(ov);
     const el = ov.querySelector('.rl-name'), t0 = Date.now();
     let i = 0, delay = 45;
@@ -275,13 +275,50 @@ window.GroupModule = function (A) {
       el.animate([{ transform: 'translateY(-40%)', opacity: 0.2 }, { transform: 'none', opacity: 1 }], { duration: Math.min(delay, 160) });
       buzz(4);
       if (Date.now() - t0 < 1800) { delay *= 1.11; setTimeout(step, delay); }
-      else setTimeout(() => { ov.classList.add('out'); setTimeout(() => ov.remove(), 320); done(); }, 280);
+      else if (winner) {
+        // Se detiene en quien salió elegido y lo deja a la vista un momento
+        setTimeout(() => {
+          el.textContent = winner; el.classList.add('win'); buzz([20, 40, 20]);
+          setTimeout(() => { ov.classList.add('out'); setTimeout(() => ov.remove(), 320); done(); }, 1200);
+        }, 200);
+      } else setTimeout(() => { ov.classList.add('out'); setTimeout(() => ov.remove(), 320); done(); }, 280);
     };
     step();
   }
   function example() {
     const mk = (name, types) => ({ id: uid(), name, beds: types.map(t => ({ id: uid(), type: t, who: [], lock: false })) });
     R_().list = [mk('Pieza principal', ['double']), mk('Pieza 2', ['single', 'single']), mk('Pieza 3', ['bunk_down', 'bunk_up']), mk('Living', ['sofa'])];
+  }
+
+
+  /* ======================= RULETA DE TAREAS ======================= */
+  const CHORES = [
+    { id: 'loza', n: 'Lavar la loza', q: 'lava la loza' }, { id: 'secar', n: 'Secar y guardar', q: 'seca y guarda la loza' },
+    { id: 'basura', n: 'Sacar la basura', q: 'saca la basura' }, { id: 'cocinar', n: 'Cocinar', q: 'cocina' }, { id: 'ordenar', n: 'Ordenar', q: 'ordena' }
+  ];
+  const choreOf = id => CHORES.find(c => c.id === id) || CHORES[0];
+  const draws = id => L_().filter(e => e.x && e.x.task === id).sort((a, b) => b.t - a.t);
+  const turns = id => { const c = {}; draws(id).forEach(e => { c[e.x.who] = (c[e.x.who] || 0) + 1; }); return c; };
+  const choreIn = () => people().filter(p => !ui.choreOff.includes(p));
+  function choreHTML() {
+    const ch = choreOf(ui.chore), ppl = people(), inn = choreIn(), cnt = turns(ch.id), last = draws(ch.id).slice(0, 5);
+    const win = ui.choreWin && ui.choreWin.task === ch.id ? ui.choreWin.who : null;
+    return `<div class="sheet-title"><span class="st-ico" style="background:var(--g-peach)">${ic('dish')}</span>
+        <div><h2>¿A quién le toca?</h2><p>La ruleta elige al azar entre los del grupo</p></div></div>
+      <div class="field"><span>¿Qué hay que hacer?</span><div class="chips wrap">${CHORES.map(c =>
+        `<button class="chip ${c.id === ch.id ? 'active' : ''}" style="--c:var(--orange)" data-act="gChoreTask" data-t="${c.id}">${esc(c.n)}</button>`).join('')}</div></div>
+      <div class="field"><span>¿Quiénes participan? (${inn.length} de ${ppl.length})</span><div class="chips wrap">${ppl.map(p =>
+        `<button class="chip ${ui.choreOff.includes(p) ? '' : 'active'}" style="--c:${colorOf(p)}" data-act="gChoreWho" data-p="${esc(p)}">${esc(p)}${cnt[p] ? ` · ${cnt[p]}` : ''}</button>`).join('')}</div></div>
+      <button class="variant-row ${ui.choreFair ? 'on' : ''}" style="--c:var(--teal);width:100%" data-act="gChoreFair">
+        <span class="check ${ui.choreFair ? 'on' : ''}">${CHECK}</span><span class="vn">Por turnos: nadie repite hasta que a todos les haya tocado</span></button>
+      ${win ? `<div class="chore-win" style="--c:${colorOf(win)}"><small>Le toca ${esc(ch.n.toLowerCase())} a</small><b>${esc(win)}</b></div>` : ''}
+      <button class="btn primary block shine" style="margin-top:12px" data-act="gChoreSpin">${ic('dish')} ${win ? 'Girar otra vez' : 'Girar la ruleta'}</button>
+      ${last.length ? `<div class="section-title" style="margin-top:16px"><h2 style="font-size:17px">Últimos sorteos</h2></div>
+        ${last.map(e => `<div class="list-row"><div class="rm"><div class="rn">${esc(e.x.who)}</div><div class="rv">${esc(dayLabel(isoOf(e.t)))} ${hhmm(e.t)} · sorteó ${esc(e.who)}</div></div></div>`).join('')}` : ''}`;
+  }
+  function choreTile() {
+    const today = isoOf(Date.now()), e = L_().filter(x => x.x && isoOf(x.t) === today).sort((a, b) => b.t - a.t)[0];
+    return `<button class="g-tile" data-act="gChore" style="--c:var(--rose)">${ic('dish')}<b>¿Quién lava la loza?</b><small>${e ? esc(`Hoy: ${e.x.who} (${choreOf(e.x.task).n.toLowerCase()})`) : 'Ruleta al azar'}</small></button>`;
   }
 
   /* ======================= PANTALLA "TU GRUPO" ======================= */
@@ -312,6 +349,7 @@ window.GroupModule = function (A) {
         <button class="g-tile" data-act="gOpen" data-m="gear" style="--c:var(--orange)">${ic('box')}<b>¿Quién lleva qué?</b><small>${items.length ? (noOwner ? `${noOwner} sin dueño` : `${items.length} cosas repartidas`) : 'Lo que lleva cada uno'}</small></button>
         <button class="g-tile" data-act="gOpen" data-m="rooms" style="--c:var(--violet)">${bedSvg('double')}<b>Habitaciones</b><small>${R_().list.length ? `${withBed}/${ppl.length} con cama` : 'Piezas, camas y sorteo'}</small></button>
         <button class="g-tile" data-act="gOpen" data-m="log" style="--c:var(--cyan)">${ic('list')}<b>Bitácora</b><small>${last ? esc(short(`${last.who} ${last.text}`)) : 'Lo que hace cada uno'}</small></button>
+        ${choreTile()}
       </div>`;
   }
   function switchMode(m) {
@@ -425,6 +463,29 @@ window.GroupModule = function (A) {
       R.together.push({ a, b }); save(); buzz(8); refreshSheet(); render(false);
     },
     gPairDel: el => { R_().together.splice(+el.dataset.i, 1); save(); refreshSheet(); render(false); },
+    // Ruleta de tareas
+    gChore: () => { ui.choreWin = null; buzz(8); openSheet(choreHTML); },
+    gChoreTask: el => { ui.chore = el.dataset.t; ui.choreWin = null; buzz(6); refreshSheet(); },
+    gChoreWho: el => {
+      const p = el.dataset.p;
+      ui.choreOff = ui.choreOff.includes(p) ? ui.choreOff.filter(x => x !== p) : ui.choreOff.concat(p);
+      buzz(6); refreshSheet();
+    },
+    gChoreFair: () => { ui.choreFair = !ui.choreFair; buzz(6); refreshSheet(); },
+    gChoreSpin: () => {
+      const inn = choreIn(), ch = choreOf(ui.chore);
+      if (inn.length < 2) { toast(people().length < 2 ? 'Primero agrega a los participantes en el engranaje del viaje' : 'Elige al menos dos personas'); return; }
+      // Por turnos: solo entran quienes llevan menos veces esta tarea
+      const cnt = turns(ch.id), min = Math.min(...inn.map(p => cnt[p] || 0));
+      const pool = ui.choreFair ? inn.filter(p => (cnt[p] || 0) === min) : inn;
+      const win = pool[Math.floor(Math.random() * pool.length)];
+      rouletteAnim(shuffle(inn), () => {
+        ui.choreWin = { task: ch.id, who: win };
+        log('group', `sorteó quién ${ch.q}: le toca a ${win}`, null, { x: { task: ch.id, who: win } });
+        refreshSheet(); render(false);
+        confetti(innerWidth / 2, innerHeight / 3, 70, 1); toast(`Le toca a ${win}`);
+      }, `¿Quién ${ch.q}?`, win);
+    },
     gRaffle: () => {
       if (!allBeds().length) { toast('Primero agrega camas a las piezas'); return; }
       rouletteAnim(shuffle(people()), () => {

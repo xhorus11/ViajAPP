@@ -46,6 +46,14 @@
     cloud: '<path d="M17.5 19H9a7 7 0 1 1 6.7-9h1.8a4.5 4.5 0 1 1 0 9z"/>',
     alert: '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
     box: '<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    csun: '<path d="M12 2v2M4.9 4.9l1.4 1.4M20 12h2M19.1 4.9l-1.4 1.4"/><path d="M15.9 13A4 4 0 0 0 8.1 11"/><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6z"/>',
+    rain: '<path d="M16 13H7.5a5.5 5.5 0 1 1 5.3-7h1.7a3.5 3.5 0 0 1 1.5 6.7"/><path d="M8 17l-1 3M12 17l-1 3M16 17l-1 3"/>',
+    snow: '<path d="M12 2v20M4.2 7l15.6 10M4.2 17 19.8 7"/><path d="m9 4 3 2 3-2M9 20l3-2 3 2"/>',
+    storm: '<path d="M17 15.5A4.5 4.5 0 0 0 16.5 7h-1.6A6.5 6.5 0 1 0 6 16"/><path d="m13 11-3 5h4l-3 5"/>',
+    fog: '<path d="M4 10h16M4 14h16M7 18h10M8 6h8"/>',
+    moon: '<path d="M20 14.5A8 8 0 1 1 9.5 4 6.5 6.5 0 0 0 20 14.5z"/>',
+    dish: '<circle cx="12.5" cy="12" r="6.5"/><circle cx="12.5" cy="12" r="3"/><path d="M2.5 3v5a1.5 1.5 0 0 0 3 0V3M4 9.5V21M4 3v4"/><path d="M21.5 3c-1.4 1-2 3-2 6.5h2V21"/>',
     leaf: '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.9-5.4 5.2-6"/>',
     back: '<path d="M15 18l-6-6 6-6"/>',
     sun: '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/>',
@@ -245,7 +253,7 @@
       ['pot', 'En <b>Despensa</b> queda lo que ya tienen en la cabaña.']] },
     recipes: { t: 'Recetas', m: 'recetas', s: [
       ['search', 'Busca un plato o elige una categoría.'],
-      ['users', 'Toca la receta y elige <b>para cuántas personas</b>.'],
+      ['users', 'Toca la receta y elige <b>para cuántas personas</b> (los niños o visitas que no están en la lista se suman como <b>extra</b>).'],
       ['cart', 'Toca <b>Agregar a la lista</b> y los ingredientes pasan al súper.']] },
     money: { t: 'Dinero', m: 'dinero', s: [
       ['plus', 'Toca el botón <b>+</b> para anotar un gasto: cuánto, en qué y quién pagó.'],
@@ -258,6 +266,7 @@
     group: { t: 'Tu grupo', m: 'grupo', s: [
       ['list', '<b>Cosas</b>: anoten quién lleva el parlante, la parrilla, el cargador…'],
       ['users', '<b>Piezas</b>: repartan las camas a mano o con un sorteo.'],
+      ['dish', '<b>¿Quién lava la loza?</b>: una ruleta elige a quién le toca.'],
       ['book', '<b>Bitácora</b>: aquí se ve lo que hizo cada uno.']] }
   };
   const LS = { get: (k, d) => { try { return localStorage.getItem(k) || d; } catch (e) { return d; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* bloqueado */ } } };
@@ -384,8 +393,9 @@
           ${TR.homeButton()}
           <div class="eyebrow" style="color:#fff;opacity:.9">Tu viaje</div>
           <div class="trip-name">${esc(t.name)}</div>
-          <div class="trip-meta"><span class="nw">${ic('calendar')} ${U.dmy(t.start)} →</span> <span class="nw">${U.dmy(t.end)}</span>${t.people.length ? ` <span class="nw">· ${ic('users')} ${t.people.length}</span>` : ''}</div>
+          <div class="trip-meta"><span class="nw">${ic('calendar')} ${U.dmy(t.start)} →</span> <span class="nw">${U.dmy(t.end)}</span>${t.people.length ? ` <span class="nw">· ${ic('users')} ${t.people.length}${+t.guests ? ' +' + t.guests : ''}</span>` : ''}</div>
           <div class="countdown">${tripStatus()}</div>
+          ${WX.pill()}
           ${Sync.active ? `<button class="sync-pill" data-act="sync">${syncDot()} Compartido · ${Sync.members.length} ${Sync.members.length === 1 ? 'persona' : 'personas'}</button>` : ''}
         </section>
         ${guide}
@@ -857,6 +867,11 @@
         <label class="field"><span>Término</span><input type="date" id="tpEnd" value="${esc(t.end)}"></label>
       </div>
       <label class="field"><span>Participantes (separados por coma)</span><input id="tpPeople" value="${esc(t.people.join(', '))}" placeholder="Ej: Ana, Pedro, Cami"></label>
+      <div class="field-row">
+        <label class="field"><span>Destino</span><input id="tpPlace" value="${esc(t.place || '')}" placeholder="Ej: Pucón" autocomplete="off"></label>
+        <label class="field" style="flex:0 0 118px"><span>Personas extra</span><input id="tpGuests" type="number" min="0" max="99" inputmode="numeric" value="${+t.guests || ''}" placeholder="0"></label>
+      </div>
+      <p class="hint" style="margin-top:-6px">El destino sirve para ver el clima. <b>Personas extra</b>: niños o visitas que comen pero no están en la lista; se suman al calcular las recetas.</p>
       <button class="btn block diet-btn" data-act="diets">${ic('leaf')} Dietas y alergias${dietPeople().length ? ` · ${dietPeople().length} con restricciones` : ''}</button>
       <div class="section-title" style="margin-top:8px"><h2 style="font-size:18px">Fondos y rendición</h2></div>
       <div class="field-row">
@@ -922,7 +937,8 @@
     Object.assign(t, {
       name: $('#tpName').value.trim() || 'Mi viaje', emoji: (draft && draft.emoji) || t.emoji, start: s, end: e,
       people: people.length ? [...new Set(people)] : ['Yo'], budget: parseAmount($('#tpBudget').value),
-      currency: $('#tpCur').value, entity: $('#tpEntity').value.trim()
+      currency: $('#tpCur').value, entity: $('#tpEntity').value.trim(),
+      place: $('#tpPlace').value.trim(), guests: Math.max(0, Math.min(99, parseInt($('#tpGuests').value, 10) || 0))
     });
     const rs = $$('.resp-row').map(r => ({ name: r.querySelector('.rp-name').value.trim(), rut: r.querySelector('.rp-rut').value.trim() })).filter(r => r.name);
     // `responsible`/`rut` se mantienen resumidos para versiones anteriores de la app
@@ -1097,17 +1113,18 @@
      mode: 'portion' (porción aparte para quien lo necesita) | 'all' (todo el plato apto) | 'none' (sin adaptar) */
   function cookPlan(r, vi, p, mode) {
     const people = dietPeople(), rows = [], issues = [], adapts = [];
-    const push = (g, tot, extra) => rows.push(Object.assign({ c: g.c, i: g.i, v: g.v, u: g.u, fixed: !g.q, tot }, extra || {}));
+    // x: unidades de lo que no tiene cantidad (sal, aceite, especias): 1 por cada 10 personas
+    const push = (g, tot, n, extra) => rows.push(Object.assign({ c: g.c, i: g.i, v: g.v, u: g.u, fixed: !g.q, tot, x: g.q ? 0 : Math.max(1, Math.ceil(n / 10)) }, extra || {}));
     recipeIngs(r, vi).forEach(g => {
       const tot = g.q ? g.q * p : 0;
       const who = whoCant(g.c, g.i, g.v, people);
-      if (!who.length || mode === 'none') { push(g, tot); if (who.length) issues.push({ g, who }); return; }
+      if (!who.length || mode === 'none') { push(g, tot, p); if (who.length) issues.push({ g, who }); return; }
       const avoid = new Set((mode === 'all' ? people : who.map(x => x.p)).flatMap(pp => [...pp.avoid]));
       const sub = Diet.substitute(g, avoid);
-      if (!sub) { push(g, tot); issues.push({ g, who }); return; }
+      if (!sub) { push(g, tot, p); issues.push({ g, who }); return; }
       const k = mode === 'all' ? p : Math.min(p, who.length);
-      if (p - k > 0) push(g, g.q ? g.q * (p - k) : 0);
-      push(Object.assign({}, g, sub), g.q ? g.q * k : 0, { adapted: true, forWho: mode === 'all' ? null : who.map(x => x.p.name) });
+      if (p - k > 0) push(g, g.q ? g.q * (p - k) : 0, p - k);
+      push(Object.assign({}, g, sub), g.q ? g.q * k : 0, k, { adapted: true, forWho: mode === 'all' ? null : who.map(x => x.p.name) });
       adapts.push({ g, sub, who });
     });
     rows.forEach(row => {
@@ -1145,6 +1162,7 @@
       let e = sel[k];
       // Si ya se había comprado, esa compra quedó en la despensa: se empieza una fila nueva
       if (!e || e.done) e = sel[k] = { c, i: row.i, v: row.v, q: 1, done: false };
+      if (row.fixed && row.x > 1) e.q = Math.max(e.q || 1, row.x);
       if (amt) { if (e.u === row.u) e.n = (e.n || 0) + amt; else if (!e.u) { e.n = amt; e.u = row.u; } }
       e.src = [...new Set((e.src || []).concat(row.forWho ? `${label} · para ${row.forWho.join(', ')}` : label))];
       n++;
@@ -1153,15 +1171,26 @@
     return n;
   }
 
+  /* Variante apta para una dieta (vegetariana/vegana): índice de variante, -1 si no tiene variantes, undefined si ninguna */
+  const AVOID = id => new Set((Diet.DIETS.find(d => d.id === id) || { avoid: [] }).avoid);
+  const REC_DIET = { veg: [AVOID('vegetariano'), 'Vegetariana'], vegan: [AVOID('vegano'), 'Vegana'] };
+  function fitVar(r, avoid) {
+    if (r.c === 'tragos') return undefined;
+    const vis = r.vars.length ? r.vars.map((_, i) => i) : [-1];
+    return vis.find(vi => recipeIngs(r, vi).every(g => ![...Diet.attrs(g.c, g.i, g.v)].some(a => avoid.has(a))));
+  }
   function recCards(list) {
+    const dt = REC_DIET[ui.recCat];
     return list.map(r => {
       const cat = rcatOf(r.c), st = recipeStatus(r);
       const badge = !st ? '' : st.s === 'ok' ? `<span class="db ok">${ic('check')} Apta para todos</span>`
         : st.s === 'adapt' ? `<span class="db adapt">${ic('leaf')} Se adapta</span>`
         : `<span class="db no">${ic('alert')} No apta: ${esc(st.who.join(', '))}</span>`;
-      return `<button class="item-card" style="--c:${cat.color}" data-act="cook" data-id="${esc(r.id)}">
+      const fv = dt ? fitVar(r, dt[0]) : undefined;
+      const sub = fv >= 0 ? `${dt[1]}: ${r.vars[fv].n}` : r.vars.length ? r.vars.length + ' variantes' : recipeIngs(r, -1).length + ' ingredientes';
+      return `<button class="item-card" style="--c:${cat.color}" data-act="cook" data-id="${esc(r.id)}"${fv >= 0 ? ` data-vi="${fv}"` : ''}>
         <span class="ie">${r.e}</span>
-        <span><span class="in">${esc(r.n)}</span><br><span class="iv">${r.vars.length ? r.vars.length + ' variantes' : recipeIngs(r, -1).length + ' ingredientes'}</span>${badge}</span>
+        <span><span class="in">${esc(r.n)}</span><br><span class="iv">${esc(sub)}</span>${badge}</span>
         ${R_().custom[r.id] ? `<b class="ib">${ic('star')}</b>` : ''}
       </button>`;
     }).join('');
@@ -1171,6 +1200,8 @@
     let list = allRecipes();
     if (ui.recCat === 'mine') list = list.filter(r => R_().custom[r.id]);
     else if (ui.recCat === 'apt') list = list.filter(r => { const st = recipeStatus(r); return st && st.s !== 'no'; });
+    else if (ui.recCat === 'big') list = list.filter(r => r.big);
+    else if (REC_DIET[ui.recCat]) list = list.filter(r => fitVar(r, REC_DIET[ui.recCat][0]) !== undefined);
     else if (ui.recCat !== 'all' && !q) list = list.filter(r => r.c === ui.recCat);   // al buscar se recorre todo el recetario
     if (q) list = list.filter(r => norm(r.n).includes(q) || r.vars.some(v => norm(v.n).includes(q)) || r.base.concat(...r.vars.map(v => v.ing)).some(g => norm(g.i).includes(q)));
     if (!list.length) {
@@ -1194,6 +1225,9 @@
     return `<div class="chips" id="recChips">
       <button class="chip ${ui.recCat === 'all' ? 'active' : ''}" data-act="rcat" data-c="all" style="--c:var(--pink)">Todas</button>
       ${dietPeople().length ? `<button class="chip ${ui.recCat === 'apt' ? 'active' : ''}" data-act="rcat" data-c="apt" style="--c:var(--teal)">${ic('leaf')} Aptas para el grupo</button>` : ''}
+      <button class="chip ${ui.recCat === 'big' ? 'active' : ''}" data-act="rcat" data-c="big" style="--c:var(--orange)">${ic('users')} Para grupos grandes</button>
+      <button class="chip ${ui.recCat === 'veg' ? 'active' : ''}" data-act="rcat" data-c="veg" style="--c:var(--lime)">${ic('leaf')} Vegetarianas</button>
+      <button class="chip ${ui.recCat === 'vegan' ? 'active' : ''}" data-act="rcat" data-c="vegan" style="--c:var(--teal)">${ic('leaf')} Veganas</button>
       <button class="chip ${ui.recCat === 'mine' ? 'active' : ''}" data-act="rcat" data-c="mine" style="--c:var(--yellow)">${ic('star')} Mías${mine ? ' · ' + mine : ''}</button>
       ${RECIPE_CATS.map(c => `<button class="chip ${ui.recCat === c.id ? 'active' : ''}" data-act="rcat" data-c="${c.id}" style="--c:${c.color}">${c.emoji} ${esc(c.name)}</button>`).join('')}
     </div>`;
@@ -1210,11 +1244,16 @@
     </div><button class="fab" data-act="newRecipe" aria-label="Nueva receta">${ic('plus')}</button>`;
   }
 
+  /* Personas que comen: las de la lista + las extra (niños o visitas que no están en la lista) */
+  function groupSize() {
+    const t = S().trip, n = t.people.length === 1 && t.people[0] === 'Yo' ? 1 : t.people.length, g = Math.max(0, +t.guests || 0);
+    return { n, g, all: n + g };
+  }
   /* Hoja "cocinar": variante, personas, ingredientes escalados */
   function openCook(id, vi, p) {
     if (!getRecipe(id)) return;
-    const n = S().trip.people.length;
-    draft = { _kind: 'cook', id, vi: vi || 0, p: p || (n > 1 ? n : 4), skip: {}, mode: 'portion' };
+    const gs = groupSize();
+    draft = { _kind: 'cook', id, vi: vi || 0, p: p || (gs.all > 1 ? gs.all : 4), skip: {}, mode: 'portion' };
     openSheet(cookHTML, releaseDraft(draft));
   }
   const prodName = (i, v) => esc(i) + (v ? ' ' + esc(v.toLowerCase()) : '');
@@ -1243,6 +1282,16 @@
         `<button class="chip ${d.mode === m ? 'active' : ''}" style="--c:var(--teal)" data-act="cookMode" data-m="${m}">${l}</button>`).join('')}</div>
     </div>`;
   }
+  /* Grupo en la hoja cocinar: personas de la lista + extra (se guardan en el viaje) */
+  function cookGroupHTML(d) {
+    const gs = groupSize();
+    return `<div class="cook-group">
+      <span>Grupo: <b>${gs.n}</b> en la lista + </span>
+      <span class="mini-step"><button data-act="cookGuest" data-d="-1" aria-label="Una persona extra menos">−</button><b>${gs.g}</b><button data-act="cookGuest" data-d="1" aria-label="Una persona extra más">+</button></span>
+      <span>extra <small>(niños, visitas)</small></span>
+      ${d.p !== gs.all ? `<button class="link" data-act="cookAll">Usar ${gs.all}</button>` : ''}
+    </div>${d.p > 10 ? `<p class="hint" style="margin:6px 0 0">Para ${d.p} personas, lo que se compra una vez (sal, aceite, especias) se calcula 1 por cada 10.</p>` : ''}`;
+  }
   function cookHTML() {
     const d = draft, r = getRecipe(d.id), cat = rcatOf(r.c), sel = S().shop.sel;
     const people = dietPeople();
@@ -1251,16 +1300,17 @@
     const on = plan.rows.filter(row => !isOff(row)).length;
     const vClass = vi => people.length ? 'dv-' + planStatus(cookPlan(r, vi, d.p, 'portion')) : '';
     return `<div class="sheet-title"><span class="st-ico" style="--c:${cat.color}">${r.e}</span>
-        <div><h2>${esc(r.n)}</h2><p>${esc(cat.name)}${R_().custom[r.id] ? ' · personalizada' : ''}</p></div></div>
+        <div><h2>${esc(r.n)}</h2><p>${esc(cat.name)}${R_().custom[r.id] ? ' · personalizada' : ''}${r.big ? ' · rinde para grupos grandes' : ''}</p></div></div>
       ${r.vars.length ? `<div class="field"><span>Variante</span><div class="chips wrap">${r.vars.map((v, i) =>
         `<button class="chip ${vClass(i)} ${i === d.vi ? 'active' : ''}" style="--c:${cat.color}" data-act="cookVar" data-i="${i}">${esc(v.n)}</button>`).join('')}</div></div>` : ''}
       <div class="field"><span>¿Para cuántas personas?</span>
-        <div class="stepper" style="padding:6px"><button data-act="cookP" data-d="-1">−</button><b style="min-width:44px;font-size:22px">${d.p}</b><button data-act="cookP" data-d="1">+</button></div></div>
+        <div class="stepper" style="padding:6px"><button data-act="cookP" data-d="-1">−</button><b style="min-width:44px;font-size:22px">${d.p}</b><button data-act="cookP" data-d="1">+</button></div>
+        ${cookGroupHTML(d)}</div>
       ${dietBoxHTML(r, d)}
       <div class="field"><span>Ingredientes (${on}/${plan.rows.length}) · desmarca lo que ya tienes</span>
         ${plan.rows.map(row => {
           const off = isOff(row), partial = row.need != null && !row.covered;
-          const amt = row.fixed ? 'x1' : U.amt(partial ? row.need : row.tot, row.u);
+          const amt = row.fixed ? 'x' + (row.x || 1) : U.amt(partial ? row.need : row.tot, row.u);
           const pantry = row.have ? ` <small class="inpantry">${row.covered ? 'en despensa' : 'despensa: ' + esc(pantryText(row.have))}</small>` : '';
           return `<div class="variant-row ${off ? '' : 'on'}" style="--c:${cat.color}" data-act="cookSkip" data-k="${esc(row.k)}">
             <span class="check ${off ? '' : 'on'}">${CHECK}</span>
@@ -1294,7 +1344,7 @@
     buildIngIndex();
     const c0 = RECIPE_CATS.some(c => c.id === ui.recCat) ? ui.recCat : 'pastas';
     draft = {
-      _kind: 'recipe', id: r ? r.id : null, n: r ? r.n : '', e: r ? r.e : '🍽️', c: r ? r.c : c0,
+      _kind: 'recipe', id: r ? r.id : null, n: r ? r.n : '', e: r ? r.e : '🍽️', c: r ? r.c : c0, big: !!(r && r.big),
       base: r ? r.base.map(toRow) : [blankRow()],
       vars: r ? r.vars.map(v => ({ n: v.n, ing: v.ing.map(toRow) })) : []
     };
@@ -1318,6 +1368,8 @@
         <label class="field"><span>Nombre</span><input id="rcName" value="${esc(d.n)}" placeholder="Ej: Pastas de la abuela" autocomplete="off"></label>
       </div>
       <label class="field"><span>Categoría</span><select id="rcCat">${RECIPE_CATS.map(c => `<option value="${c.id}" ${d.c === c.id ? 'selected' : ''}>${c.emoji} ${esc(c.name)}</option>`).join('')}</select></label>
+      <button class="variant-row ${d.big ? 'on' : ''}" style="--c:var(--orange);width:100%;margin-bottom:10px" data-act="rcBig">
+        <span class="check ${d.big ? 'on' : ''}">${CHECK}</span><span class="vn">Rinde para grupos grandes (aparece en ese filtro)</span></button>
       <p class="hint">Cantidades <b>por persona</b>. Usa “fijo” para lo que se compra una sola vez (sal, aceite, especias). Elige del catálogo o escribe un producto nuevo.</p>
       <div class="section-title" style="margin-top:6px"><h2 style="font-size:17px">Ingredientes base</h2></div>
       ${ingRowsHTML('b', d.base)}
@@ -1466,6 +1518,9 @@
     S, esc, ic, toast, money, buzz, confetti, refreshSheet, openSheet, closeSheet, $, $$, getDraft: () => draft, setDraft: v => { draft = v; },
     photoCache, FUND, log, render: a => render(a), BOL
   });
+
+  /* Clima del destino (js/clima.js) */
+  const WX = WeatherModule({ S, esc, ic, openSheet, refreshSheet, toast, log });
 
   /* Mis viajes y cuenta (js/trips.js): varios viajes, plantillas y cuenta con correo o Google */
   const TR = TripsModule({
@@ -1898,8 +1953,15 @@
       const top = box.getBoundingClientRect().top + scrollY - 80;
       if (scrollY > top) scrollTo({ top, behavior: 'smooth' });
     },
-    cook: el => { buzz(8); openCook(el.dataset.id); },
+    cook: el => { buzz(8); openCook(el.dataset.id, el.dataset.vi ? +el.dataset.vi : 0); },
     cookVar: el => { draft.vi = +el.dataset.i; draft.skip = {}; buzz(6); refreshSheet(); },
+    cookAll: () => { draft.p = Math.max(1, groupSize().all); buzz(6); refreshSheet(); },
+    cookGuest: el => {
+      const t = S().trip, before = groupSize().all;
+      t.guests = Math.max(0, Math.min(99, (+t.guests || 0) + (+el.dataset.d)));
+      if (draft.p === before) draft.p = Math.max(1, groupSize().all);   // si estaba en "todo el grupo", sigue al grupo
+      Store.save(); buzz(6); refreshSheet();
+    },
     cookP: el => { draft.p = Math.max(1, Math.min(99, draft.p + (+el.dataset.d))); buzz(6); refreshSheet(); },
     cookSkip: el => { draft.skip[el.dataset.k] = el.classList.contains('on'); buzz(6); refreshSheet(); },
     cookMode: el => { draft.mode = el.dataset.m; draft.skip = {}; buzz(6); refreshSheet(); },
@@ -1920,6 +1982,7 @@
     },
     newRecipe: () => openRecipeEditor(null),
     editRecipe: el => openRecipeEditor(el.dataset.id),
+    rcBig: () => { readEditor(); draft.big = !draft.big; buzz(6); refreshSheet(); },
     rcAddRow: el => {
       readEditor(); rowsOf(el.dataset.s).push(blankRow()); refreshSheet();
       const rows = $$(`.ing-row[data-s="${el.dataset.s}"] .ing-t`); if (rows.length) rows[rows.length - 1].focus();
@@ -1938,7 +2001,7 @@
       const vars = d.vars.filter(v => v.n.trim()).map(v => ({ n: v.n.trim(), ing: v.ing.map(rowToIng).filter(Boolean) }));
       if (!base.length && !vars.some(v => v.ing.length)) { toast('Agrega al menos un ingrediente'); return; }
       const id = d.id || 'u_' + Store.uid();
-      R_().custom[id] = { id, n: cap(name), e: d.e.trim() || '🍽️', c: d.c, base, vars };
+      R_().custom[id] = { id, n: cap(name), e: d.e.trim() || '🍽️', c: d.c, big: !!d.big, base, vars };
       log('recipes', d.id ? `editó la receta “${cap(name)}”` : `creó la receta “${cap(name)}”`);
       delete R_().hidden[id];
       Store.save(); closeSheet(); render(false);
@@ -2033,6 +2096,7 @@
   Object.assign(ACT, BOL.ACT);
   Object.assign(ACT, SEP.ACT);
   Object.assign(ACT, TR.ACT);
+  Object.assign(ACT, WX.ACT);
 
   /* ================= Eventos globales ================= */
   document.addEventListener('click', e => {
