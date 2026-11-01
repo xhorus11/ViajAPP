@@ -36,13 +36,14 @@ Pantalla **Tu grupo** (`#group`, sin pestaña propia: se abre desde la tarjeta d
 | `firestore.rules` | Reglas de seguridad (probadas en emulador: el intruso no puede nada) |
 | `tests/` | Scripts E2E/validación + `firebase.json` del emulador (ver `tests/LEEME.md`) |
 | `js/store.js` | `Store`: `state`, `save()` (debounce), `photos.put/get/del/clear`, `compress`, `backup/restore` (JSON con fotos), `reset`, `uid`, `today` |
-| `js/export.js` | `U` (money, dmy, longDate, esc, plain, slug, parseDate) y `Exporter` (groupedList, listPNG, listPDF, financePDF, financeCSV, agendaPDF, deliver) |
+| `js/export.js` | `U` (money, dmy, longDate, esc, plain, slug, parseDate) y `Exporter` (groupedList, listPNG, listPDF, financePDF, financeCSV, agendaPDF, deliver). Marca de los documentos: `brandOf()` lee `trip.brand` (viajapp / custom con `logo` dataURL / none) → logo de la cabecera (`loadLogo`, caja 42×28 mm), pie "viaje · Viajapp" o "viaje · entidad", PNG con/sin "Hecho con Viajapp" |
 | `js/app.js` | Interfaz completa (ver patrones abajo) |
 | `sw.js`, `manifest.webmanifest`, `icons/` | PWA |
 
 ## Modelo de datos (`Store.state`)
 ```js
 trip: { name, emoji, entity, responsibles: [{ name, rut }], responsible, rut, start, end, budget, currency, people: [],
+        brand?: { mode: 'viajapp'|'custom'|'none', logo?: dataURL },   // logo de la carta financiera y documentos (sincroniza con el viaje)
         diets: { "Nombre": { tags: ["celiaco", ...], note } } }      // dietas por participante (se sincroniza con el doc del viaje)
 pantry: { items: { "cat|item|variante": { c, i, v, a: { unidad: cantidad }, t } } }   // despensa; varias unidades por producto (ej. {g:440, un:1})
 // responsibles = lista real; responsible/rut quedan como resumen para versiones antiguas. Leer siempre con U.resps(trip) (migra el formato viejo).
@@ -89,7 +90,6 @@ log:      [{ id, t, who, k: money|shop|agenda|group|trip|recipes, mk, n, text }]
 - Node LTS instalado vía winget (si no está en PATH, recargar `$env:Path`).
 
 ## Estado / pendientes conocidos
-- No publicado aún (se sugirió Netlify Drop). El enlace de invitación solo sirve con la app publicada en HTTPS.
 - **Firebase del usuario**: Auth anónima ✅, Firestore ✅ creado con reglas publicadas. `tests/test-sync.js` contra el real: 21/21 OK (limpia sus datos al final).
 - **PUBLICADA en https://viajapp-trip.web.app** (Firebase Hosting multisitio; CLI logueado como mgajardod@utem.cl). `viajapp.web.app` estaba reservado por otro proyecto. En `firebase.json` hay 2 targets (`.firebaserc`): `app` → sitio `viajapp-trip` (la app) y `legacy` → sitio `viajapp-e589e` (carpeta `legacy/`: redirección 301 a viajapp-trip conservando ruta y `?viaje=`; la raíz `/` sirve `legacy/index.html` con meta-refresh). Para republicar: en PowerShell `Remove-Item env:VSCODE_CWD; firebase deploy --only hosting --project viajapp-e589e --non-interactive` (publica ambos). Para comprobar si un nombre de sitio está libre sin crearlo: API `sites?siteId=X&validateOnly=true` con el access token de `~/.config/configstore/firebase-tools.json`. **Subir `CACHE` en `sw.js` en cada cambio** para que los celulares tomen la versión nueva. `firebase deploy` sin `--only` también publicaría `firestore.rules`. Archivos internos (CONTEXTO, tests, logo original, reglas) excluidos en `firebase.json` (verificado: 404).
 - `tests/test-sync.js` contra el sitio publicado: 21/21 OK (tras offline→online Firestore tarda en reconectar por backoff; el test espera hasta 30 s).
@@ -112,6 +112,7 @@ Hechas: Recetas → lista del súper, Cuentas claras, Sincronización en grupo (
 **Pendientes propuestas sesión 6**: 2) Planificador automático de menú (días, personas, presupuesto, preferencias → llena agenda + lista consolidada, sin IA, usa dietas) · 3) Repartirse el súper (asignar secciones/productos por persona, filtro "Lo mío", avance en vivo, reparto automático) · 4) "La vaca": ingresos/aportes por persona y varias fuentes de fondos con saldo propio; carta financiera por fuente · 5) Despensa de la cabaña (comprado → despensa, cocinar descuenta, avisa lo que ya hay, sobrantes al final).
 **Hechas sesión 7**: ¿Quién lleva qué?, Habitaciones y camas, Bitácora del grupo.
 **Pendientes propuestas sesión 7**: Informe final del viaje para la entidad (PDF con actividades de la agenda, participantes, fotos, resumen de gastos, conclusiones) · Mis viajes + plantillas (varios viajes, archivar, duplicar como plantilla) · ¿Quién lleva qué? (cosas compartidas por dueño y devolución) · Habitaciones y camas (asignar/sortear con ruleta, preferencias) · Calculadora de bencina y peajes por auto → gasto dividido por pasajeros · Bitácora del grupo (registro de quién hizo qué).
+**Propuestas comerciales sesión 19** (pendiente que el usuario elija): cuentas con correo/Google (vincular la sesión anónima) + Mis viajes y plantillas · Panel para instituciones (ver y aprobar rendiciones de todos sus viajes, observaciones, logo fijo) · Verificar boletas con el timbre electrónico SII (código PDF417: RUT emisor, folio, fecha, monto) · Firma con el dedo y reglas de gastos rendibles por institución · Informe final del viaje · Plan gratis/Pro (lectura IA ilimitada, logo propio, informes) · Dominio propio + página de presentación + términos y privacidad (Ley 21.719) · Gemini de pago (en el plan gratis Google puede usar los datos) y Firebase Blaze al crecer.
 Otras: modo "en el súper", precios → gasto automático, OCR de boletas, multimoneda, presupuesto diario/por categoría, firma con el dedo en el PDF, turnos de cocina/aseo, recordatorios, clima, mapa, maleta/checklist, documentos y emergencias, votaciones, diario/álbum, "Resumen del viaje" estilo Wrapped, asistente IA para menús, gastos compartidos solo entre algunos participantes.
 
 ## Historial
@@ -240,6 +241,14 @@ Otras: modo "en el súper", precios → gasto automático, OCR de boletas, multi
 - **Firestore limpio**: borrados 6 viajes de prueba sin miembros (por REST con el token del CLI, script en el scratchpad `fs-list.js`). Quedan solo "Temuco" (real, 2 miembros) y "Mi viaje" de "prueba" (1 miembro, 12-10).
 - Pruebas: test2, help, resp, among OK; exportaciones revisadas a ojo. Manual: capturas y PDF regenerados. SW → `viajapp-v19`. Publicado.
 - Luego: **logo oficial definitivo** aplicado (íconos, insignia, PNG/PDF) y **perrito guiñando el ojo** en la tarjeta azul del viaje en vez de repetir el logo (ver Logo arriba); fechas del viaje sin cortarse a mitad (`.nw`). test2/help/join-trip OK (el huérfano de join-trip se borró). SW → `viajapp-v20`. Publicado. Después, a pedido, el perrito quedó sin movimiento (SW → `viajapp-v21`).
+
+### Sesión 19 · 2026-10-31 — Dinero del viaje, boletas electrónicas, logo propio y propuestas comerciales
+- "Plata del viaje" → **Dinero del viaje** y "¿En qué se gasta el dinero?" (más formal); el manual ya no dice "plata".
+- **Boletas electrónicas (PDF o captura)**: `Store.compress` acepta PDF → `pdfToJpeg` con pdf.js 3.11.174 (`vendor/pdfjs/`, carga bajo demanda, en el SHELL del SW): hasta 4 páginas una bajo otra, ~1100 px de ancho, tope 3200 px de alto. Así sirve en todos lados sin tocar el resto: comprobante del gasto, lectura IA (llega como image/jpeg al Worker), Cuentas separadas y anexo de la carta. Botones nuevos "Boleta electrónica (PDF o captura)" (sin `capture`, para elegir archivo) en el gasto y en Cuentas separadas; "Agregar foto" → "Foto o PDF".
+- **Logo de los documentos** (⚙️ Viaje → Fondos y rendición): Viajapp / Mi logo (subir imagen, `brandLogoData` máx. 600 px, PNG si pesa poco) / Sin logo → carta financiera, PDF de lista y agenda, PNG de la lista y **planilla Word** (imagen incrustada con relación `rIdLogo`; Excel sin logo porque SheetJS gratis no inserta imágenes). Validado abriendo el Word con Word real.
+- Pruebas: `tests/test-marca-pdf.js` 17/17 (local y publicada, Worker real; fixtures en `tests/fixtures/`). Regresión OK (test2, help, among, cuentas, boletas-app, resp, group, diet-pantry, recipes-view). **Edge quedó a mitad de una actualización y no arranca automatizado**: todas las pruebas aceptan `VIAJAPP_BROWSER` (se usó Chrome 156).
+- Manual: "Boletas electrónicas", "Tu logo en la rendición" (captura 45), 2 FAQ; PDF 31 págs. SW → `viajapp-v22`. Publicado.
+- Entregada revisión + propuestas para comercializar (ver Backlog "Propuestas comerciales sesión 19").
 
 ### (nota sesión 5)
 - El usuario tenía la app en **Vercel**: ya no es necesaria si se publica en Firebase Hosting (recomendado: misma cuenta, dominio ya autorizado). Ojo: los datos locales son por dominio; para pasar datos usar el viaje compartido o Respaldo/Restaurar.

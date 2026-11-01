@@ -107,7 +107,8 @@ function SplitModule(A) {
           <b>${s.prov ? esc(s.prov) : s.photo ? 'Boleta de respaldo' : 'Boleta'}</b>
           <small>${s.items.length ? `${s.items.length} productos · ${money(s.items.reduce((a, it) => a + (+it.p || 0), 0))}` : 'Lee la boleta con IA o escribe los productos'}</small>
           ${s.photo ? `<button class="btn sm sea" data-act="sepRead">${ic('receipt')} ${s.items.length ? 'Leer de nuevo' : 'Leer boleta con IA'}</button>`
-            : `<label class="btn sm sea">${ic('camera')} Foto de la boleta<input type="file" accept="image/*" capture="environment" hidden data-change="sepPhoto"></label>`}
+            : `<label class="btn sm sea">${ic('camera')} Foto de la boleta<input type="file" accept="image/*" capture="environment" hidden data-change="sepPhoto"></label>
+              <label class="btn sm">${ic('file')} Boleta electrónica<input type="file" accept="application/pdf,image/*" hidden data-change="sepPhoto"></label>`}
         </div>
       </div>
       ${s.err ? `<div class="bol-check warn">${ic('alert')} ${esc(s.err)}</div>` : ''}

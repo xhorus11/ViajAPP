@@ -18,7 +18,10 @@ Servidor de la app (desde la raíz del proyecto): `python -m http.server 8765 --
 | `test-help.js` | Ayuda simple: guía "Tu próximo paso" (avanza sola, ocultar/mostrar, Únete aquí), botón ? en cada pantalla (3 pasos + enlace al manual), tamaño de letra (se recuerda, sin scroll horizontal) — 22 verificaciones; capturas en `tests/out-help/` | `node tests/test-help.js URL` |
 | `test-among.js` | Gastos solo entre algunos: Todos/chips, monto c/u, Fondo común lo oculta, Cuentas claras con "su parte", editar, Excel — 14 verificaciones | `node tests/test-among.js URL` |
 | `test-join-trip.js` | Datos del viaje entre celulares usando la interfaz (nombre, fechas, participantes, dietas; en vivo, recarga, tercero con datos propios, cambiarse desde otro viaje compartido) — 17 verificaciones, contra el Firebase real | `node tests/test-join-trip.js URL` (deja 1 viaje huérfano: borrarlo por REST) |
+| `test-marca-pdf.js` | "Dinero del viaje", boleta electrónica en PDF (`fixtures/boleta-electronica.pdf` → imagen → IA real → comprobante) y logo de los documentos Viajapp / Mi logo (`fixtures/logo-institucion.png`) / Sin logo en carta PDF, PNG y Word — 17 verificaciones | `node tests/test-marca-pdf.js [URL]` |
 | `test-sync.js` | Sincronización con 2 usuarios + intruso, offline, recarga, salir (21 verificaciones) | ver abajo |
+
+**Navegador**: las pruebas usan Edge; si Edge no arranca (p. ej. a mitad de una actualización) usa Chrome con `VIAJAPP_BROWSER="C:/Program Files/Google/Chrome/Application/chrome.exe"`.
 
 ## Manual de uso (`manual/`)
 1. `node tests/shots.js https://viajapp-trip.web.app/index.html` → 22 capturas con datos de ejemplo en `tests/shots/` (+ PNG y PDF exportados en `shots/dl`). No toca Firebase (simula el viaje compartido).

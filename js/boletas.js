@@ -64,9 +64,10 @@ function BoletaModule(A) {
     const last = d && d.photos && d.photos[d.photos.length - 1];
     return `<div class="bol-box">
       ${last ? `<button class="btn sea block" data-act="bolRead" data-id="${esc(last)}">${ic('receipt')} Leer boleta con IA</button>`
-        : `<label class="btn sea block">${ic('camera')} Foto y leer boleta con IA<input type="file" accept="image/*" capture="environment" hidden data-change="bolPhoto"></label>`}
+        : `<label class="btn sea block">${ic('camera')} Foto y leer boleta con IA<input type="file" accept="image/*" capture="environment" hidden data-change="bolPhoto"></label>
+          <label class="btn sm block bol-edoc">${ic('file')} Boleta electrónica (PDF o captura)<input type="file" accept="application/pdf,image/*" hidden data-change="bolPhoto"></label>`}
       <p class="hint" style="margin:6px 2px 0">${r ? `${ic('check')} Boleta leída: ${r.items.length} productos. <button class="link" data-act="bolEdit">Ver y editar</button>`
-        : 'La IA anota el monto, la fecha, el N° y cada producto. Después lo puedes corregir.'}</p>
+        : 'La IA anota el monto, la fecha, el N° y cada producto. Sirve con la foto del papel o con la boleta electrónica que te llega por correo.'}</p>
     </div>`;
   }
 
@@ -266,7 +267,20 @@ function BoletaModule(A) {
       ${body.map(r => `<w:tr>${r.map((v, i) => cell(v, widths[i], { al: typeof v === 'number' || /^\$/.test(v) ? 'right' : null })).join('')}</w:tr>`).join('')}
       ${foot ? `<w:tr>${foot.map((v, i) => cell(v, widths[i], { b: true, fill: 'E0F2FE', al: i === foot.length - 1 ? 'right' : null })).join('')}</w:tr>` : ''}</w:tbl>`;
     const $m = n => money(n);
-    let body = par(P.title, { b: true, sz: 34, after: 120 }) + P.meta.map(m => par(m, { sz: 20 })).join('') + par('', {}) +
+    // Logo propio de la institución o empresa (⚙️ Viaje → Logo en la carta financiera): arriba a la derecha
+    const brand = P.t.brand && P.t.brand.mode === 'custom' && P.t.brand.logo, m = brand && /^data:image\/(png|jpeg);base64,(.*)$/.exec(brand);
+    let logoXML = '';
+    if (m) {
+      const im = await new Promise(res => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = brand; });
+      if (im) {
+        const k = Math.min(1600000 / im.width, 820000 / im.height), cx = Math.round(im.width * k), cy = Math.round(im.height * k);
+        logoXML = `<w:p><w:pPr><w:jc w:val="right"/><w:spacing w:after="120"/></w:pPr><w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${cx}" cy="${cy}"/><wp:docPr id="1" name="Logo"/>` +
+          `<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">` +
+          `<pic:nvPicPr><pic:cNvPr id="1" name="logo"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rIdLogo"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>` +
+          `<pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>`;
+      }
+    }
+    let body = logoXML + par(P.title, { b: true, sz: 34, after: 120 }) + P.meta.map(m => par(m, { sz: 20 })).join('') + par('', {}) +
       par(`Resumen de gastos (${P.rows.length} documentos)`, { b: true, sz: 26, after: 120 }) +
       table([500, 1100, 1900, 2700, 1300, 1500], ['N°', 'Fecha', 'Proveedor', 'Detalle general', 'N° Doc / Boleta', 'Monto'],
         P.rows.map(r => [String(r.n), r.fecha, r.prov || '-', r.det, r.doc || '-', $m(r.monto)]),
@@ -280,11 +294,16 @@ function BoletaModule(A) {
             r.e.receipt.items.map(it => [it.nombre, String(it.cant).replace('.', ',') + (it.unidad !== 'un' ? ' ' + it.unidad : ''), $m(it.pUnit), $m(it.total)])) + par('', {});
       });
     }
-    const doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body}<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1134" w:right="1000" w:bottom="1134" w:left="1000" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+    const doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><w:body>${body}<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1134" w:right="1000" w:bottom="1134" w:left="1000" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>`;
     const zip = new JSZip();
-    zip.file('[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
+    zip.file('[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
     zip.file('_rels/.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>');
     zip.file('word/document.xml', doc);
+    if (logoXML) {
+      const ext = m[1];
+      zip.file(`word/media/logo.${ext}`, m[2], { base64: true });
+      zip.file('word/_rels/document.xml.rels', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdLogo" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/logo.${ext}"/></Relationships>`);
+    }
     const blob = await zip.generateAsync({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
     return Exporter.deliver(blob, P.file + '.docx');
   }

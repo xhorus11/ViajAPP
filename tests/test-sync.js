@@ -48,7 +48,7 @@ async function user(browser, name) {
 }
 
 (async () => {
-  const browser = await puppeteer.launch({ executablePath: 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe', headless: 'new', args: ['--no-sandbox'] });
+  const browser = await puppeteer.launch({ executablePath: process.env.VIAJAPP_BROWSER || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe', headless: 'new', args: ['--no-sandbox'] });
   const A = await user(browser, 'A'), B = await user(browser, 'B');
 
   // ---- A: datos locales y crea el viaje compartido

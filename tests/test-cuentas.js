@@ -22,7 +22,7 @@ const BAR = { proveedor: 'Bar La Terraza', razonSocial: '', rut: '', fecha: '202
 
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
-  const browser = await puppeteer.launch({ executablePath: 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe', headless: 'new' });
+  const browser = await puppeteer.launch({ executablePath: process.env.VIAJAPP_BROWSER || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe', headless: 'new' });
   const p = await browser.newPage();
   await p.setViewport({ width: 400, height: 860, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
   const errs = []; p.on('pageerror', e => { errs.push(e.message); console.log('STACK', String(e.stack || '').split(String.fromCharCode(10)).slice(0, 3).join(' | ')); });

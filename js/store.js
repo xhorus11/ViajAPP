@@ -85,8 +85,44 @@
     clear: () => tx('readwrite', s => s.clear())
   };
 
-  /* Comprime una imagen a JPEG (máx 1600px) */
+  /* Boleta electrónica en PDF → una sola imagen JPEG con sus páginas una bajo otra (máx. 4).
+     pdf.js se carga solo la primera vez que se sube un PDF. */
+  let pdfjs = null;
+  function loadPdfjs() {
+    if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+    return pdfjs || (pdfjs = new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = 'vendor/pdfjs/pdf.min.js';
+      s.onload = () => { window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'vendor/pdfjs/pdf.worker.min.js'; res(window.pdfjsLib); };
+      s.onerror = () => { pdfjs = null; rej(new Error('No se pudo abrir el PDF')); };
+      document.head.appendChild(s);
+    }));
+  }
+  async function pdfToJpeg(file, q) {
+    const lib = await loadPdfjs();
+    const doc = await lib.getDocument({ data: await file.arrayBuffer() }).promise;
+    const pages = [];
+    for (let i = 1; i <= Math.min(doc.numPages, 4); i++) {
+      const p = await doc.getPage(i), v0 = p.getViewport({ scale: 1 });
+      const v = p.getViewport({ scale: Math.min(3, 1100 / v0.width) });   // ~1100 px de ancho: se lee bien el detalle
+      const c = document.createElement('canvas'); c.width = Math.round(v.width); c.height = Math.round(v.height);
+      const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+      await p.render({ canvasContext: ctx, viewport: v }).promise;
+      pages.push(c);
+    }
+    const W = Math.max(...pages.map(c => c.width)), H = pages.reduce((s, c) => s + c.height, 0);
+    const k = Math.min(1, 3200 / H);                                       // boletas largas: tope de alto
+    const out = document.createElement('canvas'); out.width = Math.round(W * k); out.height = Math.round(H * k);
+    const o = out.getContext('2d'); o.fillStyle = '#fff'; o.fillRect(0, 0, out.width, out.height);
+    let y = 0;
+    pages.forEach(c => { o.drawImage(c, 0, y, c.width * k, c.height * k); y += c.height * k; });
+    return out.toDataURL('image/jpeg', q);
+  }
+  const isPdf = f => f && (f.type === 'application/pdf' || /\.pdf$/i.test(f.name || ''));
+
+  /* Comprime una imagen a JPEG (máx 1600px). También acepta boletas electrónicas en PDF. */
   function compress(file, max = 1600, q = 0.82) {
+    if (isPdf(file)) return pdfToJpeg(file, Math.max(q, 0.85));
     return new Promise((res, rej) => {
       const url = URL.createObjectURL(file);
       const img = new Image();

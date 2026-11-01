@@ -8,7 +8,7 @@ const URL = process.argv[2] || 'https://viajapp-trip.web.app/index.html';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 (async () => {
-  const browser = await puppeteer.launch({ executablePath: 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe', headless: 'new', args: ['--no-sandbox'] });
+  const browser = await puppeteer.launch({ executablePath: process.env.VIAJAPP_BROWSER || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe', headless: 'new', args: ['--no-sandbox'] });
   const page = await browser.newPage();
   await page.setViewport({ width: 400, height: 860, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
   const errs = []; page.on('pageerror', e => errs.push(e.message));
@@ -246,6 +246,11 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await tab('home');
   await click('.icon-btn[data-act="trip"]', 900); await shot('18-viaje', 700);
   await page.evaluate(() => { document.querySelector('#rpList').scrollIntoView({ block: 'center' }); }); await shot('19-responsables', 700);
+  // Logo propio en los documentos (logo de ejemplo de una institución), luego se vuelve al de Viajapp
+  await click('[data-act="brandMode"][data-v="custom"]', 600);
+  await (await page.$('input[data-change="brandLogo"]')).uploadFile(path.join(__dirname, 'fixtures', 'logo-institucion.png')); await sleep(1500);
+  await page.evaluate(() => { document.querySelector('.brand-box').scrollIntoView({ block: 'center' }); }); await shot('45-logo-propio', 2600);
+  await click('[data-act="brandMode"][data-v="viajapp"]', 600);
   await click('[data-act="diets"]', 900);
   await page.evaluate(() => { const p = document.querySelectorAll('.diet-person')[2]; if (p) p.scrollIntoView({ block: 'start' }); document.getElementById('sheetBody').scrollTop -= 10; });
   await shot('23-dietas', 700); await esc();

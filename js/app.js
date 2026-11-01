@@ -706,7 +706,7 @@
     const dates = [...new Set(ex.map(e => e.date))].sort().reverse();
 
     return `<div class="page">
-      ${header('Finanzas del viaje', 'Plata del viaje', `<button class="icon-btn" data-act="trip" aria-label="Configurar fondos" style="--i:1">${ic('settings')}</button>`)}
+      ${header('Finanzas del viaje', 'Dinero del viaje', `<button class="icon-btn" data-act="trip" aria-label="Configurar fondos" style="--i:1">${ic('settings')}</button>`)}
       <div class="stagger">
         <div class="balance ${over ? 'over' : ''}" style="--i:0">
           <div class="bl">
@@ -732,7 +732,7 @@
         <div class="money-links">${SEP.linkHTML()}${ex.length ? BOL.planillaLink() : ''}</div>
       </div>
       ${byCat.length ? `
-        <div class="section-title"><h2>¿En qué se va la plata?</h2></div>
+        <div class="section-title"><h2>¿En qué se gasta el dinero?</h2></div>
         <div class="card bars">${byCat.map(x => `
           <div class="bar-row" style="--c:${x.c.color}"><div class="bh"><span>${x.c.emoji} ${esc(x.c.name)}</span><b>${money(x.v)}</b></div>
           <div class="bt"><i data-w="${spent ? x.v / spent * 100 : 0}%"></i></div></div>`).join('')}</div>` : ''}
@@ -759,7 +759,7 @@
 
   function photosHTML() {
     return draft.photos.map(id => `<div class="photo"><img data-photo="${id}" alt="Comprobante"><button class="x" data-act="rmPhoto" data-id="${id}" aria-label="Quitar foto">✕</button></div>`).join('') +
-      `<label class="photo-add"><div><span>${ic('camera')}</span>Agregar foto</div><input type="file" accept="image/*" multiple hidden data-change="photos"></label>`;
+      `<label class="photo-add"><div><span>${ic('camera')}</span>Foto o PDF</div><input type="file" accept="image/*,application/pdf" multiple hidden data-change="photos"></label>`;
   }
   function chipGroup(group, options, current, colorOf) {
     return `<div class="chips wrap">${options.map(o => {
@@ -866,6 +866,7 @@
         <div id="rpList">${(U.resps(t).length ? U.resps(t) : [{ name: '', rut: '' }]).map(respRow).join('')}</div>
         <button class="btn sm" data-act="rpAdd">${ic('plus')} Agregar responsable</button>
       </div>
+      ${brandHTML(t)}
       <button class="btn primary block shine" data-act="saveTrip">Guardar</button>
       <div class="section-title"><h2 style="font-size:18px">Apariencia y lectura</h2></div>
       ${fontHTML()}
@@ -878,6 +879,37 @@
       </div>
       <a class="btn block help-link" href="manual/" target="_blank" rel="noopener">${ic('book')} Manual de uso</a>`;
   }
+  /* Logo de los documentos (carta financiera, PDF y PNG): el de Viajapp, el de la institución o empresa, o ninguno */
+  const BRAND = [['viajapp', 'Viajapp'], ['custom', 'Mi logo'], ['none', 'Sin logo']];
+  function brandHTML(t) {
+    const b = t.brand || {}, mode = b.mode || 'viajapp';
+    return `<div class="field"><span>Logo en la carta financiera y los documentos</span>
+      <div class="chips wrap">${BRAND.map(([v, n]) => `<button class="chip ${mode === v ? 'active' : ''}" style="--c:var(--violet)" data-act="brandMode" data-v="${v}">${n}</button>`).join('')}</div>
+      ${mode === 'custom' ? `<div class="brand-box">
+        ${b.logo ? `<img src="${b.logo}" alt="Logo de los documentos">` : `<span class="brand-empty">${ic('image')}</span>`}
+        <label class="btn sm">${ic('upload')} ${b.logo ? 'Cambiar logo' : 'Subir logo'}<input type="file" accept="image/*" hidden data-change="brandLogo"></label>
+      </div>` : ''}
+      <p class="hint" style="margin-top:6px">${mode === 'custom' ? 'Usa el logo de tu institución o empresa (PNG con fondo transparente se ve mejor).'
+        : mode === 'none' ? 'Los documentos salen sin logo y sin la marca Viajapp.' : 'Puedes cambiarlo por el logo de tu institución o empresa.'}</p></div>`;
+  }
+  /* Achica el logo subido (máx. 600 px). PNG si tiene transparencia y pesa poco; si no, JPEG sobre blanco */
+  function brandLogoData(file) {
+    return new Promise((res, rej) => {
+      const url = URL.createObjectURL(file), img = new Image();
+      img.onload = () => {
+        const k = Math.min(1, 600 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        let out = c.toDataURL('image/png');
+        if (out.length > 350000) { const w = document.createElement('canvas'); w.width = c.width; w.height = c.height; const x = w.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, w.width, w.height); x.drawImage(c, 0, 0); out = w.toDataURL('image/jpeg', 0.88); }
+        res(out);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Imagen no válida')); };
+      img.src = url;
+    });
+  }
+
   /* Lee la hoja "Tu viaje" y guarda (sin cerrarla) */
   function persistTrip() {
     const t = S().trip;
@@ -1616,6 +1648,11 @@
         $('#evTitle').placeholder = PH[v] || '';
       }
     },
+    brandMode: el => {
+      persistTrip();
+      const t = S().trip; t.brand = Object.assign({}, t.brand, { mode: el.dataset.v });
+      Store.save(); buzz(8); refreshSheet();
+    },
     setTheme: el => {
       LS.set('viajapp-theme', el.dataset.v); applyTheme(); buzz(8);
       $$('[data-act="setTheme"]').forEach(c => c.classList.toggle('active', c === el));
@@ -2013,6 +2050,16 @@
     const el = e.target;
     if (el.dataset.change === 'bolPhoto') { BOL.onPhoto(el); return; }
     if (el.dataset.change === 'sepPhoto') { SEP.onPhoto(el); return; }
+    if (el.dataset.change === 'brandLogo') {
+      const f = el.files[0]; el.value = '';
+      if (!f) return;
+      try {
+        persistTrip();
+        const t = S().trip; t.brand = { mode: 'custom', logo: await brandLogoData(f) };
+        Store.save(); log('trip', 'cambió el logo de los documentos'); refreshSheet(); toast('Logo guardado: saldrá en la carta y los documentos');
+      } catch (err) { toast('No se pudo leer la imagen'); }
+      return;
+    }
     if (el.dataset.change === 'photos') {
       const files = [...el.files]; el.value = '';
       if (!files.length || !draft) return;

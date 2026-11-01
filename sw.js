@@ -1,11 +1,11 @@
 /* Service worker: la app funciona sin conexión */
-const CACHE = 'viajapp-v21';
+const CACHE = 'viajapp-v22';
 const SHELL = [
   './', './index.html', './manifest.webmanifest',
   './css/styles.css',
   './js/firebase-config.js', './js/data.js', './js/recipes.js', './js/diets.js', './js/store.js', './js/export.js', './js/sync.js', './js/group.js', './js/boletas.js', './js/cuentas.js', './js/app.js',
   './vendor/html2canvas.min.js', './vendor/jspdf.umd.min.js', './vendor/jspdf.plugin.autotable.min.js', './vendor/qrcode.min.js',
-  './vendor/xlsx.mini.min.js', './vendor/jszip.min.js',
+  './vendor/xlsx.mini.min.js', './vendor/jszip.min.js', './vendor/pdfjs/pdf.min.js', './vendor/pdfjs/pdf.worker.min.js',
   './vendor/firebase-app-compat.js', './vendor/firebase-auth-compat.js', './vendor/firebase-firestore-compat.js',
   './icons/icon-192.png', './icons/icon-512.png', './icons/logo-badge.png', './icons/perro-guino.webp', './icons/favicon-64.png', './icons/apple-touch-icon.png'
 ];

@@ -61,10 +61,14 @@
     })).filter(g => g.rows.length);
   }
 
+  /* Marca de los documentos: logo de Viajapp, el de la institución/empresa (trip.brand.logo) o ninguno */
+  const brandOf = () => { const b = Store.state.trip.brand || {}; return b.mode === 'custom' && b.logo ? { mode: 'custom', logo: b.logo } : { mode: b.mode === 'none' || b.mode === 'custom' ? 'none' : 'viajapp' }; };
+  const brandSign = () => { const t = Store.state.trip; return brandOf().mode === 'viajapp' ? 'Viajapp' : plain(t.entity); };
+
   /* ---------- Lista del súper → PNG ---------- */
   async function listPNG(share) {
     const groups = groupedList();
-    const trip = Store.state.trip;
+    const trip = Store.state.trip, brand = brandOf();
     const total = groups.reduce((s, g) => s + g.rows.length, 0);
     const cols = [[], []], weight = [0, 0];
     groups.forEach(g => { const k = weight[0] <= weight[1] ? 0 : 1; cols[k].push(g); weight[k] += g.rows.length + 2; });
@@ -95,13 +99,15 @@
               <div style="font-family:'Plus Jakarta Sans',Inter,sans-serif;font-size:72px;font-weight:800;line-height:1.15;margin-top:8px;color:#0f2742">Lista del súper</div>
               <div style="font-size:25px;font-weight:600;margin-top:12px;color:#5b7a99">${total} productos · ${longDate(Store.today())}</div>
             </div>
-            <img src="icons/logo-badge.png" alt="" style="width:180px;height:180px;flex:none">
+            ${brand.mode === 'none' ? '' : brand.mode === 'custom'
+              ? `<img src="${brand.logo}" alt="" style="max-width:260px;max-height:170px;flex:none;object-fit:contain">`
+              : '<img src="icons/logo-badge.png" alt="" style="width:180px;height:180px;flex:none">'}
           </div>
           <div style="display:flex;gap:22px;align-items:flex-start">
             <div style="flex:1">${cols[0].map(groupHTML).join('')}</div>
             <div style="flex:1">${cols[1].map(groupHTML).join('')}</div>
           </div>
-          <div style="text-align:center;color:#5b7a99;font-size:20px;font-weight:600;margin-top:6px">Hecho con Viajapp</div>
+          ${brand.mode === 'viajapp' ? '<div style="text-align:center;color:#5b7a99;font-size:20px;font-weight:600;margin-top:6px">Hecho con Viajapp</div>' : ''}
         </div>
       </div>`;
     try {
@@ -115,14 +121,18 @@
   }
 
   /* ---------- Cabecera común de PDFs ---------- */
-  let LOGO = null;
+  let VIAJAPP_LOGO = null, LOGO = '';
   async function loadLogo() {
-    if (LOGO !== null) return LOGO;
-    try {
-      const blob = await (await fetch('icons/logo-badge.png')).blob();
-      LOGO = await new Promise(res => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsDataURL(blob); });
-    } catch (e) { LOGO = ''; }
-    return LOGO;
+    const b = brandOf();
+    if (b.mode === 'custom') return (LOGO = b.logo);
+    if (b.mode === 'none') return (LOGO = '');
+    if (VIAJAPP_LOGO === null) {
+      try {
+        const blob = await (await fetch('icons/logo-badge.png')).blob();
+        VIAJAPP_LOGO = await new Promise(res => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsDataURL(blob); });
+      } catch (e) { VIAJAPP_LOGO = ''; }
+    }
+    return (LOGO = VIAJAPP_LOGO);
   }
   /* Paleta clara y formal de los documentos (celeste + azul marino) */
   const NAVY = [15, 39, 66], MUTED = [91, 122, 153], LINE = [219, 232, 245], ALT = [242, 248, 253], SKY = [3, 105, 161];
@@ -135,8 +145,12 @@
     doc.setTextColor(...NAVY);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.text(title, 14, 16);
     doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(...MUTED); doc.text(subtitle, 14, 25);
-    const lx = LOGO ? W - 40 : W - 14;
-    if (LOGO) doc.addImage(LOGO, 'PNG', W - 37, 3, 28, 28, 'viajapp-logo', 'FAST');
+    let lx = W - 14;
+    if (LOGO) {   // cabe en una caja de 42 × 28 mm, alineado a la derecha (logos anchos de instituciones también)
+      const pr = doc.getImageProperties(LOGO), k = Math.min(42 / pr.width, 28 / pr.height), w = pr.width * k, h = pr.height * k;
+      doc.addImage(LOGO, /png/i.test(LOGO.slice(0, 30)) ? 'PNG' : 'JPEG', W - 9 - w, 3 + (28 - h) / 2, w, h, 'doc-logo-' + LOGO.length, 'FAST');
+      lx = W - 12 - w;
+    }
     doc.setFontSize(9); doc.text('Emitido: ' + dmy(Store.today()), lx, 16, { align: 'right' });
     doc.setDrawColor(...LINE); doc.setLineWidth(0.5); doc.line(14, 35, W - 14, 35);
     doc.setTextColor(...NAVY);
@@ -149,7 +163,7 @@
       doc.setPage(i);
       doc.setFontSize(8); doc.setTextColor(...MUTED);
       doc.text(`Página ${i} de ${n}`, W - 14, H - 8, { align: 'right' });
-      doc.text(plain(Store.state.trip.name) + ' · Viajapp', 14, H - 8);
+      doc.text([plain(Store.state.trip.name), brandSign()].filter(Boolean).join(' · '), 14, H - 8);
     }
   }
   const newPDF = () => new window.jspdf.jsPDF({ unit: 'mm', format: 'a4' });

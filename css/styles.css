@@ -838,3 +838,10 @@ html[data-theme="day"] .quick-tile { box-shadow: 0 12px 26px -14px rgba(15, 39, 
 /* Texto blanco fijo sobre degradados (en el tema Día el texto general es oscuro) */
 .btn.primary, .btn.sea, .fab, .cta-float, .hero, .balance, .sheet-title .st-ico, .act span, .rl-card, .quick-tile, .split-out { color: #fff; }
 .hero .trip-meta .nw { white-space: nowrap; }
+
+/* Boleta electrónica y logo de los documentos */
+.bol-edoc { margin-top: 8px; }
+.brand-box { display: flex; align-items: center; gap: 12px; margin-top: 10px; padding: 10px; border-radius: 16px; background: var(--field); border: 1px dashed var(--stroke); }
+.brand-box img { width: 96px; height: 56px; object-fit: contain; background: #fff; border-radius: 10px; padding: 4px; }
+.brand-empty { width: 96px; height: 56px; display: grid; place-items: center; border-radius: 10px; background: var(--tint-1); color: var(--muted); }
+.brand-empty .ic { width: 26px; height: 26px; }
