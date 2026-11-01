@@ -269,6 +269,15 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await shot('44-tema-noche', 900);
   await page.evaluate(t => { localStorage.setItem('viajapp-theme', t); document.documentElement.dataset.theme = t; }, THEME);
 
+  // Mis viajes: repetir el viaje como plantilla y ver la lista (sin cuenta: no toca Firebase)
+  await page.evaluate(() => { location.hash = '#agenda'; }); await sleep(300); await page.evaluate(() => { location.hash = '#home'; scrollTo(0, 0); }); await sleep(900);
+  await click('.hero .trips-btn', 900);
+  await page.evaluate(() => { document.querySelector('[data-act="tripTpl"]').click(); }); await sleep(900);
+  await page.evaluate(() => { document.getElementById('tplName').value = 'Gira de estudios Pucón 2027'; });
+  await shot('47-plantilla', 600);
+  await click('[data-act="tplGo"]', 2200);
+  await click('.hero .trips-btn', 900); await shot('46-mis-viajes', 900); await esc();
+
   await sleep(1000);
   console.log('Descargas:', fs.readdirSync(DL).join(', '));
   console.log('Errores:', errs.length ? errs.join(' / ') : 'ninguno');

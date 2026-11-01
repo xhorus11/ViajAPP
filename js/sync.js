@@ -1,4 +1,4 @@
-/* Sincronización en grupo: Firebase Auth (anónima) + Firestore en tiempo real.
+/* Sincronización en grupo: Firebase Auth (anónima, o cuenta con correo/Google) + Firestore en tiempo real.
    Idea: Store.state sigue siendo la fuente local. Al guardar se compara contra lo último sincronizado
    (`last`, ruta → JSON estable) y se envían solo los documentos que cambiaron. Los cambios remotos
    se aplican sobre Store.state y se avisa a la interfaz con el evento `viajapp:remote`. */
@@ -96,7 +96,9 @@
     s.expenses.forEach(e => (e.photos || []).forEach(id => { m['photos/' + id] = 'p'; }));
     return { m, vals };
   }
-  const saveLast = () => { if (Sync.active) ls.set(LAST, last); };
+  // Lo último sincronizado se guarda por viaje (Mis viajes: se puede pausar uno y retomar otro)
+  const lastKey = id => LAST + ':' + id;
+  const saveLast = () => { if (Sync.active && Sync.tripId) ls.set(lastKey(Sync.tripId), last); };
 
   /* ---------- Envío de cambios locales ---------- */
   function push() { clearTimeout(pushTimer); pushTimer = setTimeout(flush, 60); }
@@ -183,12 +185,12 @@
   function onTrip(snap) {
     setStatus(snap.metadata.fromCache ? 'offline' : 'online');
     if (!snap.exists) {
-      if (!snap.metadata.fromCache) { msg('El viaje compartido ya no existe'); stop(); }
+      if (!snap.metadata.fromCache) { msg('El viaje compartido ya no existe'); detach(); }
       return;
     }
     const d = snap.data();
     Sync.members = d.members || []; Sync.names = d.names || {};
-    if (!snap.metadata.fromCache && Sync.uid && !Sync.members.includes(Sync.uid)) { msg('Ya no eres parte de este viaje compartido'); stop(); return; }
+    if (!snap.metadata.fromCache && Sync.uid && !Sync.members.includes(Sync.uid)) { msg('Ya no eres parte de este viaje compartido'); detach(); return; }
     if (!snap.metadata.hasPendingWrites && d.trip) {
       const rj = stable(d.trip);
       if (rj !== last.trip && (!Sync.ready || stable(Store.state.trip) === last.trip)) {
@@ -268,13 +270,18 @@
   function connect(tripId, mode) {
     Object.assign(Sync, { active: true, tripId, ready: mode !== 'fresh' });
     seen = {};
-    last = mode === 'resume' ? ls.get(LAST, {}) : {};
+    // (versiones anteriores guardaban un solo "last" sin el ID del viaje)
+    last = mode === 'resume' ? ls.get(lastKey(tripId), null) || ((ls.get(SESSION, {}) || {}).tripId === tripId ? ls.get(LAST, {}) : {}) : {};
+    ls.del(LAST);
     ls.set(SESSION, { tripId });
     setStatus('connecting');
     if (mode === 'upload') flush();
     listen();
   }
-  function stop() {
+  /* Deja de escuchar el viaje. keep = true: solo se pausa (Mis viajes) y se puede retomar después */
+  function stop(keep) {
+    const id = Sync.tripId;
+    if (keep) { flush(); saveLast(); } else if (id) ls.del(lastKey(id));
     unsubs.concat(Object.values(photoWatch)).forEach(u => { try { u(); } catch (e) { /* ya cerrado */ } });
     unsubs = [];
     Object.keys(photoWatch).forEach(k => delete photoWatch[k]);
@@ -282,6 +289,15 @@
     last = {}; seen = {};
     ls.del(SESSION); ls.del(LAST);
     setStatus('off'); emit();
+  }
+  const pause = () => { if (Sync.active) stop(true); };
+  /* El viaje ya no existe o me sacaron: queda como viaje solo de este equipo */
+  function detach() { const id = Sync.tripId; stop(); if (window.Trips) Trips.onDetached(id); }
+  /* Retomar un viaje de Mis viajes (fresh = no hay datos en este equipo: se descargan) */
+  async function open(tripId, fresh) {
+    await boot();
+    if (fresh) { pendingName = null; Store.replace({}); }
+    connect(tripId, fresh ? 'fresh' : 'resume');
   }
 
   /* ---------- API pública ---------- */
@@ -307,6 +323,7 @@
     ls.set(NAME, name);
     Store.save();
     connect(ref.id, 'upload');
+    if (window.Trips) Trips.onCloud(ref.id);
     return ref.id;
   }
   async function join(code, name) {
@@ -320,9 +337,10 @@
       members: firebase.firestore.FieldValue.arrayUnion(Sync.uid),
       ['names.' + Sync.uid]: name
     }));
-    ls.set(BACKUP, Store.state);           // respaldo de los datos locales
     ls.set(NAME, name);
     pendingName = name;
+    if (window.Trips) { pause(); Trips.beforeJoin(id, (snap.data().trip || {}).name); }   // el viaje actual queda en Mis viajes
+    else ls.set(BACKUP, Store.state);      // respaldo de los datos locales
     Store.replace({});                     // se llenará con los datos del viaje
     connect(id, 'fresh');
     return (snap.data().trip || {}).name || 'el viaje';
@@ -335,6 +353,7 @@
       try { await withTimeout(db.collection('trips').doc(id).update({ members: firebase.firestore.FieldValue.arrayRemove(uid) }), 8000); }
       catch (e) { console.warn('No se pudo salir en el servidor', e); }
     }
+    if (window.Trips) { await Trips.afterLeave(id); return; }
     const bk = ls.get(BACKUP, null);
     if (bk) { Store.replace(bk); ls.del(BACKUP); }
   }
@@ -348,6 +367,128 @@
     await boot();
     return withTimeout(auth.currentUser.getIdToken(), 20000);
   }
+  /* ---------- Cuentas (correo o Google) ----------
+     La sesión anónima se VINCULA a la cuenta: el UID no cambia y los viajes compartidos siguen igual.
+     Si la cuenta ya existía (otro equipo), se entra a ella y Trips vuelve a unir los viajes de este equipo. */
+  const ACCOUNT = 'viajapp-account';
+  function user() {
+    const u = auth && auth.currentUser;
+    if (!u) return ls.get(ACCOUNT, null);
+    if (u.isAnonymous) return null;
+    return { uid: u.uid, email: u.email || '', name: u.displayName || '', google: u.providerData.some(p => p.providerId === 'google.com') };
+  }
+  function remember() { const u = user(); if (u) ls.set(ACCOUNT, u); else ls.del(ACCOUNT); }
+  const hasAccount = () => !!ls.get(ACCOUNT, null);
+  function afterAuth(mode) {
+    const prev = Sync.uid;
+    Sync.uid = auth.currentUser.uid;
+    remember();
+    return { mode, prev, uid: Sync.uid };
+  }
+  const AUTH_ERR = {
+    'auth/invalid-email': 'El correo no es válido',
+    'auth/missing-password': 'Escribe una contraseña',
+    'auth/weak-password': 'La contraseña debe tener al menos 6 caracteres',
+    'auth/email-already-in-use': 'Ese correo ya tiene cuenta: toca "Ya tengo cuenta"',
+    'auth/credential-already-in-use': 'Esa cuenta ya existe: toca "Ya tengo cuenta"',
+    'auth/provider-already-linked': 'Este equipo ya está vinculado a una cuenta',
+    'auth/wrong-password': 'Correo o contraseña incorrectos',
+    'auth/invalid-credential': 'Correo o contraseña incorrectos',
+    'auth/invalid-login-credentials': 'Correo o contraseña incorrectos',
+    'auth/user-not-found': 'No hay una cuenta con ese correo',
+    'auth/too-many-requests': 'Demasiados intentos. Espera unos minutos',
+    'auth/popup-blocked': 'El navegador bloqueó la ventana de Google. Permite las ventanas emergentes e intenta de nuevo',
+    'auth/popup-closed-by-user': 'Cerraste la ventana de Google antes de terminar',
+    'auth/cancelled-popup-request': 'Cerraste la ventana de Google antes de terminar',
+    'auth/operation-not-allowed': 'Este tipo de cuenta aún no está activado',
+    'auth/unauthorized-domain': 'Este sitio aún no está autorizado para iniciar sesión',
+    'auth/operation-not-supported-in-this-environment': 'Google no funciona dentro de la app instalada en este equipo: ábrela en el navegador o usa tu correo',
+    'auth/network-request-failed': 'Necesitas conexión a internet'
+  };
+  const authErr = e => Object.assign(new Error(AUTH_ERR[e && e.code] || (e && e.message) || 'No se pudo entrar'), { code: e && e.code });
+  async function createAccount(email, pass) {
+    await boot(); auth.languageCode = 'es';
+    try {
+      if (auth.currentUser && auth.currentUser.isAnonymous) await auth.currentUser.linkWithCredential(firebase.auth.EmailAuthProvider.credential(email, pass));
+      else await auth.createUserWithEmailAndPassword(email, pass);
+      return afterAuth('linked');
+    } catch (e) { throw authErr(e); }
+  }
+  async function signInEmail(email, pass) {
+    await boot(); auth.languageCode = 'es';
+    try { await auth.signInWithEmailAndPassword(email, pass); return afterAuth('switched'); } catch (e) { throw authErr(e); }
+  }
+  async function google() {
+    await boot(); auth.languageCode = 'es';
+    const p = new firebase.auth.GoogleAuthProvider(); p.setCustomParameters({ prompt: 'select_account' });
+    try {
+      if (auth.currentUser && auth.currentUser.isAnonymous) {
+        try { await auth.currentUser.linkWithPopup(p); return afterAuth('linked'); }
+        catch (e) {
+          if (e.code !== 'auth/credential-already-in-use' || !e.credential) throw e;
+          await auth.signInWithCredential(e.credential);   // esa cuenta de Google ya existía: se entra a ella
+          return afterAuth('switched');
+        }
+      }
+      await auth.signInWithPopup(p); return afterAuth('switched');
+    } catch (e) { throw authErr(e); }
+  }
+  async function resetPassword(email) {
+    await boot(); auth.languageCode = 'es';
+    try { await auth.sendPasswordResetEmail(email); } catch (e) { throw authErr(e); }
+  }
+  async function signOut() {
+    pause();
+    if (auth) await auth.signOut();
+    Sync.uid = null; ls.del(ACCOUNT);
+  }
+  /* Viajes de la cuenta (en los que soy miembro) */
+  async function myTrips() {
+    await boot();
+    const q = await withTimeout(db.collection('trips').where('members', 'array-contains', Sync.uid).get(), 20000);
+    return q.docs.map(d => {
+      const x = d.data(), t = x.trip || {};
+      return { cloud: d.id, name: t.name || 'Viaje', start: t.start || '', end: t.end || '', n: (t.people || []).length, members: (x.members || []).length };
+    });
+  }
+  /* Volver a unirse con el UID de la cuenta (viajes compartidos que ya estaban en este equipo) */
+  async function rejoin(tripId, name) {
+    await boot();
+    await withTimeout(db.collection('trips').doc(tripId).update({ members: firebase.firestore.FieldValue.arrayUnion(Sync.uid), ['names.' + Sync.uid]: name }));
+  }
+  /* Subir a la cuenta un viaje que no está abierto (sus datos vienen de Mis viajes) */
+  async function uploadState(state, name) {
+    await boot();
+    const ref = db.collection('trips').doc();
+    await withTimeout(ref.set({ members: [Sync.uid], names: { [Sync.uid]: name }, trip: clean(state.trip), created: firebase.firestore.FieldValue.serverTimestamp() }), 30000);
+    const { m, vals } = flatten(state), commits = [];
+    let batch = db.batch(), n = 0;
+    for (const p in m) {
+      if (p === 'trip') continue;
+      if (p.startsWith('photos/')) { photoOp(ref, p.slice(7), 'set'); continue; }
+      const [c, id] = split(p); batch.set(ref.collection(c).doc(id), clean(vals[p]));
+      if (++n >= 400) { commits.push(batch.commit()); batch = db.batch(); n = 0; }
+    }
+    if (n) commits.push(batch.commit());
+    await withTimeout(Promise.all(commits), 30000);
+    ls.set(lastKey(ref.id), m);
+    return ref.id;
+  }
+  /* Quitar un viaje de mi cuenta: si soy el único miembro se borra entero; si no, solo salgo */
+  async function removeTrip(tripId) {
+    await boot();
+    if (Sync.tripId === tripId) stop();
+    ls.del(lastKey(tripId));
+    const ref = db.collection('trips').doc(tripId);
+    const snap = await withTimeout(ref.get(), 15000).catch(() => null);
+    if (!snap || !snap.exists) return;
+    const members = snap.data().members || [];
+    if (members.length === 1 && members[0] === Sync.uid) {
+      for (const c of COL_NAMES.concat('photos')) { const q = await ref.collection(c).get(); await Promise.all(q.docs.map(d => d.ref.delete())); }
+      await ref.delete();
+    } else await ref.update({ members: firebase.firestore.FieldValue.arrayRemove(Sync.uid) });
+  }
+
   const inviteLink = () => `${location.origin}${location.pathname}?viaje=${Sync.tripId}`;
   const savedTrip = () => (ls.get(SESSION, null) || {}).tripId || null;
   const savedName = () => ls.get(NAME, '');
@@ -355,5 +496,6 @@
   addEventListener('online', () => { if (Sync.active && Sync.status === 'offline') setStatus('connecting'); });
   addEventListener('offline', () => { if (Sync.active) setStatus('offline'); });
 
-  window.Sync = Object.assign(Sync, { init, create, join, leave, push, flush, parseCode, inviteLink, savedTrip, savedName, idToken });
+  window.Sync = Object.assign(Sync, { init, create, join, leave, push, flush, parseCode, inviteLink, savedTrip, savedName, idToken,
+    pause, open, boot, user, hasAccount, createAccount, signInEmail, google, resetPassword, signOut, myTrips, rejoin, uploadState, removeTrip });
 })();

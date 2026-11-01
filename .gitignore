@@ -19,3 +19,7 @@ Thumbs.db
 tests/out*/
 tests/shots/
 tests/m-*.png
+
+# Emulador de Firebase (se regeneran)
+tests/*-debug.log
+tests/firestore.rules

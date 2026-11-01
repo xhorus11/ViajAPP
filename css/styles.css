@@ -845,3 +845,31 @@ html[data-theme="day"] .quick-tile { box-shadow: 0 12px 26px -14px rgba(15, 39, 
 .brand-box img { width: 96px; height: 56px; object-fit: contain; background: #fff; border-radius: 10px; padding: 4px; }
 .brand-empty { width: 96px; height: 56px; display: grid; place-items: center; border-radius: 10px; background: var(--tint-1); color: var(--muted); }
 .brand-empty .ic { width: 26px; height: 26px; }
+
+/* Mis viajes y cuenta (js/trips.js) */
+.hero .trips-btn { position: absolute; top: 14px; right: 14px; z-index: 1; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; border: 0; background: rgba(3, 30, 60, .28); color: #fff; font-family: inherit; font-weight: 700; font-size: 13px; line-height: 1; cursor: pointer; }
+.hero .trips-btn .ic { width: 15px; height: 15px; }
+.hero .trips-btn b { min-width: 18px; padding: 2px 5px; border-radius: 999px; background: #fff; color: var(--pink); font-size: 11px; }
+.hero .trips-btn:active { transform: scale(.94); }
+.acct { display: grid; gap: 8px; padding: 16px; margin-bottom: 16px; }
+.acct small { color: var(--muted); line-height: 1.4; }
+.acct.on { grid-template-columns: auto 1fr; align-items: center; }
+.acct.on .link { grid-column: 1 / -1; justify-self: start; }
+.acct-ico { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; background: var(--grad-sea); color: #fff; }
+.acct-txt { display: grid; gap: 3px; min-width: 0; }
+.acct-txt b { overflow-wrap: anywhere; }
+.google-btn { margin-top: 4px; }
+.g-logo { width: 18px; height: 18px; flex: none; }
+.trip-list { display: grid; gap: 10px; margin-bottom: 14px; }
+.trip-item { border-radius: 18px; background: var(--card); border: 1px solid var(--stroke); box-shadow: var(--card-shadow); overflow: hidden; }
+.trip-item.on { border-color: var(--pink); box-shadow: 0 0 0 2px color-mix(in srgb, var(--pink) 30%, transparent); }
+.ti-main { display: grid; gap: 4px; width: 100%; padding: 14px 16px 10px; text-align: left; background: none; border: 0; color: var(--text); cursor: pointer; }
+.ti-main b { font-family: var(--font-display); font-size: 17px; color: var(--strong); }
+.ti-main small { display: flex; align-items: center; gap: 5px; color: var(--muted); }
+.ti-main small .ic { width: 14px; height: 14px; }
+.ti-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+.ti-tag { font-style: normal; font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--tint-1); color: var(--muted); }
+.ti-tag.sky { background: color-mix(in srgb, var(--pink) 14%, transparent); color: var(--link); }
+.ti-tag.now { background: var(--pink); color: #fff; }
+.ti-acts { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 16px 14px; }
+.ti-del { color: var(--neg); }

@@ -41,6 +41,7 @@
     search: '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
     book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/>',
     list: '<path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>',
+    mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
     phone: '<rect x="5" y="2" width="14" height="20" rx="3"/><path d="M12 18h.01"/>',
     cloud: '<path d="M17.5 19H9a7 7 0 1 1 6.7-9h1.8a4.5 4.5 0 1 1 0 9z"/>',
     alert: '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
@@ -380,6 +381,7 @@
       <div class="stagger">
         <section class="hero" style="--i:1" data-act="trip">
           <img class="hero-dog" src="icons/perro-guino.webp" alt="">
+          ${TR.homeButton()}
           <div class="eyebrow" style="color:#fff;opacity:.9">Tu viaje</div>
           <div class="trip-name">${esc(t.name)}</div>
           <div class="trip-meta"><span class="nw">${ic('calendar')} ${U.dmy(t.start)} →</span> <span class="nw">${U.dmy(t.end)}</span>${t.people.length ? ` <span class="nw">· ${ic('users')} ${t.people.length}</span>` : ''}</div>
@@ -407,7 +409,7 @@
         </div>
       </div>
       ${ui.installEvt ? `<button class="btn sea block shine" style="margin-top:14px" data-act="install">${ic('phone')} Instalar Viajapp en este celular</button>` : ''}
-      ${!Sync.active && !guide ? `<button class="btn block share-cta" style="margin-top:14px" data-act="sync"><span>${ic('users')} Compartir con mi grupo</span><small>En vivo</small></button>` : ''}
+      ${(!Sync.active || Sync.members.length < 2) && !guide ? `<button class="btn block share-cta" style="margin-top:14px" data-act="sync"><span>${ic('users')} Compartir con mi grupo</span><small>En vivo</small></button>` : ''}
       ${G.homeCard()}
       <div class="section-title"><h2>Accesos rápidos</h2></div>
       <div class="quick stagger">
@@ -871,7 +873,8 @@
       <div class="section-title"><h2 style="font-size:18px">Apariencia y lectura</h2></div>
       ${fontHTML()}
       <div class="section-title"><h2 style="font-size:18px">Tus datos</h2></div>
-      <p class="hint" style="margin-top:-4px">Todo se guarda solo en este equipo. Haz un respaldo para pasarlo a otro celular.</p>
+      <button class="btn block" style="margin-bottom:10px" data-act="trips">${ic('list')} Mis viajes y cuenta</button>
+      <p class="hint" style="margin-top:-4px">${TR.signed() ? 'Tus viajes se guardan en tu cuenta. También puedes descargar un respaldo.' : 'Sin cuenta, todo se guarda solo en este equipo. Crea una cuenta en Mis viajes o haz un respaldo para pasarlo a otro celular.'}</p>
       <div class="btn-row">
         <button class="btn sm" data-act="backup">${ic('download')} Respaldo</button>
         <button class="btn sm" data-act="restore">${ic('upload')} Restaurar</button>
@@ -1374,7 +1377,7 @@
       const name = `<label class="field"><span>Tu nombre</span><input id="syName" value="${esc(nm)}" placeholder="Ej: Ana" autocomplete="off"></label>`;
       const join = (main) => `<label class="field"><span>Enlace o código de invitación</span><input id="syCode" value="${esc(draft.code)}" placeholder="Pega aquí el enlace que te mandaron" autocomplete="off"></label>
         <button class="btn ${main ? 'primary shine' : 'sea'} block" data-act="syJoin">Unirme al viaje</button>
-        <p class="hint" style="margin-top:8px">Tus datos actuales se guardan como respaldo y vuelven si sales del viaje compartido.</p>
+        <p class="hint" style="margin-top:8px">Tu viaje actual queda guardado en <b>Mis viajes</b>: puedes volver a él cuando quieras.</p>
         <p class="hint">¿Usas la app instalada y el QR se abrió en otro navegador? Copia el enlace, abre la app y pégalo aquí.</p>`;
       const create = (main) => `<button class="btn ${main ? 'primary shine' : ''} block" data-act="syCreate">Crear viaje compartido${main ? '' : ' propio'}</button>
         <p class="hint" style="margin-top:8px">Se suben tus datos actuales (lista, gastos, agenda, recetas) y te damos un enlace para invitar.</p>`;
@@ -1394,9 +1397,9 @@
     const other = draft && draft.code && Sync.parseCode(draft.code) && Sync.parseCode(draft.code) !== Sync.tripId;
     const switchBox = other ? `<div class="card sy-switch">
         <b>Te invitaron a otro viaje compartido</b>
-        <p class="hint">Este equipo está conectado a <b>«${esc(S().trip.name)}»</b>. Para ver el viaje al que te invitaron tienes que cambiarte: sales de este (sigue disponible para los demás) y te unes al nuevo.</p>
+        <p class="hint">Ahora tienes abierto <b>«${esc(S().trip.name)}»</b>. Al unirte al nuevo, este queda guardado en <b>Mis viajes</b> y puedes volver a él cuando quieras.</p>
         <label class="field"><span>Tu nombre</span><input id="syName" value="${esc(Sync.savedName())}" placeholder="Ej: Ana" autocomplete="off"></label>
-        <button class="btn sea block" data-act="sySwitch">${ic('users')} Cambiarme al viaje nuevo</button>
+        <button class="btn sea block" data-act="sySwitch">${ic('users')} Unirme al viaje nuevo</button>
       </div>` : '';
     let qr = '';
     try { const q = qrcode(0, 'M'); q.addData(link); q.make(); qr = q.createSvgTag({ cellSize: 5, margin: 2, scalable: true }); } catch (e) { /* sin QR */ }
@@ -1411,7 +1414,15 @@
       ${local ? '<p class="hint">El enlace funcionará en otros celulares cuando la app esté publicada (por ejemplo en Netlify).</p>' : ''}
       <div class="btn-row"><button class="btn sm" data-act="syCopy">${ic('copy')} Copiar enlace</button><button class="btn sm sea" data-act="syShare">${ic('share')} Compartir</button></div>
       <button class="btn danger block" style="margin-top:18px" data-act="syLeave">${ic('logout')} Salir del viaje compartido</button>
-      <p class="hint" style="margin-top:8px">Al salir vuelves a tus datos anteriores. El viaje sigue disponible para los demás.</p>`;
+      <p class="hint" style="margin-top:8px">Al salir, el viaje se quita de Mis viajes en este equipo y vuelves al anterior. Sigue disponible para los demás.</p>`;
+  }
+  /* Invitación a un viaje que ya está en Mis viajes: se abre ese en vez de unirse de nuevo */
+  async function openKnown(cloudId) {
+    const e = TR.byCloud(cloudId);
+    if (!e) return false;
+    if (Sync.tripId !== cloudId) await TR.switchTo(e.id);
+    closeSheet(); render(true); toast(`Abriste «${S().trip.name}»`);
+    return true;
   }
   async function busyRun(el, label, fn) {
     if (el.dataset.busy) return;
@@ -1432,6 +1443,7 @@
   view.addEventListener('focusout', () => { if (remotePending) { remotePending = false; setTimeout(remoteRender, 60); } });
   addEventListener('viajapp:remote', () => {
     G.onRemote();
+    if (typeof TR !== 'undefined') TR.touch();
     remoteRender();
     if (sheet.open && draft && draft._kind === 'sync') refreshSheet();
   });
@@ -1453,6 +1465,15 @@
   const SEP = SplitModule({
     S, esc, ic, toast, money, buzz, confetti, refreshSheet, openSheet, closeSheet, $, $$, getDraft: () => draft, setDraft: v => { draft = v; },
     photoCache, FUND, log, render: a => render(a), BOL
+  });
+
+  /* Mis viajes y cuenta (js/trips.js): varios viajes, plantillas y cuenta con correo o Google */
+  const TR = TripsModule({
+    S, esc, ic, toast, buzz, confetti, openSheet, refreshSheet, closeSheet, $, render: a => render(a), confirmTap, log,
+    getDraft: () => draft, setDraft: v => { draft = v; }, releaseDraft,
+    onSwitch: () => { ui.shopMode = 'catalog'; Object.keys(photoCache).forEach(k => delete photoCache[k]); },
+    openTripSheet: () => ACT.trip(),
+    nameFor: () => { const u = Sync.user(); return Sync.savedName() || (u && (u.name || (u.email || '').split('@')[0])) || myName() || 'Yo'; }
   });
 
   const RENDER = { home: renderHome, shop: renderShop, recipes: renderRecipes, money: renderMoney, agenda: renderAgenda, group: G.render };
@@ -1955,6 +1976,7 @@
       if (!name) { toast('Escribe tu nombre'); $('#syName').focus(); return; }
       if (!navigator.onLine) { toast('Necesitas conexión a internet'); return; }
       return busyRun(el, 'Uniéndome…', async () => {
+        if (await openKnown(Sync.parseCode(code))) return;
         const tripName = await Sync.join(code, name);
         log('group', 'se unió al viaje compartido');
         ui.shopMode = 'catalog';
@@ -1967,8 +1989,8 @@
       if (!name) { toast('Escribe tu nombre'); $('#syName').focus(); return; }
       if (!navigator.onLine) { toast('Necesitas conexión a internet'); return; }
       return busyRun(el, 'Cambiando…', async () => {
-        await Sync.leave();
-        const tripName = await Sync.join(code, name);
+        if (await openKnown(Sync.parseCode(code))) return;
+        const tripName = await Sync.join(code, name);   // el viaje actual queda en Mis viajes
         log('group', 'se unió al viaje compartido');
         draft.code = '';
         ui.shopMode = 'catalog';
@@ -2010,6 +2032,7 @@
   Object.assign(ACT, G.ACT);
   Object.assign(ACT, BOL.ACT);
   Object.assign(ACT, SEP.ACT);
+  Object.assign(ACT, TR.ACT);
 
   /* ================= Eventos globales ================= */
   document.addEventListener('click', e => {
@@ -2097,11 +2120,13 @@
 
   /* Viaje compartido: reconectar y abrir invitaciones (?viaje=ID) */
   const syncBoot = Sync.init().then(() => render(false));
+  // Con cuenta: traer a Mis viajes los viajes creados en otros equipos
+  if (Sync.hasAccount()) syncBoot.then(() => TR.pullRemote()).then(n => { if (n && ui.tab === 'home') render(false); }).catch(() => {});
   const invite = new URLSearchParams(location.search).get('viaje');
   if (invite) {
     history.replaceState(history.state, '', location.pathname + location.hash);
     // Se espera la reconexión: si ya está en otro viaje, la hoja ofrece cambiarse
-    if (Sync.savedTrip() !== invite) syncBoot.then(() => setTimeout(() => openSync(invite), 400));
+    if (Sync.savedTrip() !== invite) syncBoot.then(() => setTimeout(async () => { if (!(await openKnown(invite).catch(() => false))) openSync(invite); }, 400));
   }
 
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {

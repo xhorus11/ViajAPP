@@ -151,10 +151,12 @@
     }
     return JSON.stringify({ app: 'viajapp', version: 1, state, photos: ph });
   }
+  /* Con Mis viajes hay varios viajes en el equipo: solo se tocan las fotos del viaje abierto */
+  const photoIds = st => [].concat(...(st.expenses || []).map(e => e.photos || []));
   async function restore(text) {
     const data = JSON.parse(text);
     if (data.app !== 'viajapp' || !data.state) throw new Error('Archivo no válido');
-    await photos.clear();
+    for (const id of photoIds(state)) await photos.del(id);
     for (const [id, url] of Object.entries(data.photos || {})) if (url) await photos.put(id, url);
     replace(data.state);
   }
@@ -166,11 +168,11 @@
     save();
   }
   async function reset() {
-    await photos.clear();
+    for (const id of photoIds(state)) await photos.del(id);
     replace(DEFAULT());
   }
 
   const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 
-  window.Store = { get state() { return state; }, save, photos, compress, backup, restore, reset, replace, uid, today };
+  window.Store = { get state() { return state; }, save, writeNow, photos, compress, backup, restore, reset, replace, uid, today, DEFAULT, photoIds };
 })();
