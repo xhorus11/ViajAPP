@@ -272,5 +272,11 @@ Otras: modo "en el súper", precios → gasto automático, OCR de boletas, multi
 - Pruebas: `tests/test-clima-loza.js` 34/34 (local y publicada; usa Open-Meteo real). Regresión OK: test2, help, group (4 tarjetas), diet-pantry, recipes-view (146), among, resp, mis-viajes y sync (emulador), check-recipes 146/400/1533, check-diets 165.
 - Manual: "Clima del destino" (Inicio), filtros y personas extra (Recetas), "¿Quién lava la loza?" (Tu grupo), 2 FAQ, capturas 48–50; PDF 36 págs. `shots.js` usa destino Pucón y 2 extra (el clima de la captura es real). SW → `viajapp-v24`. Publicado.
 
+### Sesión 22 · 2026-11-02 — Video tutorial
+- Pedido: video MP4 tipo manual con todos los módulos, cómo funciona la IA, voz neutra y subtítulos.
+- Hecho `manual/Video-Viajapp.mp4` (9:15, 1080p, 49 MB) + `manual/Video-Viajapp.srt`: 30 diapositivas (captura real del manual en un celular + título y puntos con el color del módulo), voz neuronal **es-MX-DaliaNeural** (edge-tts), subtítulos quemados y en SRT. Sección IA: foto → Worker seguro que valida la sesión → Gemini → verifica que la suma cuadre, si no otro modelo → tabla editable → nada se guarda sin confirmar → planilla; cuentas separadas.
+- Generador reutilizable en `tests/video/` (`guion.py`, `make_video.py`, `render.js`; ver `tests/LEEME.md`). ffmpeg viene de `imageio-ffmpeg` (no hay ffmpeg en PATH).
+- Manual: bloque "Video: Viajapp en 9 minutos" al inicio (`#video`, portada `img/video-portada.webp`, oculto al imprimir → el PDF no cambia), botón "Ver el video" y enlace en el índice. SW → `viajapp-v25`. Publicado.
+
 ### (nota sesión 5)
 - El usuario tenía la app en **Vercel**: ya no es necesaria si se publica en Firebase Hosting (recomendado: misma cuenta, dominio ya autorizado). Ojo: los datos locales son por dominio; para pasar datos usar el viaje compartido o Respaldo/Restaurar.

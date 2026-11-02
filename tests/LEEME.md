@@ -30,6 +30,11 @@ Servidor de la app (desde la raíz del proyecto): `python -m http.server 8765 --
 3. Con el servidor local: `node tests/manual-pdf.js http://127.0.0.1:8765/manual/index.html manual/Manual-Viajapp.pdf tests` → PDF del manual (abre las preguntas frecuentes antes de imprimir).
 Otros: `test-clima-loza.js` (ruleta de tareas, clima con Open-Meteo real, personas extra, filtros de recetas), `test-resp.js` (varios responsables + migración), `make_logo_icons.py` (íconos e insignia circular `logo-badge.png` desde `logo Viajapp v2.png`).
 
+## Video tutorial (`manual/Video-Viajapp.mp4` + `.srt`)
+Guion en `video/guion.py` (cada diapositiva: módulo, título, puntos, captura de `manual/img` y frases narradas = subtítulos).
+`pip install edge-tts imageio-ffmpeg`; con `NODE_PATH` apuntando a un `node_modules` con puppeteer-core y `VIAJAPP_BROWSER`:
+`python tests/video/make_video.py <carpeta de trabajo>` → voz neuronal es-MX-DaliaNeural (necesita internet; caché por frase), diapositivas 1920×1080 a 2x (`video/render.js`), zoom suave + fundidos + subtítulos quemados (Segoe UI) con el ffmpeg de imageio. ~9 min, ~49 MB. Pronunciación de palabras raras en `SAY` (solo la voz). Regenerar si cambian las capturas o los módulos.
+
 ## Sincronización con el emulador de Firebase
 Necesita Java 21 (Temurin) y `npm i -g firebase-tools@13.29.1`.
 En PowerShell, dentro de VS Code hay que quitar `VSCODE_CWD` (si no, firebase-tools busca mal sus plantillas):

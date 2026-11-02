@@ -83,6 +83,8 @@
     footer { margin-top: 50px; padding: 30px 0 calc(env(safe-area-inset-bottom, 0px) + 40px); text-align: center; color: var(--dim); border-top: 1px solid var(--stroke); }
     footer img { width: 56px; margin: 0 auto 8px; }
 
+    .video { display: block; width: 100%; max-width: 960px; aspect-ratio: 16 / 9; border-radius: 18px; background: #0a1628; }
+    .video-links { margin: 10px 0 0; color: var(--muted); }
     @media print {
       :root { color-scheme: light; }
       body { background: #fff; color: #1b1040; font-size: 11.5pt; }
@@ -115,12 +117,14 @@
   <p>La lista del súper, la despensa de la cabaña, recetas que se adaptan a la dieta de cada uno, los gastos con sus boletas, la carta financiera, la agenda de comidas, quién lleva qué, las camas y la bitácora del grupo, todo compartido en tiempo real. Esta guía te muestra cómo usar cada parte, paso a paso.</p>
   <div class="cta">
     <a class="btn primary" href="../">Abrir Viajapp</a>
+    <a class="btn" href="#video">Ver el video</a>
     <a class="btn" href="Manual-Viajapp.pdf" download>Descargar en PDF</a>
   </div>
 </header>
 
 <nav class="toc" aria-label="Contenido">
   <div class="wrap">
+    <a href="#video">Video</a>
     <a href="#inicio-rapido">Primeros pasos</a>
     <a href="#inicio">Inicio</a>
     <a href="#super">Súper</a>
@@ -137,6 +141,14 @@
 </nav>
 
 <main class="wrap">
+
+  <!-- Video tutorial -->
+  <section id="video" class="no-print">
+    <div class="sec-head"><h2>Video: Viajapp en 9 minutos</h2></div>
+    <p class="lead">Un recorrido por todos los módulos y por cómo funciona la inteligencia artificial que lee las boletas, con voz y subtítulos en español.</p>
+    <video class="video" controls preload="none" poster="img/video-portada.webp" src="Video-Viajapp.mp4"></video>
+    <p class="video-links"><a href="Video-Viajapp.mp4" download>Descargar el video (MP4)</a> · <a href="Video-Viajapp.srt" download>Subtítulos (SRT)</a></p>
+  </section>
 
   <!-- 1. Primeros pasos -->
   <section id="inicio-rapido">
