@@ -54,6 +54,10 @@
     fog: '<path d="M4 10h16M4 14h16M7 18h10M8 6h8"/>',
     moon: '<path d="M20 14.5A8 8 0 1 1 9.5 4 6.5 6.5 0 0 0 20 14.5z"/>',
     dish: '<circle cx="12.5" cy="12" r="6.5"/><circle cx="12.5" cy="12" r="3"/><path d="M2.5 3v5a1.5 1.5 0 0 0 3 0V3M4 9.5V21M4 3v4"/><path d="M21.5 3c-1.4 1-2 3-2 6.5h2V21"/>',
+    sparkle: '<path d="M11 3.5l1.9 4.8 4.8 1.9-4.8 1.9L11 16.9l-1.9-4.8-4.8-1.9 4.8-1.9z"/><path d="M18.5 14.5l.8 2.1 2.1.8-2.1.8-.8 2.1-.8-2.1-2.1-.8 2.1-.8z"/>',
+    mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/>',
+    heart: '<path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
     leaf: '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.9-5.4 5.2-6"/>',
     back: '<path d="M15 18l-6-6 6-6"/>',
     sun: '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/>',
@@ -252,7 +256,7 @@
       ['check', 'En <b>Mi lista</b> marca con el visto lo que ya compraste.'],
       ['pot', 'En <b>Despensa</b> queda lo que ya tienen en la cabaña.']] },
     recipes: { t: 'Recetas', m: 'recetas', s: [
-      ['search', 'Busca un plato o elige una categoría.'],
+      ['search', 'Busca un plato o elige una categoría. ¿Sin ideas? Toca <b>Chef IA</b> y te propone recetas con lo que hay.'],
       ['users', 'Toca la receta y elige <b>para cuántas personas</b> (los niños o visitas que no están en la lista se suman como <b>extra</b>).'],
       ['cart', 'Toca <b>Agregar a la lista</b> y los ingredientes pasan al súper.']] },
     money: { t: 'Dinero', m: 'dinero', s: [
@@ -608,7 +612,12 @@
   const diets = () => { const t = S().trip; t.diets = t.diets || {}; return t.diets; };
   function dietPeople() {
     return S().trip.people.map(n => ({ name: n, tags: (diets()[n] || {}).tags || [], note: (diets()[n] || {}).note || '' }))
-      .filter(p => p.tags.length).map(p => Object.assign(p, { avoid: Diet.avoidOf(p.tags) }));
+      .filter(p => p.tags.length).map(p => Object.assign(p, { avoid: Diet.avoidOf(p.tags), care: Diet.careOf(p.tags) }));
+  }
+  /* Quiénes deberían cuidar un producto por una condición de salud (no lo prohíbe: se reemplaza o se avisa) */
+  function whoCare(c, i, v, people) {
+    const a = Diet.attrs(c, i, v);
+    return (people || dietPeople()).map(p => ({ p, why: Diet.clash(a, p.care) })).filter(x => x.why.length);
   }
   /* Quiénes no pueden comer un producto y por qué */
   function whoCant(c, i, v, people) {
@@ -618,8 +627,9 @@
   const whyText = why => [...new Set(why.map(w => Diet.ATTR[w]))].join(', ');
   function dietWarnHTML(r) {
     if ((r.src || []).some(s => / · para /.test(s))) return '';          // ya es la porción adaptada
-    const w = whoCant(r.c, r.i, r.v);
-    return w.length ? `<div class="dw">${ic('alert')} No apto para ${w.map(x => `${esc(x.p.name)} (${esc(whyText(x.why))})`).join(', ')}</div>` : '';
+    const w = whoCant(r.c, r.i, r.v), h = whoCare(r.c, r.i, r.v).filter(x => !w.some(y => y.p === x.p));
+    return (w.length ? `<div class="dw">${ic('alert')} No apto para ${w.map(x => `${esc(x.p.name)} (${esc(whyText(x.why))})`).join(', ')}</div>` : '') +
+      (h.length ? `<div class="dw care">${ic('heart')} Con moderación para ${h.map(x => `${esc(x.p.name)} (${esc(whyText(x.why))})`).join(', ')}</div>` : '');
   }
   const dietSummary = () => dietPeople().map(p => `${p.name} (${p.tags.map(Diet.dietName).join(', ').toLowerCase()})`).join(' · ');
 
@@ -629,14 +639,19 @@
   }
   function dietsHTML() {
     const people = S().trip.people;
-    return `<div class="sheet-title"><span class="st-ico" style="--c:linear-gradient(135deg,var(--lime),var(--cyan))">${ic('leaf')}</span><div><h2>Dietas y alergias</h2><p>Las recetas avisan y se adaptan para cada persona</p></div></div>
+    const chips = (list, n, tags, color) => list.map(t => `<button class="chip ${tags.includes(t.id) ? 'active' : ''}" style="--c:${color}" data-act="dietTog" data-p="${esc(n)}" data-t="${t.id}">${esc(t.name)}</button>`).join('');
+    return `<div class="sheet-title"><span class="st-ico" style="--c:linear-gradient(135deg,var(--lime),var(--cyan))">${ic('leaf')}</span><div><h2>Dietas, alergias y salud</h2><p>Las recetas y el Chef IA avisan y se adaptan para cada persona</p></div></div>
       ${people.length === 1 && people[0] === 'Yo' ? `<p class="tip-inline">${ic('alert')} Primero agrega a los participantes en la configuración del viaje.</p>` : ''}
       ${people.map(n => { const d = diets()[n] || {}, tags = d.tags || []; return `
         <div class="diet-person">
           <div class="dp-name">${esc(n)}${tags.length ? ` <small>${tags.length} ${tags.length === 1 ? 'restricción' : 'restricciones'}</small>` : ''}</div>
-          <div class="chips wrap">${Diet.DIETS.map(t => `<button class="chip ${tags.includes(t.id) ? 'active' : ''}" style="--c:var(--teal)" data-act="dietTog" data-p="${esc(n)}" data-t="${t.id}">${esc(t.name)}</button>`).join('')}</div>
+          <div class="dp-k">Dietas y alergias</div>
+          <div class="chips wrap">${chips(Diet.DIETS, n, tags, 'var(--teal)')}</div>
+          <div class="dp-k">${ic('heart')} Condiciones de salud</div>
+          <div class="chips wrap">${chips(Diet.CONDS, n, tags, 'var(--rose)')}</div>
           <input class="diet-note" data-p="${esc(n)}" value="${esc(d.note || '')}" placeholder="Otra restricción o nota (ej. no le gusta el cilantro)" autocomplete="off">
         </div>`; }).join('')}
+      <p class="hint">Con una condición de salud, las recetas cambian lo que tiene reemplazo (azúcar → endulzante, leche entera → descremada) y avisan el resto (ej. alto en sodio). Son recomendaciones generales: sigan siempre la indicación de su médico.</p>
       <button class="btn primary block" style="margin-top:6px" data-act="close">Listo</button>`;
   }
 
@@ -1112,12 +1127,23 @@
   /* Plan de compra de una receta: adapta a las dietas del grupo y descuenta lo que hay en la despensa.
      mode: 'portion' (porción aparte para quien lo necesita) | 'all' (todo el plato apto) | 'none' (sin adaptar) */
   function cookPlan(r, vi, p, mode) {
-    const people = dietPeople(), rows = [], issues = [], adapts = [];
+    const people = dietPeople(), rows = [], issues = [], adapts = [], cautions = [];
     // x: unidades de lo que no tiene cantidad (sal, aceite, especias): 1 por cada 10 personas
     const push = (g, tot, n, extra) => rows.push(Object.assign({ c: g.c, i: g.i, v: g.v, u: g.u, fixed: !g.q, tot, x: g.q ? 0 : Math.max(1, Math.ceil(n / 10)) }, extra || {}));
     recipeIngs(r, vi).forEach(g => {
       const tot = g.q ? g.q * p : 0;
-      const who = whoCant(g.c, g.i, g.v, people);
+      const who = whoCant(g.c, g.i, g.v, people), care = whoCare(g.c, g.i, g.v, people).filter(x => !who.some(w => w.p === x.p));
+      // Salud: si hay alternativa se adapta igual que una dieta; si no, el ingrediente queda con un aviso
+      if (care.length && !who.length) {
+        const sub = mode === 'none' ? null : Diet.substitute(g, new Set(care.flatMap(x => [...x.p.care])));
+        if (!sub) { push(g, tot, p); cautions.push({ g, who: care }); return; }
+        const k = mode === 'all' ? p : Math.min(p, care.length);
+        if (p - k > 0) push(g, g.q ? g.q * (p - k) : 0, p - k);
+        push(Object.assign({}, g, sub), g.q ? g.q * k : 0, k, { adapted: true, forWho: mode === 'all' ? null : care.map(x => x.p.name) });
+        adapts.push({ g, sub, who: care, soft: true });
+        return;
+      }
+      if (care.length) cautions.push({ g, who: care });
       if (!who.length || mode === 'none') { push(g, tot, p); if (who.length) issues.push({ g, who }); return; }
       const avoid = new Set((mode === 'all' ? people : who.map(x => x.p)).flatMap(pp => [...pp.avoid]));
       const sub = Diet.substitute(g, avoid);
@@ -1135,7 +1161,7 @@
       if (row.fixed) row.covered = true;
       else if (e.a[row.u]) { row.need = Math.max(0, Math.round((row.tot - e.a[row.u]) * 100) / 100); row.covered = row.need <= 0; }
     });
-    return { rows, issues, adapts };
+    return { rows, issues, adapts, cautions };
   }
   /* Estado de una receta para el grupo: ok (apta), adapt (apta con reemplazos), no (alguien no puede) */
   function planStatus(pl) { return pl.issues.length ? 'no' : pl.adapts.length ? 'adapt' : 'ok'; }
@@ -1236,9 +1262,10 @@
     return `<div class="page">
       ${header(`Recetario · ${allRecipes().length} recetas`, '¿Qué cocinamos?')}
       <label class="search"><input type="search" id="recSearch" placeholder="Buscar: pesto, pollo, pisco sour..." value="${esc(ui.recQ)}" autocomplete="off"></label>
+      <button class="chef-btn" data-act="chef">${ic('sparkle')}<span><b>Chef IA</b><small>¿Qué cocinamos con lo que hay? Ideas a la medida del grupo</small></span>${ic('arrow')}</button>
       ${dietPeople().length
         ? `<button class="diet-banner" data-act="diets">${ic('leaf')}<span><b>Dietas del grupo</b><small>${esc(dietSummary())}</small></span><i>Editar</i></button>`
-        : `<button class="diet-banner empty" data-act="diets">${ic('leaf')}<span><b>¿Alguien tiene una dieta o alergia?</b><small>Agrégala y las recetas avisan y se adaptan solas</small></span></button>`}
+        : `<button class="diet-banner empty" data-act="diets">${ic('leaf')}<span><b>¿Dietas, alergias o temas de salud?</b><small>Agrégalos y las recetas avisan y se adaptan solas</small></span></button>`}
       <div class="sticky-chips">${recChips()}</div>
       <div id="recGrid">${recSections()}</div>
     </div><button class="fab" data-act="newRecipe" aria-label="Nueva receta">${ic('plus')}</button>`;
@@ -1271,12 +1298,13 @@
     const people = dietPeople();
     if (!people.length) return '';
     const probe = cookPlan(r, d.vi, d.p, 'portion');
-    if (planStatus(probe) === 'ok') return `<div class="diet-box ok">${ic('check')} Apta para todo el grupo (${esc(people.map(p => p.name).join(', '))})</div>`;
+    if (planStatus(probe) === 'ok' && !probe.cautions.length) return `<div class="diet-box ok">${ic('check')} Apta para todo el grupo (${esc(people.map(p => p.name).join(', '))})</div>`;
     const pl = cookPlan(r, d.vi, d.p, d.mode);
     const names = w => w.map(x => `<b>${esc(x.p.name)}</b>`).join(', ');
     return `<div class="diet-box">
       <div class="db-h">${ic('leaf')} Dietas del grupo</div>
       ${pl.adapts.map(a => `<div class="db-line">${names(a.who)}: ${prodName(a.g.i, a.g.v)} → <b>${prodName(a.sub.i, a.sub.v)}</b>${d.mode === 'portion' ? ' (porción aparte)' : ''}</div>`).join('')}
+      ${issuesByPerson(pl.cautions).map(x => `<div class="db-line care">${ic('heart')} <b>${esc(x.name)}</b>: ${x.prods.join(', ')} (${esc(whyText(x.why))}) en poca cantidad.</div>`).join('')}
       ${issuesByPerson(pl.issues).map(x => `<div class="db-line bad">${ic('alert')} <b>${esc(x.name)}</b> no puede comer ${x.prods.join(', ')} (${esc(whyText(x.why))})${d.mode === 'none' ? '' : ': sin reemplazo, prepárale algo aparte'}.</div>`).join('')}
       <div class="chips wrap" style="margin-top:10px">${[['portion', 'Porción aparte'], ['all', 'Todo el plato apto'], ['none', 'Sin adaptar']].map(([m, l]) =>
         `<button class="chip ${d.mode === m ? 'active' : ''}" style="--c:var(--teal)" data-act="cookMode" data-m="${m}">${l}</button>`).join('')}</div>
@@ -1317,6 +1345,7 @@
             <span class="vn">${esc(row.i)}${row.v ? ` <small style="color:var(--muted)">· ${esc(row.v)}</small>` : ''}${row.adapted ? ` <small class="adapted">${row.forWho ? 'para ' + esc(row.forWho.join(', ')) : 'apto para todos'}</small>` : ''}${pantry}${sel[key(row.c, row.i, row.v)] ? ' <small class="inlist">en tu lista</small>' : ''}</span>
             <b class="amt">${partial ? 'faltan ' : ''}${esc(amt)}</b></div>`;
         }).join('')}</div>
+      ${r.steps && r.steps.length ? `<details class="steps-box"><summary>${ic('list')} Preparación · ${r.steps.length} pasos</summary><ol>${r.steps.map(x => `<li>${esc(x)}</li>`).join('')}</ol></details>` : ''}
       <button class="btn primary block shine" data-act="cookAdd">${ic('cart')} Agregar ${on} ingredientes a la lista</button>
       <div class="btn-row" style="margin-top:10px">
         <button class="btn sea" data-act="cookAgenda">${ic('calendar')} Agendar</button>
@@ -1344,7 +1373,7 @@
     buildIngIndex();
     const c0 = RECIPE_CATS.some(c => c.id === ui.recCat) ? ui.recCat : 'pastas';
     draft = {
-      _kind: 'recipe', id: r ? r.id : null, n: r ? r.n : '', e: r ? r.e : '🍽️', c: r ? r.c : c0, big: !!(r && r.big),
+      _kind: 'recipe', id: r ? r.id : null, n: r ? r.n : '', e: r ? r.e : '🍽️', c: r ? r.c : c0, big: !!(r && r.big), steps: r && r.steps ? r.steps.join('\n') : '',
       base: r ? r.base.map(toRow) : [blankRow()],
       vars: r ? r.vars.map(v => ({ n: v.n, ing: v.ing.map(toRow) })) : []
     };
@@ -1380,6 +1409,8 @@
           <button class="del" style="margin-bottom:14px" data-act="rcDelVar" data-vi="${vi}" aria-label="Eliminar variante">${ic('trash')}</button>
         </div>${ingRowsHTML(vi, v.ing)}</div>`).join('')}
       <button class="btn block" data-act="rcAddVar">${ic('plus')} Agregar variante</button>
+      <label class="field" style="margin-top:14px"><span>Preparación <small style="color:var(--muted);font-weight:500">(opcional, un paso por línea)</small></span>
+        <textarea id="rcSteps" rows="4" placeholder="Ej: Picar la cebolla y sofreír 5 minutos">${esc(d.steps || '')}</textarea></label>
       ${ingIndex.html}
       <button class="btn primary block shine" style="margin-top:18px" data-act="rcSave">Guardar receta</button>
       ${builtin && edited ? `<button class="btn block" style="margin-top:10px" data-act="rcRestore">${ic('undo')} Restaurar original</button>` : ''}
@@ -1387,7 +1418,7 @@
   }
   function readEditor() {
     const d = draft;
-    d.n = $('#rcName').value; d.e = $('#rcEmoji').value; d.c = $('#rcCat').value;
+    d.n = $('#rcName').value; d.e = $('#rcEmoji').value; d.c = $('#rcCat').value; if ($('#rcSteps')) d.steps = $('#rcSteps').value;
     $$('.rc-vname').forEach(el => { d.vars[+el.dataset.vi].n = el.value; });
     $$('.ing-row').forEach(row => {
       const s = row.dataset.s, list = s === 'b' ? d.base : d.vars[+s].ing;
@@ -1517,6 +1548,13 @@
   const SEP = SplitModule({
     S, esc, ic, toast, money, buzz, confetti, refreshSheet, openSheet, closeSheet, $, $$, getDraft: () => draft, setDraft: v => { draft = v; },
     photoCache, FUND, log, render: a => render(a), BOL
+  });
+
+  /* Chef IA (js/chef.js): recetas con lo que hay en la despensa, según dietas y salud del grupo */
+  const CHEF = ChefModule({
+    S, esc, ic, toast, buzz, confetti, openSheet, refreshSheet, $, norm, cap, key, setDraft: v => { draft = v; }, releaseDraft, log,
+    groupSize, dietPeople, allRecipes, getRecipe, recipeStatus, recipeIngs, P_, pantryText, ensureCatalogItem, updateBadge,
+    openCook: (id, vi, p) => openCook(id, vi, p), openEvent: (id, t, pre) => openEvent(id, t, pre), RECIPE_MEAL, R_, U, render: a => render(a)
   });
 
   /* Clima del destino (js/clima.js) */
@@ -2001,7 +2039,8 @@
       const vars = d.vars.filter(v => v.n.trim()).map(v => ({ n: v.n.trim(), ing: v.ing.map(rowToIng).filter(Boolean) }));
       if (!base.length && !vars.some(v => v.ing.length)) { toast('Agrega al menos un ingrediente'); return; }
       const id = d.id || 'u_' + Store.uid();
-      R_().custom[id] = { id, n: cap(name), e: d.e.trim() || '🍽️', c: d.c, big: !!d.big, base, vars };
+      const steps = String(d.steps || '').split('\n').map(x => x.replace(/^\s*\d+[.)-]\s*/, '').trim()).filter(Boolean);
+      R_().custom[id] = Object.assign({ id, n: cap(name), e: d.e.trim() || '🍽️', c: d.c, big: !!d.big, base, vars }, steps.length ? { steps } : {});
       log('recipes', d.id ? `editó la receta “${cap(name)}”` : `creó la receta “${cap(name)}”`);
       delete R_().hidden[id];
       Store.save(); closeSheet(); render(false);
@@ -2097,6 +2136,7 @@
   Object.assign(ACT, SEP.ACT);
   Object.assign(ACT, TR.ACT);
   Object.assign(ACT, WX.ACT);
+  Object.assign(ACT, CHEF.ACT);
 
   /* ================= Eventos globales ================= */
   document.addEventListener('click', e => {

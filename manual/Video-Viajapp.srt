@@ -7,429 +7,513 @@ Bienvenido a Viajapp, la aplicación para organizar viajes en grupo.
 En este video vas a conocer todos sus módulos, paso a paso.
 
 3
-00:00:11,372 --> 00:00:16,830
-También verás cómo funciona la inteligencia artificial que lee tus boletas.
+00:00:11,372 --> 00:00:18,174
+También verás cómo funciona la inteligencia artificial: el Chef IA y la lectura de boletas.
 
 4
-00:00:17,880 --> 00:00:21,346
+00:00:19,224 --> 00:00:22,690
 Al abrir la aplicación llegas a Inicio.
 
 5
-00:00:21,446 --> 00:00:25,389
+00:00:22,790 --> 00:00:26,733
 La tarjeta azul muestra el nombre del viaje, las fechas,
 
 6
-00:00:25,409 --> 00:00:28,560
+00:00:26,753 --> 00:00:29,904
 cuántos van y en qué día del viaje están.
 
 7
-00:00:28,660 --> 00:00:31,785
+00:00:30,004 --> 00:00:33,129
 Más abajo ves cuántos productos ya se compraron,
 
 8
-00:00:31,805 --> 00:00:35,462
+00:00:33,149 --> 00:00:36,806
 cuánto se ha gastado y el próximo plan de la agenda.
 
 9
-00:00:35,562 --> 00:00:42,700
+00:00:36,906 --> 00:00:44,044
 En la barra inferior están los cinco módulos: Inicio, Súper, Recetas, Dinero y Agenda.
 
 10
-00:00:43,750 --> 00:00:50,288
+00:00:45,094 --> 00:00:51,632
 Si es tu primera vez, la tarjeta Tu próximo paso te guía con una sola tarea a la vez.
 
 11
-00:00:50,388 --> 00:00:54,838
+00:00:51,732 --> 00:00:56,182
 Los pasos se marcan solos a medida que completas el viaje.
 
 12
-00:00:54,938 --> 00:01:01,380
+00:00:56,282 --> 00:01:02,724
 Y en cada pantalla, el botón con el signo de pregunta explica en tres pasos cómo se usa.
 
 13
-00:01:02,430 --> 00:01:06,184
+00:01:03,774 --> 00:01:07,528
 Con el botón de ajustes configuras el viaje.
 
 14
-00:01:06,284 --> 00:01:11,358
+00:01:07,628 --> 00:01:12,702
 Escribe el nombre, las fechas, el destino y quiénes van.
 
 15
-00:01:11,458 --> 00:01:16,823
+00:01:12,802 --> 00:01:18,167
 Si vienen niños o visitas que no usan la app, agrégalos como personas extra:
 
 16
-00:01:16,843 --> 00:01:19,148
+00:01:18,187 --> 00:01:20,492
 las recetas los van a contar.
 
 17
-00:01:19,248 --> 00:01:24,826
+00:01:20,592 --> 00:01:26,170
 Aquí también defines los fondos del viaje y los responsables que rinden los gastos.
 
 18
-00:01:25,876 --> 00:01:30,566
+00:01:27,220 --> 00:01:31,910
 En Dietas y alergias marcas lo que no puede comer cada persona.
 
 19
-00:01:30,666 --> 00:01:37,300
+00:01:32,010 --> 00:01:38,644
 Por ejemplo, celíaco, vegetariano, vegano o alergia a los frutos secos.
 
 20
-00:01:37,400 --> 00:01:38,568
+00:01:38,744 --> 00:01:39,912
 Desde ese momento,
 
 21
-00:01:38,588 --> 00:01:44,778
+00:01:39,932 --> 00:01:46,122
 la app avisa qué recetas son aptas y propone reemplazos para que nadie se quede sin comer.
 
 22
-00:01:45,828 --> 00:01:50,734
-Para que todo el grupo vea lo mismo, toca Compartir con mi grupo.
+00:01:47,172 --> 00:01:52,493
+También puedes marcar condiciones de salud, como diabetes, hipertensión,
 
 23
-00:01:50,834 --> 00:01:55,740
-Invita con un enlace, un código o un código QR.
+00:01:52,513 --> 00:01:54,766
+colesterol alto o embarazo.
 
 24
-00:01:55,840 --> 00:02:00,890
-Los cambios de cada persona aparecen en vivo en los demás celulares.
+00:01:54,866 --> 00:02:00,520
+Las recetas cambian lo que tiene una alternativa más sana, por ejemplo azúcar por endulzante,
 
 25
-00:02:00,990 --> 00:02:06,856
-Y si no hay señal, la app sigue funcionando y sincroniza cuando vuelve la conexión.
+00:02:00,540 --> 00:02:05,244
+y avisan lo que conviene comer en poca cantidad, como los caldos en cubo.
 
 26
-00:02:07,906 --> 00:02:12,932
-Con el destino definido, la tarjeta del viaje muestra el clima.
+00:02:05,344 --> 00:02:10,874
+Son recomendaciones generales: siempre manda la indicación del médico.
 
 27
-00:02:13,032 --> 00:02:17,436
-Al tocarlo ves el pronóstico de cada día, con temperatura máxima,
+00:02:11,924 --> 00:02:16,830
+Para que todo el grupo vea lo mismo, toca Compartir con mi grupo.
 
 28
-00:02:17,456 --> 00:02:22,402
-mínima y probabilidad de lluvia, además de consejos sobre qué llevar.
+00:02:16,930 --> 00:02:21,836
+Invita con un enlace, un código o un código QR.
 
 29
-00:02:22,502 --> 00:02:24,858
-Si el viaje es en más de 16 días,
+00:02:21,936 --> 00:02:26,986
+Los cambios de cada persona aparecen en vivo en los demás celulares.
 
 30
-00:02:24,878 --> 00:02:29,808
-muestra cómo estuvo el clima en esas mismas fechas el año pasado.
+00:02:27,086 --> 00:02:32,952
+Y si no hay señal, la app sigue funcionando y sincroniza cuando vuelve la conexión.
 
 31
-00:02:30,858 --> 00:02:34,300
-En Súper armas la lista de compras.
+00:02:34,002 --> 00:02:39,028
+Con el destino definido, la tarjeta del viaje muestra el clima.
 
 32
-00:02:34,400 --> 00:02:39,594
-El catálogo está ordenado por categorías, como en el supermercado.
+00:02:39,128 --> 00:02:43,532
+Al tocarlo ves el pronóstico de cada día, con temperatura máxima,
 
 33
-00:02:39,694 --> 00:02:45,943
-Toca un producto para agregarlo; si tiene variantes, como aceite de oliva o de maravilla,
+00:02:43,552 --> 00:02:48,498
+mínima y probabilidad de lluvia, además de consejos sobre qué llevar.
 
 34
-00:02:45,963 --> 00:02:48,608
-eliges una o varias y la cantidad.
+00:02:48,598 --> 00:02:50,954
+Si el viaje es en más de 16 días,
 
 35
-00:02:49,658 --> 00:02:55,212
-En Mi lista los productos aparecen agrupados y con la cantidad que necesitas.
+00:02:50,974 --> 00:02:55,904
+muestra cómo estuvo el clima en esas mismas fechas el año pasado.
 
 36
-00:02:55,312 --> 00:03:02,114
-En el supermercado, márcalos a medida que los compras; el resto del grupo lo ve al instante.
+00:02:56,954 --> 00:03:00,396
+En Súper armas la lista de compras.
 
 37
-00:03:02,214 --> 00:03:08,032
-También puedes exportar la lista como imagen o como PDF para enviarla por WhatsApp.
+00:03:00,496 --> 00:03:05,690
+El catálogo está ordenado por categorías, como en el supermercado.
 
 38
-00:03:09,082 --> 00:03:13,292
-Todo lo que marcas como comprado pasa a la Despensa.
+00:03:05,790 --> 00:03:12,039
+Toca un producto para agregarlo; si tiene variantes, como aceite de oliva o de maravilla,
 
 39
-00:03:13,392 --> 00:03:18,802
-Cuando cocinas una receta, la app descuenta los ingredientes que usaste.
+00:03:12,059 --> 00:03:14,704
+eliges una o varias y la cantidad.
 
 40
-00:03:18,902 --> 00:03:24,864
-Así siempre sabes qué queda en la cabaña, y lo que se acaba vuelve a la lista con un toque.
+00:03:15,754 --> 00:03:21,308
+En Mi lista los productos aparecen agrupados y con la cantidad que necesitas.
 
 41
-00:03:25,914 --> 00:03:31,276
-En Recetas tienes 146 recetas con 400 variantes.
+00:03:21,408 --> 00:03:28,210
+En el supermercado, márcalos a medida que los compras; el resto del grupo lo ve al instante.
 
 42
-00:03:31,376 --> 00:03:38,602
-Hay comida chilena, latinoamericana, asiática y europea, además de desayunos, onces,
+00:03:28,310 --> 00:03:34,128
+También puedes exportar la lista como imagen o como PDF para enviarla por WhatsApp.
 
 43
-00:03:38,622 --> 00:03:40,338
-postres y tragos.
+00:03:35,178 --> 00:03:39,388
+Todo lo que marcas como comprado pasa a la Despensa.
 
 44
-00:03:40,438 --> 00:03:46,640
-Usa el buscador o las categorías, y crea tus propias recetas cuando quieras.
+00:03:39,488 --> 00:03:44,898
+Cuando cocinas una receta, la app descuenta los ingredientes que usaste.
 
 45
-00:03:47,690 --> 00:03:53,028
-Al abrir una receta, elige la variante y para cuántas personas.
+00:03:44,998 --> 00:03:50,960
+Así siempre sabes qué queda en la cabaña, y lo que se acaba vuelve a la lista con un toque.
 
 46
-00:03:53,128 --> 00:03:59,066
-La app calcula las cantidades para todo el grupo, incluidas las personas extra.
+00:03:52,010 --> 00:03:57,372
+En Recetas tienes 146 recetas con 400 variantes.
 
 47
-00:03:59,166 --> 00:04:02,290
-Lo que ya está en la despensa no se vuelve a comprar,
+00:03:57,472 --> 00:04:04,698
+Hay comida chilena, latinoamericana, asiática y europea, además de desayunos, onces,
 
 48
-00:04:02,310 --> 00:04:06,712
-y con un toque los ingredientes que faltan pasan a la lista del súper.
+00:04:04,718 --> 00:04:06,434
+postres y tragos.
 
 49
-00:04:07,762 --> 00:04:09,807
-Los filtros te ayudan a elegir:
+00:04:06,534 --> 00:04:12,736
+Usa el buscador o las categorías, y crea tus propias recetas cuando quieras.
 
 50
-00:04:09,827 --> 00:04:15,140
-Para grupos grandes muestra platos de olla o bandeja que rinden para muchos.
+00:04:13,786 --> 00:04:19,124
+Al abrir una receta, elige la variante y para cuántas personas.
 
 51
-00:04:15,240 --> 00:04:19,594
-También hay filtros de recetas vegetarianas y veganas.
+00:04:19,224 --> 00:04:25,162
+La app calcula las cantidades para todo el grupo, incluidas las personas extra.
 
 52
-00:04:19,694 --> 00:04:22,067
-Si alguien tiene una dieta especial,
+00:04:25,262 --> 00:04:28,386
+Lo que ya está en la despensa no se vuelve a comprar,
 
 53
-00:04:22,087 --> 00:04:26,592
-la app prepara una porción aparte con los reemplazos necesarios.
+00:04:28,406 --> 00:04:32,808
+y con un toque los ingredientes que faltan pasan a la lista del súper.
 
 54
-00:04:27,642 --> 00:04:31,228
-En Agenda organizas el viaje día a día.
+00:04:33,858 --> 00:04:35,903
+Los filtros te ayudan a elegir:
 
 55
-00:04:31,328 --> 00:04:39,282
-Agrega desayunos, almuerzos, onces, paseos o traslados, con hora, lugar y encargado.
+00:04:35,923 --> 00:04:41,236
+Para grupos grandes muestra platos de olla o bandeja que rinden para muchos.
 
 56
-00:04:39,382 --> 00:04:43,472
-La agenda completa se puede exportar en PDF.
+00:04:41,336 --> 00:04:45,690
+También hay filtros de recetas vegetarianas y veganas.
 
 57
-00:04:44,522 --> 00:04:48,420
-A cada comida le puedes vincular una receta.
+00:04:45,790 --> 00:04:48,163
+Si alguien tiene una dieta especial,
 
 58
-00:04:48,520 --> 00:04:51,340
-Desde ahí envías los ingredientes a la lista,
+00:04:48,183 --> 00:04:52,688
+la app prepara una porción aparte con los reemplazos necesarios.
 
 59
-00:04:51,360 --> 00:04:56,090
-y al terminar la marcas como cocinada para descontarlos de la despensa.
+00:04:53,738 --> 00:04:59,700
+¿No sabes qué cocinar? Toca Chef IA, arriba en Recetas.
 
 60
-00:04:57,140 --> 00:05:00,342
-En Dinero controlas el presupuesto.
+00:04:59,800 --> 00:05:04,580
+Indica cuántas personas comen, cuánto tiempo tienes y, si quieres,
 
 61
-00:05:00,442 --> 00:05:06,356
-Ves el saldo disponible, cuánto se ha gastado y en qué categorías se va el dinero.
+00:05:04,600 --> 00:05:07,250
+escribe o dicta qué se te antoja.
 
 62
-00:05:06,456 --> 00:05:12,490
-Desde aquí registras gastos, divides cuentas y generas los documentos para rendir.
+00:05:07,350 --> 00:05:10,332
+La inteligencia artificial revisa la despensa,
 
 63
-00:05:13,540 --> 00:05:17,606
-Para registrar un gasto, toca el botón más.
+00:05:10,352 --> 00:05:14,584
+lo que falta comprar y las dietas y la salud de cada persona.
 
 64
-00:05:17,706 --> 00:05:23,692
-Escribe el monto, elige la categoría, quién pagó y el tipo de documento.
+00:05:15,634 --> 00:05:19,575
+En segundos propone tres recetas, cada una con su tiempo,
 
 65
-00:05:23,792 --> 00:05:29,970
-Puedes adjuntar la foto de la boleta como respaldo, o un PDF si es electrónica.
+00:05:19,595 --> 00:05:23,180
+su dificultad y cuánto aprovecha de la despensa.
 
 66
-00:05:31,020 --> 00:05:35,878
-Si un gasto no es de todos, indica entre quiénes se reparte.
+00:05:23,280 --> 00:05:28,777
+Explica cómo adaptarla para cada persona, por ejemplo fideos sin gluten aparte,
 
 67
-00:05:35,978 --> 00:05:40,548
-La app muestra al instante cuánto le corresponde a cada uno.
+00:05:28,797 --> 00:05:31,282
+y cómo cuida la salud del grupo.
 
 68
-00:05:41,598 --> 00:05:45,112
-Cuentas claras calcula quién le debe a quién.
+00:05:31,382 --> 00:05:35,205
+Las dietas y alergias son reglas obligatorias para el Chef,
 
 69
-00:05:45,212 --> 00:05:49,804
-Propone el menor número de transferencias posible para dejar todo saldado,
+00:05:35,225 --> 00:05:38,928
+pero revisa siempre los ingredientes si hay alergias.
 
 70
-00:05:49,824 --> 00:05:53,190
-y puedes copiar el resumen para enviarlo al grupo.
+00:05:39,978 --> 00:05:43,730
+Cada propuesta muestra qué ingredientes están en la despensa,
 
 71
-00:05:54,240 --> 00:05:57,826
-Ahora, la inteligencia artificial.
+00:05:43,750 --> 00:05:47,092
+cuáles hay que comprar y los pasos de preparación.
 
 72
-00:05:57,926 --> 00:06:03,175
-En el formulario del gasto, toca Leer boleta con IA y saca una foto a la boleta,
+00:05:47,192 --> 00:05:50,197
+Con un toque, lo que falta pasa a la lista,
 
 73
-00:06:03,195 --> 00:06:06,936
-o sube la boleta electrónica que te llegó por correo.
+00:05:50,217 --> 00:05:54,618
+la receta se agenda o se guarda en Mías con su preparación.
 
 74
-00:06:07,036 --> 00:06:10,411
-La inteligencia artificial lee el local, la fecha,
+00:05:54,718 --> 00:06:01,040
+Y si no hay internet, el Chef te muestra recetas del recetario que aprovechan lo que tienes.
 
 75
-00:06:10,431 --> 00:06:15,230
-el número de documento y cada producto con su cantidad y su precio.
+00:06:02,090 --> 00:06:05,676
+En Agenda organizas el viaje día a día.
 
 76
-00:06:16,280 --> 00:06:19,282
-La foto viaja a un servidor seguro de Viajapp,
+00:06:05,776 --> 00:06:13,730
+Agrega desayunos, almuerzos, onces, paseos o traslados, con hora, lugar y encargado.
 
 77
-00:06:19,302 --> 00:06:23,034
-que primero comprueba que vienes desde la aplicación.
+00:06:13,830 --> 00:06:17,920
+La agenda completa se puede exportar en PDF.
 
 78
-00:06:23,134 --> 00:06:27,671
-Luego un modelo de inteligencia artificial de Google, llamado Gemini,
+00:06:18,970 --> 00:06:22,868
+A cada comida le puedes vincular una receta.
 
 79
-00:06:27,691 --> 00:06:31,376
-interpreta la imagen y devuelve los datos ordenados.
+00:06:22,968 --> 00:06:25,788
+Desde ahí envías los ingredientes a la lista,
 
 80
-00:06:31,476 --> 00:06:37,414
-Después la app verifica que la suma de los productos coincida con el total de la boleta.
+00:06:25,808 --> 00:06:30,538
+y al terminar la marcas como cocinada para descontarlos de la despensa.
 
 81
-00:06:37,514 --> 00:06:43,620
-Si no coincide, vuelve a leerla con otro modelo y se queda con la lectura que cuadra.
+00:06:31,588 --> 00:06:34,790
+En Dinero controlas el presupuesto.
 
 82
-00:06:44,670 --> 00:06:49,160
-El resultado aparece en una tabla que puedes corregir: nombre,
+00:06:34,890 --> 00:06:40,804
+Ves el saldo disponible, cuánto se ha gastado y en qué categorías se va el dinero.
 
 83
-00:06:49,180 --> 00:06:51,976
-cantidad y precio de cada producto.
+00:06:40,904 --> 00:06:46,938
+Desde aquí registras gastos, divides cuentas y generas los documentos para rendir.
 
 84
-00:06:52,076 --> 00:06:56,406
-Un aviso verde confirma que la suma cuadra con el total.
+00:06:47,988 --> 00:06:52,054
+Para registrar un gasto, toca el botón más.
 
 85
-00:06:56,506 --> 00:07:02,708
-Nada se guarda hasta que tocas Usar estos datos; ahí el gasto se completa solo.
+00:06:52,154 --> 00:06:58,140
+Escribe el monto, elige la categoría, quién pagó y el tipo de documento.
 
 86
-00:07:03,758 --> 00:07:09,144
-Con las boletas leídas, genera la Planilla de gastos en Excel o en Word.
+00:06:58,240 --> 00:07:04,418
+Puedes adjuntar la foto de la boleta como respaldo, o un PDF si es electrónica.
 
 87
-00:07:09,244 --> 00:07:13,397
-Incluye un resumen por boleta y el detalle de cada producto,
+00:07:05,468 --> 00:07:10,326
+Si un gasto no es de todos, indica entre quiénes se reparte.
 
 88
-00:07:13,417 --> 00:07:16,310
-lista para rendir ante tu institución.
+00:07:10,426 --> 00:07:14,996
+La app muestra al instante cuánto le corresponde a cada uno.
 
 89
-00:07:17,360 --> 00:07:21,786
-En el bar o el restaurante, usa Cuentas separadas.
+00:07:16,046 --> 00:07:19,560
+Cuentas claras calcula quién le debe a quién.
 
 90
-00:07:21,886 --> 00:07:27,488
-La inteligencia artificial lee la boleta y tú indicas qué consumió cada persona.
+00:07:19,660 --> 00:07:24,252
+Propone el menor número de transferencias posible para dejar todo saldado,
 
 91
-00:07:27,588 --> 00:07:33,430
-La app suma la propina que elijas y calcula exactamente cuánto paga cada uno.
+00:07:24,272 --> 00:07:27,638
+y puedes copiar el resumen para enviarlo al grupo.
 
 92
-00:07:34,480 --> 00:07:40,747
-Al final del viaje, la Carta financiera genera un PDF formal con los fondos, los gastos,
+00:07:28,688 --> 00:07:32,946
+La inteligencia artificial también lee tus boletas.
 
 93
-00:07:40,767 --> 00:07:44,018
-los responsables y las boletas como anexo.
+00:07:33,046 --> 00:07:38,295
+En el formulario del gasto, toca Leer boleta con IA y saca una foto a la boleta,
 
 94
-00:07:44,118 --> 00:07:48,808
-Puedes poner el logo de tu institución en todos los documentos.
+00:07:38,315 --> 00:07:42,056
+o sube la boleta electrónica que te llegó por correo.
 
 95
-00:07:49,858 --> 00:07:55,484
-Desde la tarjeta Tu grupo, en Inicio, se abren cuatro herramientas.
+00:07:42,156 --> 00:07:45,531
+La inteligencia artificial lee el local, la fecha,
 
 96
-00:07:55,584 --> 00:08:01,021
-¿Quién lleva qué? reparte las cosas compartidas, como la parrilla o el parlante,
+00:07:45,551 --> 00:07:50,350
+el número de documento y cada producto con su cantidad y su precio.
 
 97
-00:08:01,041 --> 00:08:03,610
-y controla que vuelvan a su dueño.
+00:07:51,400 --> 00:07:54,402
+La foto viaja a un servidor seguro de Viajapp,
 
 98
-00:08:03,710 --> 00:08:08,640
-Habitaciones asigna las camas, a mano o con un sorteo.
+00:07:54,422 --> 00:07:58,154
+que primero comprueba que vienes desde la aplicación.
 
 99
-00:08:08,740 --> 00:08:13,406
-Y la Bitácora registra lo que hace cada persona en el viaje.
+00:07:58,254 --> 00:08:02,791
+Luego un modelo de inteligencia artificial de Google, llamado Gemini,
 
 100
-00:08:14,456 --> 00:08:21,714
-Y para evitar discusiones, la ruleta elige al azar quién lava la loza, saca la basura o cocina.
+00:08:02,811 --> 00:08:06,496
+interpreta la imagen y devuelve los datos ordenados.
 
 101
-00:08:21,814 --> 00:08:27,224
-Con la opción Por turnos, nadie repite hasta que a todos les haya tocado.
+00:08:06,596 --> 00:08:12,534
+Después la app verifica que la suma de los productos coincida con el total de la boleta.
 
 102
-00:08:28,274 --> 00:08:33,060
-En Mis viajes guardas todos tus viajes y cambias entre ellos.
+00:08:12,634 --> 00:08:18,740
+Si no coincide, vuelve a leerla con otro modelo y se queda con la lectura que cuadra.
 
 103
-00:08:33,160 --> 00:08:39,218
-Puedes usar un viaje anterior como plantilla para repetirlo, sin copiar los gastos.
+00:08:19,790 --> 00:08:24,280
+El resultado aparece en una tabla que puedes corregir: nombre,
 
 104
-00:08:39,318 --> 00:08:45,664
-Y si creas una cuenta con tu correo o con Google, recuperas tus viajes en cualquier celular.
+00:08:24,300 --> 00:08:27,096
+cantidad y precio de cada producto.
 
 105
-00:08:46,714 --> 00:08:52,412
-Por último, elige el tema Día o Noche y el tamaño de letra que te acomode.
+00:08:27,196 --> 00:08:31,526
+Un aviso verde confirma que la suma cuadra con el total.
 
 106
-00:08:52,512 --> 00:08:57,826
-Viajapp está pensada para que la use todo el grupo, de cualquier edad.
+00:08:31,626 --> 00:08:37,828
+Nada se guarda hasta que tocas Usar estos datos; ahí el gasto se completa solo.
 
 107
-00:08:58,876 --> 00:09:03,275
-Eso es todo. Abre Viajapp en viajapp-trip.web.app,
+00:08:38,878 --> 00:08:44,264
+Con las boletas leídas, genera la Planilla de gastos en Excel o en Word.
 
 108
-00:09:03,295 --> 00:09:08,582
-instálala en tu celular y comparte el viaje con tu grupo.
+00:08:44,364 --> 00:08:48,517
+Incluye un resumen por boleta y el detalle de cada producto,
 
 109
-00:09:08,682 --> 00:09:15,004
+00:08:48,537 --> 00:08:51,430
+lista para rendir ante tu institución.
+
+110
+00:08:52,480 --> 00:08:56,906
+En el bar o el restaurante, usa Cuentas separadas.
+
+111
+00:08:57,006 --> 00:09:02,608
+La inteligencia artificial lee la boleta y tú indicas qué consumió cada persona.
+
+112
+00:09:02,708 --> 00:09:08,550
+La app suma la propina que elijas y calcula exactamente cuánto paga cada uno.
+
+113
+00:09:09,600 --> 00:09:15,867
+Al final del viaje, la Carta financiera genera un PDF formal con los fondos, los gastos,
+
+114
+00:09:15,887 --> 00:09:19,138
+los responsables y las boletas como anexo.
+
+115
+00:09:19,238 --> 00:09:23,928
+Puedes poner el logo de tu institución en todos los documentos.
+
+116
+00:09:24,978 --> 00:09:30,604
+Desde la tarjeta Tu grupo, en Inicio, se abren cuatro herramientas.
+
+117
+00:09:30,704 --> 00:09:36,141
+¿Quién lleva qué? reparte las cosas compartidas, como la parrilla o el parlante,
+
+118
+00:09:36,161 --> 00:09:38,730
+y controla que vuelvan a su dueño.
+
+119
+00:09:38,830 --> 00:09:43,760
+Habitaciones asigna las camas, a mano o con un sorteo.
+
+120
+00:09:43,860 --> 00:09:48,526
+Y la Bitácora registra lo que hace cada persona en el viaje.
+
+121
+00:09:49,576 --> 00:09:56,834
+Y para evitar discusiones, la ruleta elige al azar quién lava la loza, saca la basura o cocina.
+
+122
+00:09:56,934 --> 00:10:02,344
+Con la opción Por turnos, nadie repite hasta que a todos les haya tocado.
+
+123
+00:10:03,394 --> 00:10:08,180
+En Mis viajes guardas todos tus viajes y cambias entre ellos.
+
+124
+00:10:08,280 --> 00:10:14,338
+Puedes usar un viaje anterior como plantilla para repetirlo, sin copiar los gastos.
+
+125
+00:10:14,438 --> 00:10:20,784
+Y si creas una cuenta con tu correo o con Google, recuperas tus viajes en cualquier celular.
+
+126
+00:10:21,834 --> 00:10:27,532
+Por último, elige el tema Día o Noche y el tamaño de letra que te acomode.
+
+127
+00:10:27,632 --> 00:10:32,946
+Viajapp está pensada para que la use todo el grupo, de cualquier edad.
+
+128
+00:10:33,996 --> 00:10:38,395
+Eso es todo. Abre Viajapp en viajapp-trip.web.app,
+
+129
+00:10:38,415 --> 00:10:43,702
+instálala en tu celular y comparte el viaje con tu grupo.
+
+130
+00:10:43,802 --> 00:10:50,124
 Si tienes dudas, el manual completo está en la aplicación. ¡Buen viaje!

@@ -130,7 +130,7 @@
     <a href="#super">Súper</a>
     <a href="#despensa">Despensa</a>
     <a href="#recetas">Recetas</a>
-    <a href="#dietas">Dietas y alergias</a>
+    <a href="#dietas">Dietas y salud</a>
     <a href="#dinero">Dinero</a>
     <a href="#agenda">Agenda</a>
     <a href="#grupo">Tu grupo</a>
@@ -144,8 +144,8 @@
 
   <!-- Video tutorial -->
   <section id="video" class="no-print">
-    <div class="sec-head"><h2>Video: Viajapp en 9 minutos</h2></div>
-    <p class="lead">Un recorrido por todos los módulos y por cómo funciona la inteligencia artificial que lee las boletas, con voz y subtítulos en español.</p>
+    <div class="sec-head"><h2>Video: Viajapp en 11 minutos</h2></div>
+    <p class="lead">Un recorrido por todos los módulos y por cómo funciona la inteligencia artificial (el Chef IA y la lectura de boletas), con voz y subtítulos en español.</p>
     <video class="video" controls preload="none" poster="img/video-portada.webp" src="Video-Viajapp.mp4"></video>
     <p class="video-links"><a href="Video-Viajapp.mp4" download>Descargar el video (MP4)</a> · <a href="Video-Viajapp.srt" download>Subtítulos (SRT)</a></p>
   </section>
@@ -332,6 +332,7 @@
           <li>Con el botón <span class="ui">+</span> creas tu propia receta: nombre, categoría, ingredientes base y variantes.</li>
           <li>Las cantidades se escriben <b>por persona</b>. Usa la unidad <b>"fijo"</b> para lo que se compra una sola vez, como sal o especias.</li>
           <li>Puedes elegir los productos del catálogo o escribir uno nuevo: se crea solo en el Súper.</li>
+          <li>En <b>Preparación</b> puedes escribir los pasos (uno por línea): aparecen al abrir la receta.</li>
           <li>Puedes <span class="ui">Editar receta</span> en cualquiera de las incluidas sin perder la original: siempre está <span class="ui">Restaurar original</span>. También puedes <b>ocultar</b> las que no te sirvan.</li>
           <li>Tus recetas y las que modificaste aparecen en el filtro <span class="ui">Mías</span>, con una estrella.</li>
           <li>Marca <span class="ui">Rinde para grupos grandes</span> para que tu receta aparezca en ese filtro.</li>
@@ -344,20 +345,58 @@
         <figure><span class="phone"><img loading="lazy" src="img/08-receta-editor.webp" alt="Editor de recetas con ingredientes y variantes"></span><figcaption>Editor de recetas</figcaption></figure>
       </div>
     </div>
+    <div class="split" id="chef">
+      <div>
+        <h3>Chef IA: ¿qué cocinamos con lo que hay?</h3>
+        <p>El botón naranjo <span class="ui">Chef IA</span>, arriba en Recetas, te propone <b>3 recetas</b> pensadas para el grupo con lo que ya tienen.</p>
+        <ol class="steps">
+          <li>Revisa <b>cuántas personas</b> comen (parte con el grupo completo, incluidas las personas extra).</li>
+          <li>Elige el <b>tiempo</b>: Sin apuro, 15 min, 30 min o 1 hora.</li>
+          <li>Si quieres, escribe o <b>dicta</b> qué se te antoja: <i>"algo calentito", "sin horno", "para el asado"</i>.</li>
+          <li>Toca <span class="ui">Proponer recetas</span>. En unos segundos verás 3 ideas, cada una con su tiempo, su dificultad y cuántos ingredientes salen de la despensa.</li>
+        </ol>
+        <p>Cada propuesta explica <b>por qué conviene</b>, cómo se <b>adapta</b> para cada persona (por ejemplo, fideos sin gluten aparte para Cami), cómo cuida la <b>salud</b> del grupo y trae un <b>dato o truco</b> de cocina. Toca <span class="ui">Ver ingredientes y preparación</span> para ver lo que está "en despensa", lo que hay que "comprar" y los pasos.</p>
+        <ul class="dots">
+          <li><span class="ui">Lo que falta a la lista</span>: agrega solo lo que no tienen, con la cantidad.</li>
+          <li><span class="ui">Agendar</span>: la pone en la agenda con los ingredientes y los pasos en las notas.</li>
+          <li><span class="ui">Guardar en Mías</span>: queda como receta propia, con cantidades por persona y su <b>preparación</b>.</li>
+          <li>Si se parece a una receta del recetario, aparece <span class="ui">Ver “nombre”</span> para abrirla.</li>
+          <li><span class="ui">Otras ideas</span> pide 3 recetas nuevas.</li>
+        </ul>
+        <div class="tip"><b>¿Cómo funciona?</b> La app manda al servidor seguro de Viajapp la lista de la despensa, lo que falta comprar, las dietas y condiciones de salud del grupo y los nombres del recetario. Un modelo de inteligencia artificial de Google (Gemini) arma las recetas respetando las alergias y dietas como reglas obligatorias. No se envían fotos, gastos ni datos de contacto. Hay un máximo de 25 consultas por persona al día.</div>
+        <div class="tip warn"><b>Sin internet:</b> el Chef IA muestra recetas del recetario ordenadas según cuánto aprovechan tu despensa y que sean aptas para el grupo. Revisa siempre los ingredientes si hay alergias: la IA puede equivocarse.</div>
+      </div>
+      <div class="shots">
+        <figure><span class="phone"><img loading="lazy" src="img/51-chef-ia.webp" alt="Chef IA: personas, tiempo y antojo"></span><figcaption>Personas, tiempo y antojo</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/52-chef-propuestas.webp" alt="Tres recetas propuestas por el Chef IA"></span><figcaption>3 propuestas para el grupo</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/53-chef-detalle.webp" alt="Ingredientes en despensa o por comprar y preparación"></span><figcaption>Ingredientes y preparación</figcaption></figure>
+      </div>
+    </div>
   </section>
 
   <!-- 6. Dietas -->
   <section id="dietas">
-    <div class="sec-head"><span class="sec-num" style="--c:linear-gradient(135deg,#34d399,#38bdf8)">6</span><h2>Dietas y alergias del grupo</h2></div>
-    <p class="lead">Anota quién es vegetariano, celíaco, sin lactosa o alérgico a algo, y Viajapp lo tiene en cuenta en todas las recetas y en la lista del súper.</p>
+    <div class="sec-head"><span class="sec-num" style="--c:linear-gradient(135deg,#34d399,#38bdf8)">6</span><h2>Dietas, alergias y salud del grupo</h2></div>
+    <p class="lead">Anota quién es vegetariano, celíaco, sin lactosa, alérgico a algo o tiene una condición de salud como diabetes o hipertensión, y Viajapp lo tiene en cuenta en todas las recetas, en el Chef IA y en la lista del súper.</p>
     <div class="split rev">
       <div>
         <h3>Configurarlas</h3>
         <ol class="steps">
           <li>En la hoja del viaje (ajustes en Inicio) toca <span class="ui">Dietas y alergias</span>, o el aviso verde de arriba en Recetas.</li>
           <li>Para cada persona marca lo que corresponda: <b>vegetariano, vegano, celíaco / sin gluten, sin lactosa, sin cerdo, alergia a mariscos, a frutos secos / maní, al huevo</b> o <b>no toma alcohol</b>.</li>
-          <li>Si hay algo más (por ejemplo "no le gusta el cilantro"), escríbelo en la nota.</li>
+          <li>En <b>Condiciones de salud</b> marca si corresponde: <b>diabetes, hipertensión, colesterol o triglicéridos altos, enfermedad renal, embarazo, gota</b> o <b>gastritis o reflujo</b>.</li>
+          <li>Si hay algo más (por ejemplo "no le gusta el cilantro"), escríbelo en la nota. El Chef IA también la lee.</li>
         </ol>
+        <h3>Condiciones de salud</h3>
+        <p>Una condición de salud no prohíbe recetas: las <b>cuida</b>. Si hay un reemplazo en el catálogo, se adapta igual que una dieta (porción aparte o todo el plato); si no, la receta avisa que se use en poca cantidad.</p>
+        <ul class="dots">
+          <li><b>Diabetes:</b> azúcar → endulzante, bebida → Coca Zero, mermelada y manjar → light; avisa en postres, jugos y dulces.</li>
+          <li><b>Hipertensión</b> y <b>enfermedad renal:</b> avisa en lo alto en sodio (caldos en cubo, sopas en sobre, cecinas, salsa de soya, snacks salados).</li>
+          <li><b>Colesterol alto:</b> leche entera → descremada, carne molida → 4% grasa, mayonesa → light; avisa en cecinas, frituras, mantequilla y crema.</li>
+          <li><b>Embarazo:</b> el alcohol queda fuera (igual que "no toma alcohol") y avisa en cecinas crudas y ahumados.</li>
+          <li><b>Gota:</b> avisa en mariscos, atún, jurel, paté y cerveza. <b>Gastritis o reflujo:</b> avisa en lo picante y el alcohol.</li>
+        </ul>
+        <div class="tip warn"><b>Importante:</b> son recomendaciones generales para cocinar en grupo. No reemplazan la indicación del médico o nutricionista de cada persona.</div>
         <h3>Qué hace la app con eso</h3>
         <ul class="dots">
           <li><b>En el recetario</b> cada receta muestra si es <b>"Apta para todos"</b>, si <b>"Se adapta"</b> con reemplazos o si <b>"No apta"</b> para alguien. El filtro <span class="ui">Aptas para el grupo</span> deja solo las que sirven.</li>
@@ -375,6 +414,7 @@
       </div>
       <div class="shots">
         <figure><span class="phone"><img loading="lazy" src="img/23-dietas.webp" alt="Hoja de dietas y alergias por persona"></span><figcaption>Dietas y alergias por persona</figcaption></figure>
+        <figure><span class="phone"><img loading="lazy" src="img/54-dietas-salud.webp" alt="Condiciones de salud: diabetes marcada para Pedro"></span><figcaption>Condiciones de salud</figcaption></figure>
         <figure><span class="phone"><img loading="lazy" src="img/06-recetas.webp" alt="Recetario con las dietas del grupo y etiquetas de aptitud"></span><figcaption>Recetas aptas, adaptables o no aptas</figcaption></figure>
         <figure><span class="phone"><img loading="lazy" src="img/25-receta-adaptada.webp" alt="Receta de asado adaptada: pan sin gluten para Cami y aviso para Diego"></span><figcaption>Reemplazos y avisos al cocinar</figcaption></figure>
         <figure><span class="phone"><img loading="lazy" src="img/05-super-lista.webp" alt="Lista con avisos de no apto"></span><figcaption>Avisos en la lista del súper</figcaption></figure>
@@ -695,6 +735,8 @@
     <details><summary>¿Puedo poner más de un responsable en la carta financiera?</summary><p>Sí. En la hoja del viaje, en Responsables, toca "Agregar responsable" las veces que necesites. Todos aparecen en la carta con su RUT y su propia línea de firma.</p></details>
     <details><summary>Agregué una receta y las cantidades son muchas o pocas</summary><p>Las cantidades dependen de las personas elegidas. Cambia el número en "¿Para cuántas personas?" antes de agregar, o ajusta la cantidad después en Mi lista con los botones − y +.</p></details>
     <details><summary>Vienen niños o visitas que no están en la lista, ¿cómo los cuento?</summary><p>En la hoja del viaje (engranaje) escribe cuántas son en <b>Personas extra</b>, o súmalas en la receta con − y + junto a "extra". Las recetas parten calculando para todos: los de la lista más los extra.</p></details>
+    <details><summary>¿El Chef IA puede equivocarse con una alergia?</summary><p>El Chef IA trata las dietas y alergias como reglas obligatorias, pero es una inteligencia artificial y puede equivocarse. Revisa siempre los ingredientes antes de cocinar para alguien con alergia. Las recetas del recetario, en cambio, se revisan con la tabla de ingredientes de la app.</p></details>
+    <details><summary>¿Por qué una receta dice "en poca cantidad" para alguien?</summary><p>Porque esa persona tiene una condición de salud (por ejemplo, hipertensión) y la receta lleva algo que conviene moderar, como el caldo en cubo, y el catálogo no tiene un reemplazo. La receta sigue siendo apta; es solo un aviso.</p></details>
     <details><summary>¿De dónde sale el clima?</summary><p>De Open-Meteo, un servicio gratuito de pronóstico. Se necesita internet para consultarlo; sin conexión se muestra la última consulta. El pronóstico llega a 16 días; para fechas más lejanas se muestra cómo estuvo el clima el año pasado.</p></details>
     <details><summary>¿La despensa se actualiza sola?</summary><p>Sí: suma lo que marcas como comprado y descuenta lo que cocinan cuando marcas un plan con receta como "cocinado". Lo que traigan de sus casas o lo que se use sin receta lo ajustas a mano con − y +.</p></details>
     <details><summary>Alguien del grupo es celíaco o vegetariano, ¿qué hago?</summary><p>Anótalo en Dietas y alergias. Las recetas te dirán cuáles sirven para todos y cuáles se pueden adaptar, y al agregar una receta se compra solo para esa persona la versión apta (por ejemplo, fideos sin gluten).</p></details>

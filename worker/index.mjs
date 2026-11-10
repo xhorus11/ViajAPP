@@ -1,9 +1,11 @@
-/* ViajAPP · intermediario para leer boletas con IA (Cloudflare Worker).
+/* ViajAPP · intermediario de IA (Cloudflare Worker): leer boletas y Chef IA.
+   - POST /chef { personas, minutos, antojo, despensa, lista, restricciones, recetario } → 3 recetas (ver chef.mjs).
    - Recibe POST /leer { image: base64, mime } con la sesión de Firebase en "Authorization: Bearer <idToken>".
    - Solo atiende a la app (CORS + verificación del token de Firebase) y limita lecturas por persona y por día.
    - Lee con Gemini (clave secreta GEMINI_API_KEY) y, si falla o se acaba la cuota, con Workers AI.
    Las claves nunca llegan al celular. */
 import { PROMPT, SCHEMA, CATS, readWithGemini, check } from './boleta.mjs';
+import { chefWithGemini, chefWithWorkersAI, cleanInput, normalizeChef } from './chef.mjs';
 
 const GEMINI = ['gemini-3.5-flash-lite', 'gemini-flash-lite-latest'];
 // Respaldo en Cloudflare (probado con boletas reales: Llama 4 Scout fue el más fiable; Gemma 4 y Mistral fallaron)
@@ -26,7 +28,7 @@ export default {
 
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
     if (req.method === 'GET' && url.pathname === '/') return out(200, { ok: true, servicio: 'viajapp-boletas' });
-    if (req.method !== 'POST' || url.pathname !== '/leer') return out(404, { ok: false, error: 'No encontrado' });
+    if (req.method !== 'POST' || !['/leer', '/chef'].includes(url.pathname)) return out(404, { ok: false, error: 'No encontrado' });
     if (origin && !allowed.includes(origin)) return out(403, { ok: false, error: 'Origen no permitido' });
 
     // 1) ¿Quién pide? Sesión de Firebase (anónima) válida del proyecto
@@ -34,8 +36,10 @@ export default {
     try { uid = await verifyFirebase((req.headers.get('authorization') || '').replace(/^Bearer\s+/i, ''), env.FIREBASE_PROJECT); }
     catch (e) { return out(401, { ok: false, error: 'Sesión no válida. Abre la app con internet e intenta de nuevo.' }); }
 
-    // 2) Límite diario por persona (y uno general para cuidar la cuota gratis)
     const day = new Date().toISOString().slice(0, 10);
+    if (url.pathname === '/chef') return chef(req, env, uid, day, out);
+
+    // 2) Límite diario por persona (y uno general para cuidar la cuota gratis)
     const per = +(env.LIMIT_PER_USER || 40), all = +(env.LIMIT_TOTAL || 600);
     const kU = `u:${uid}:${day}`, kT = `t:${day}`;
     const [nU, nT] = await Promise.all([env.LIMITS.get(kU), env.LIMITS.get(kT)]).then(v => v.map(x => +x || 0));
@@ -80,6 +84,30 @@ export default {
     return out(502, { ok: false, error: 'No se pudo leer la boleta ahora. Intenta en un rato o anótala a mano.', detalle: fails });
   }
 };
+
+/* Chef IA: Gemini → Gemini 2 → Workers AI, con su propio límite diario */
+async function chef(req, env, uid, day, out) {
+  const per = +(env.CHEF_PER_USER || 25), all = +(env.CHEF_TOTAL || 400);
+  const kU = `c:${uid}:${day}`, kT = `ct:${day}`;
+  const [nU, nT] = await Promise.all([env.LIMITS.get(kU), env.LIMITS.get(kT)]).then(v => v.map(x => +x || 0));
+  if (nU >= per) return out(429, { ok: false, error: `Llegaste al máximo de ${per} consultas al Chef IA por hoy. Mañana puedes seguir.` });
+  if (nT >= all) return out(429, { ok: false, error: 'El Chef IA llegó a su máximo de hoy. Intenta mañana.' });
+  let body;
+  try { body = await req.json(); } catch (e) { return out(400, { ok: false, error: 'Solicitud no válida' }); }
+  const input = cleanInput(body), ids = new Set(input.recetario.map(r => r.id)), fails = [], t0 = Date.now();
+  const order = GEMINI.map(m => ['g', m]).concat([['cf', CF_MODELS[0]]]);
+  for (const [kind, model] of order) {
+    try {
+      const raw = kind === 'g' ? await chefWithGemini({ key: env.GEMINI_API_KEY, model, input }) : await chefWithWorkersAI(env, model, input);
+      const data = normalizeChef(raw, ids);
+      if (!data.recetas.length) throw new Error('Sin recetas');
+      await Promise.all([env.LIMITS.put(kU, String(nU + 1), { expirationTtl: 172800 }), env.LIMITS.put(kT, String(nT + 1), { expirationTtl: 172800 })]);
+      return out(200, { ok: true, model, ms: Date.now() - t0, data, intentos: fails, restantes: per - nU - 1 });
+    } catch (e) { fails.push(`${model}: ${String(e.message || e).slice(0, 120)}`); }
+  }
+  console.log('Chef: fallaron todos', fails);
+  return out(502, { ok: false, error: 'El Chef IA no pudo responder ahora. Intenta en un rato.', detalle: fails });
+}
 
 /* Workers AI (respaldo): mensajes con imagen + salida JSON según el mismo esquema */
 async function readWithWorkersAI(env, model, b64, mime) {

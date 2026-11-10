@@ -26,8 +26,41 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     items: [['Fideos spaghetti', 'Fideos spaghetti x4', 4, 1490, 5960], ['Salsa pesto', 'Salsa pesto x2', 2, 3990, 7980], ['Queso parmesano', 'Queso parmesano', 1, 6490, 6490], ['Asado de tira', 'Asado de tira 1,5kg', 1.5, 15933, 23900], ['Chorizo', 'Chorizo x8', 8, 950, 7600], ['Pan marraqueta', 'Pan marraqueta 2kg', 2, 2100, 4200], ['Bebida 3 L', 'Bebidas 3L x4', 4, 2990, 11960], ['Carbón 5 kg', 'Carbón 5kg', 1, 6990, 6990], ['Tomate y cebolla', 'Tomate / cebolla', 1, 4270, 4270], ['Hielo 2 kg', 'Hielo 2kg', 1, 3000, 3000]]
       .map(([nombre, orig, cant, pUnit, total]) => ({ nombre, orig, cant, unidad: /kg/.test(orig) && cant % 1 ? 'kg' : 'un', pUnit, total })),
     neto: 69202, iva: 13148, propina: 0, total: 82350, legible: true, avisos: [] };
+  // Chef IA de ejemplo: los ids de la despensa se toman de lo que manda la app
+  const chefDemo = body => {
+    const pid = re => (body.despensa.find(x => re.test(x.n)) || {}).id || '';
+    const g = (nombre, cant, unidad, re) => ({ nombre, cant, unidad, despensa: re ? pid(re) : '' });
+    return {
+      intro: 'Tres ideas para aprovechar el arroz, los tallarines y las paltas que quedan en la cabaña.',
+      recetas: [
+        { nombre: 'Arroz con chorizo y verduras', emoji: '🥘', minutos: 35, categoria: 'arroz', dificultad: 'Fácil', base: '',
+          porQue: 'Usa el arroz y los chorizos de la despensa en una sola olla.',
+          ingredientes: [g('Arroz grado 1', 400, 'g', /arroz/i), g('Chorizo', 4, 'un', /chorizo/i), g('Cebolla', 1, 'un'), g('Pimentón rojo', 1, 'un'), g('Aceite', 2, 'cda', /aceite/i), g('Sal', 0, 'al gusto', /sal fina/i)],
+          pasos: ['Corta el chorizo en rodajas y dóralo en la olla.', 'Agrega la cebolla y el pimentón picados y sofríe 5 minutos.', 'Suma el arroz, revuelve un minuto y agrega 800 ml de agua caliente con sal.', 'Cocina tapado a fuego bajo 18 minutos.', 'Deja reposar 5 minutos antes de servir.'],
+          adaptaciones: ['Para Diego (vegetariano): separa una porción de arroz antes de agregar el chorizo y súmale champiñones salteados.'],
+          salud: 'Para Pedro (diabetes): porción moderada de arroz acompañada de una buena ensalada.', tip: 'Si el arroz se pega un poco al fondo, no lo raspes: en España a esa costra la llaman socarrat y es la parte favorita.' },
+        { nombre: 'Tallarines con pesto de palta', emoji: '🍝', minutos: 25, categoria: 'pastas', dificultad: 'Fácil', base: 'pastas',
+          porQue: 'Aprovecha los tallarines, las paltas maduras y el queso parmesano.',
+          ingredientes: [g('Tallarines', 400, 'g', /fideos/i), g('Fideos sin gluten', 100, 'g'), g('Palta', 2, 'un', /palta/i), g('Queso parmesano', 40, 'g', /queso/i), g('Ajo', 1, 'un'), g('Limón', 1, 'un'), g('Aceite', 3, 'cda', /aceite/i)],
+          pasos: ['Cuece los tallarines en agua con sal.', 'En una olla aparte cuece los fideos sin gluten para Cami.', 'Muele la palta con el ajo, el jugo de limón, el aceite y el queso.', 'Mezcla la salsa con los fideos recién colados.', 'Sirve con un poco más de queso rallado.'],
+          adaptaciones: ['Para Cami (celíaca): fideos sin gluten en una olla aparte, con su propio colador.'],
+          salud: 'Grasas buenas de la palta en vez de crema.', tip: 'Un chorrito del agua de cocción deja la salsa más cremosa sin agregar crema.' },
+        { nombre: 'Ensalada tibia de arroz, palta y huevo', emoji: '🥗', minutos: 20, categoria: 'ensaladas', dificultad: 'Fácil', base: '',
+          porQue: 'Una opción liviana con el arroz que sobre y las paltas.',
+          ingredientes: [g('Arroz grado 1', 300, 'g', /arroz/i), g('Palta', 2, 'un', /palta/i), g('Huevos', 4, 'un'), g('Tomate', 2, 'un'), g('Limón', 1, 'un')],
+          pasos: ['Cuece el arroz y déjalo entibiar.', 'Cuece los huevos 9 minutos y córtalos en cuartos.', 'Corta la palta y el tomate en cubos.', 'Mezcla todo y aliña con limón, aceite y sal.'],
+          adaptaciones: [], salud: '', tip: 'Ideal para llevar en un táper al paseo del día siguiente.' }
+      ]
+    };
+  };
   await page.setRequestInterception(true);
   page.on('request', r => {
+    if (/viajapp-boletas\..*workers\.dev\/chef/.test(r.url())) {
+      const h = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'authorization, content-type', 'content-type': 'application/json' };
+      if (r.method() === 'OPTIONS') return r.respond({ status: 204, headers: h });
+      const data = chefDemo(JSON.parse(r.postData() || '{}'));
+      return setTimeout(() => r.respond({ status: 200, headers: h, body: JSON.stringify({ ok: true, model: 'demo', data }) }), 1500);
+    }
     if (/viajapp-boletas\..*workers\.dev\/leer/.test(r.url())) {
       const h = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'authorization, content-type', 'content-type': 'application/json' };
       if (r.method() === 'OPTIONS') return r.respond({ status: 204, headers: h });
@@ -95,7 +128,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       { id: 'v7', type: 'almuerzo', title: 'Cazuela · De ave', date: d(2), time: '14:00', place: 'Cabaña', who: 'Pedro', notes: '' },
       { id: 'v8', type: 'snack', title: 'Tabla de picoteo', date: d(-1), time: '19:00', place: 'Terraza', who: 'Cami', notes: '' }
     ];
-    S.trip.diets = { Cami: { tags: ['celiaco'], note: '' }, Diego: { tags: ['vegetariano'], note: 'No le gusta el cilantro' } };
+    S.trip.diets = { Cami: { tags: ['celiaco'], note: '' }, Diego: { tags: ['vegetariano'], note: 'No le gusta el cilantro' }, Pedro: { tags: ['diabetes'], note: '' } };
     const pi = {}, pa = (c, i, v, a) => { pi[`${c}|${i}|${v}`] = { c, i, v, a, t: now }; };
     pa('lacteos', 'Queso', 'Parmesano', { g: 80 });
     pa('carnes', 'Embutidos', 'Chorizo', { un: 4 });
@@ -189,6 +222,13 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await tab('recipes'); await shot('06-recetas');
   await click('[data-act="rcat"][data-c="big"]', 900); await shot('50-recetas-grupos', 700);
   await click('[data-act="rcat"][data-c="all"]', 700); await page.evaluate(() => scrollTo(0, 0));
+  // Chef IA
+  await click('.chef-btn', 900); await shot('51-chef-ia', 600);
+  await click('[data-act="chefGo"]', 300); await page.waitForSelector('.chef-card', { timeout: 9000 }); await shot('52-chef-propuestas', 900);
+  await click('[data-act="chefOpen"][data-i="1"]', 500);
+  await page.evaluate(() => { const b = document.getElementById('sheetBody'), c = document.querySelectorAll('.chef-card')[1]; b.scrollTop += c.getBoundingClientRect().top - b.getBoundingClientRect().top - 10; });
+  await shot('53-chef-detalle', 600); await esc();
+  await page.evaluate(() => scrollTo(0, 0));
   await click('[data-act="cook"][data-id="pastas"]', 800);
   await click('[data-act="cookVar"][data-i="1"]', 400);
   await shot('07-receta-cocinar', 700); await esc();
@@ -261,7 +301,9 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await click('[data-act="brandMode"][data-v="viajapp"]', 600);
   await click('[data-act="diets"]', 900);
   await page.evaluate(() => { const p = document.querySelectorAll('.diet-person')[2]; if (p) p.scrollIntoView({ block: 'start' }); document.getElementById('sheetBody').scrollTop -= 10; });
-  await shot('23-dietas', 700); await esc();
+  await shot('23-dietas', 700);
+  await page.evaluate(() => { const p = [...document.querySelectorAll('.diet-person')].find(x => /Pedro/.test(x.querySelector('.dp-name').textContent)); const b = document.getElementById('sheetBody'); b.scrollTop += p.getBoundingClientRect().top - b.getBoundingClientRect().top - 10; });
+  await shot('54-dietas-salud', 700); await esc();
   await click('.share-cta', 900); await shot('20-compartir-crear', 700); await esc();
   await page.evaluate(() => {
     Object.assign(Sync, { active: true, ready: true, tripId: 'Kq3vT8wXr2LmP9sZbN4e', uid: 'u1', status: 'online', members: ['u1', 'u2', 'u3', 'u4'], names: { u1: 'Ana', u2: 'Pedro', u3: 'Cami', u4: 'Diego' } });

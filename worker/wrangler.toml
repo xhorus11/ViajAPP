@@ -1,4 +1,4 @@
-# Intermediario de ViajAPP para leer boletas (ver index.mjs).
+# Intermediario de ViajAPP: leer boletas y Chef IA (ver index.mjs).
 # Publicar: cd worker; npx wrangler@4 deploy
 # Clave de Gemini (secreta, NO va en este archivo): npx wrangler@4 secret put GEMINI_API_KEY
 name = "viajapp-boletas"
@@ -10,6 +10,8 @@ ALLOWED_ORIGINS = "https://viajapp-trip.web.app,http://localhost:8765,http://127
 FIREBASE_PROJECT = "viajapp-e589e"
 LIMIT_PER_USER = "40"
 LIMIT_TOTAL = "600"
+CHEF_PER_USER = "25"
+CHEF_TOTAL = "400"
 
 [ai]
 binding = "AI"

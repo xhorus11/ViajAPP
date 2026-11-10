@@ -1,6 +1,8 @@
 /* Dietas y alergias: qué contiene cada producto del catálogo y con qué se puede reemplazar.
    attrs(c, i, v) → Set de atributos del producto (gluten, dairy, meat...).
-   Cada dieta indica qué atributos evita; substitute() busca un reemplazo del catálogo que no los tenga. */
+   Cada dieta indica qué atributos evita; substitute() busca un reemplazo del catálogo que no los tenga.
+   Condiciones de salud (CONDS): "care" son atributos que conviene cuidar (no prohíben la receta: se reemplazan
+   si hay alternativa o quedan como aviso); "avoid" es estricto, igual que una dieta. */
 (function () {
   const DIETS = [
     { id: 'vegetariano', name: 'Vegetariano', avoid: ['meat', 'fish'] },
@@ -13,7 +15,17 @@
     { id: 'huevo', name: 'Alergia al huevo', avoid: ['egg'] },
     { id: 'sin_alcohol', name: 'No toma alcohol', avoid: ['alcohol'] }
   ];
+  const CONDS = [
+    { id: 'diabetes', name: 'Diabetes', care: ['sugar'] },
+    { id: 'hipertension', name: 'Hipertensión', care: ['sodium'] },
+    { id: 'colesterol', name: 'Colesterol o triglicéridos altos', care: ['satfat'] },
+    { id: 'renal', name: 'Enfermedad renal', care: ['sodium'] },
+    { id: 'embarazo', name: 'Embarazo', avoid: ['alcohol'], care: ['cured'] },
+    { id: 'gota', name: 'Gota (ácido úrico)', care: ['purine'] },
+    { id: 'gastritis', name: 'Gastritis o reflujo', care: ['spicy', 'alcohol'] }
+  ];
   const ATTR = {
+    sugar: 'azúcar', sodium: 'sodio', satfat: 'grasas saturadas', cured: 'cecinas crudas o ahumados', purine: 'purinas', spicy: 'picante',
     meat: 'carne', fish: 'pescado o marisco', seafood: 'mariscos', dairy: 'lácteos', dairy_lf: 'lácteos',
     egg: 'huevo', honey: 'miel', gluten: 'gluten', pork: 'cerdo', nuts: 'frutos secos', alcohol: 'alcohol'
   };
@@ -24,6 +36,35 @@
     snacks: ['Galletas', 'Barras de cereal'], desayuno: ['Cereal'], aceites: ['Salsa de soya', 'Salsas asiáticas'], alcohol: ['Cerveza']
   };
   const SEAFOOD = ['Camarones', 'Choritos', 'Machas / Almejas', 'Mix de mariscos', 'Surimi'];
+
+  /* Listas por condición: "cat|Producto" (todas las variantes), "cat|Producto|Var1,Var2" (solo esas) o "cat|Producto|!Var" (todas menos esas) */
+  const SUGAR = ['despensa|Azúcar|!Endulzante', 'despensa|Postres en polvo', 'desayuno|Mermelada|!Light', 'desayuno|Manjar|!Light', 'desayuno|Miel',
+    'desayuno|Nutella / Untable|!Mantequilla de maní', 'desayuno|Chocolate en polvo', 'desayuno|Cereal|Chocapic,Corn flakes,Granola',
+    'bebestibles|Bebida|!Coca Zero', 'bebestibles|Jugo|!Natural', 'bebestibles|Energética', 'bebestibles|Isotónica', 'bebestibles|Leche saborizada',
+    'lacteos|Leche condensada', 'snacks|Chocolates', 'snacks|Dulces', 'snacks|Galletas|Dulces,Oreo,Triton,Champaña', 'snacks|Cabritas|Dulces', 'snacks|Barras de cereal',
+    'panaderia|Queque / Kuchen', 'congelados|Helado', 'despensa|Conservas|Duraznos,Piña', 'frutas|Durazno|Conserva', 'frutas|Piña|Conserva',
+    'aceites|Salsas asiáticas|Teriyaki,Agridulce', 'aceites|Salsa BBQ', 'aceites|Ketchup', 'aceites|Mostaza|Miel mostaza',
+    'despensa|Repostería|Chips de chocolate', 'alcohol|Pisco|Sour preparado', 'alcohol|Espumante|Demi sec'];
+  const SODIUM = ['carnes|Embutidos', 'carnes|Fiambres', 'carnes|Tocino', 'desayuno|Paté', 'despensa|Sopas', 'despensa|Puré', 'aceites|Salsa de soya',
+    'aceites|Salsas asiáticas', 'snacks|Papas fritas', 'snacks|Frutos secos|Maní salado', 'despensa|Conservas|Aceitunas,Chucrut', 'congelados|Nuggets / Apanados',
+    'congelados|Pizza congelada', 'snacks|Nachos y salsas', 'pescados|Salmón|Ahumado', 'snacks|Galletas|Saladas,Soda', 'despensa|Arroz|Preparado', 'despensa|Sal|Parrillera'];
+  const SATFAT = ['carnes|Embutidos', 'carnes|Tocino', 'carnes|Fiambres|Salame,Mortadela,Arrollado', 'carnes|Cerdo|Costillar,Panceta,Malaya', 'carnes|Cordero|Costillar',
+    'carnes|Vacuno|Asado de tira,Lomo vetado', 'carnes|Carne molida|10% grasa,Mixta', 'lacteos|Mantequilla', 'lacteos|Crema|De leche,Chantilly,Ácida',
+    'lacteos|Queso|Mantecoso,Gauda laminado,Cheddar,Crema,Mascarpone,Parmesano,Rallado,Mozzarella', 'lacteos|Leche|Entera', 'lacteos|Leche condensada',
+    'aceites|Aceite|Coco', 'aceites|Mayonesa|Normal,Casera', 'congelados|Papas pre-fritas', 'congelados|Nuggets / Apanados', 'congelados|Pizza congelada',
+    'congelados|Empanadas', 'snacks|Papas fritas', 'snacks|Chocolates', 'congelados|Helado|!Vegano', 'panaderia|Queque / Kuchen', 'panaderia|Masas', 'desayuno|Paté'];
+  const CURED = ['carnes|Fiambres|Salame', 'pescados|Salmón|Ahumado', 'desayuno|Paté'];
+  const PURINE = ['desayuno|Paté', 'alcohol|Cerveza|!Sin alcohol', 'pescados|Jurel', 'pescados|Atún'];
+  const SPICY = ['verduras|Ají', 'aceites|Ají / Salsa picante', 'aceites|Salsas asiáticas|Sriracha', 'aceites|Especias|Curry,Pasta de curry'];
+  function isIn(list, c, i, v) {
+    return list.some(e => {
+      const [cc, ii, vv] = e.split('|');
+      if (cc !== c || ii !== i) return false;
+      if (!vv) return true;
+      const not = vv[0] === '!', vs = (not ? vv.slice(1) : vv).split(',');
+      return not ? !vs.includes(v || '') : vs.includes(v || '');
+    });
+  }
 
   function attrs(c, i, v) {
     const a = new Set();
@@ -82,12 +123,28 @@
         (c === 'snacks' && i === 'Barras de cereal')) a.add('nuts');
     // Alcohol
     if (c === 'alcohol' && i !== 'Hielo' && v !== 'Sin alcohol') a.add('alcohol');
+    // Condiciones de salud
+    if (isIn(SUGAR, c, i, v)) a.add('sugar');
+    if (isIn(SODIUM, c, i, v)) a.add('sodium');
+    if (isIn(SATFAT, c, i, v)) a.add('satfat');
+    if (isIn(CURED, c, i, v)) a.add('cured');
+    if (isIn(PURINE, c, i, v) || (c === 'pescados' && SEAFOOD.includes(i))) a.add('purine');
+    if (isIn(SPICY, c, i, v)) a.add('spicy');
     return a;
   }
 
   /* Reemplazos posibles, en orden de preferencia */
   const is = (c, i) => g => g.c === c && g.i === i;
   const SUBS = [
+    // Condiciones de salud (van primero: si el reemplazo no sirve para una dieta estricta, se sigue buscando)
+    [g => g.c === 'lacteos' && g.i === 'Leche' && g.v === 'Entera', ['lacteos', 'Leche', 'Descremada']],
+    [g => g.c === 'aceites' && g.i === 'Mayonesa' && ['Normal', 'Casera', ''].includes(g.v || ''), ['aceites', 'Mayonesa', 'Light']],
+    [g => g.c === 'despensa' && g.i === 'Azúcar' && g.v !== 'Endulzante', ['despensa', 'Azúcar', 'Endulzante']],
+    [g => g.c === 'bebestibles' && g.i === 'Bebida' && g.v !== 'Coca Zero', ['bebestibles', 'Bebida', 'Coca Zero']],
+    [g => g.c === 'desayuno' && g.i === 'Mermelada' && g.v !== 'Light', ['desayuno', 'Mermelada', 'Light']],
+    [g => g.c === 'desayuno' && g.i === 'Manjar' && g.v !== 'Light', ['desayuno', 'Manjar', 'Light']],
+    [g => g.c === 'carnes' && g.i === 'Carne molida' && ['10% grasa', 'Mixta'].includes(g.v), ['carnes', 'Carne molida', '4% grasa']],
+    [g => g.c === 'despensa' && g.i === 'Sal' && g.v === 'Parrillera', ['despensa', 'Sal', 'De mar']],
     [is('despensa', 'Fideos'), ['despensa', 'Fideos', 'Sin gluten']],
     [g => g.c === 'despensa' && g.i === 'Harina' && !['Maicena', 'De maíz precocida'].includes(g.v), ['despensa', 'Harina', 'Sin gluten']],
     [is('despensa', 'Mote'), ['despensa', 'Quinoa / Cuscús', 'Quinoa']],
@@ -121,7 +178,11 @@
     [g => g.c === 'carnes' && g.i === 'Carne molida' && g.v === 'Mixta', ['carnes', 'Carne molida', '7% grasa']]
   ];
 
-  const avoidOf = tags => new Set((tags || []).flatMap(t => (DIETS.find(d => d.id === t) || { avoid: [] }).avoid));
+  const ALL = DIETS.concat(CONDS);
+  const avoidOf = tags => new Set((tags || []).flatMap(t => (ALL.find(d => d.id === t) || {}).avoid || []));
+  /* Lo que conviene cuidar por salud (sin repetir lo que ya se evita estrictamente) */
+  const careOf = tags => { const av = avoidOf(tags); return new Set((tags || []).flatMap(t => (CONDS.find(d => d.id === t) || {}).care || []).filter(x => !av.has(x))); };
+  const isCond = id => CONDS.some(d => d.id === id);
   const clash = (a, avoid) => [...a].filter(x => avoid.has(x));
   function substitute(g, avoid) {
     for (const [match, t] of SUBS) {
@@ -130,7 +191,8 @@
     }
     return null;
   }
-  const dietName = id => (DIETS.find(d => d.id === id) || { name: id }).name;
+  const dietName = id => (ALL.find(d => d.id === id) || { name: id }).name;
 
-  window.Diet = { DIETS, ATTR, attrs, avoidOf, clash, substitute, dietName };
+  const HEALTH = { SUGAR, SODIUM, SATFAT, CURED, PURINE, SPICY };   // para validar contra el catálogo (tests/check-diets.js)
+  window.Diet = { DIETS, CONDS, ATTR, HEALTH, attrs, avoidOf, careOf, isCond, clash, substitute, dietName };
 })();
