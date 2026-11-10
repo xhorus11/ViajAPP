@@ -289,5 +289,7 @@ Otras: modo "en el súper", precios → gasto automático, OCR de boletas, multi
 - Pruebas: `tests/test-chef.js` 25/25 (Worker real + sin internet), `check-diets` 248 reemplazos (valida que las listas de salud existan en el catálogo), check-recipes OK, regresión OK (diet-pantry, recipes-view, test2, help, group, clima-loza, among, cuentas con `tests/fixtures/logo-institucion.png` como foto). El `puppeteer-core` del scratchpad viejo estaba incompleto: se reinstaló en el scratchpad nuevo.
 - Manual: "Chef IA" en Recetas (capturas 51–53, `shots.js` responde el `/chef` con datos fijos armados con la despensa que manda la app), "Condiciones de salud" en Dietas (captura 54, Pedro con diabetes en `shots.js`), pasos en el editor, 2 FAQ; PDF 39 págs. Video tutorial regenerado con 4 escenas nuevas (condiciones de salud + 3 del Chef IA): 10:50, 58 MB.
 
+- Arreglo posterior: el botón Chef IA se montaba 2 px sobre el buscador. Causa: `.search` es un `<label>` en línea, así que su `margin-bottom` no se aplicaba (el banner usaba `margin-top:-2px`). Ahora `.search { display:block }` y el botón sin margen negativo; Súper también gana su separación de 12 px bajo el buscador. Capturas y PDF regenerados. SW → `viajapp-v27`.
+
 ### (nota sesión 5)
 - El usuario tenía la app en **Vercel**: ya no es necesaria si se publica en Firebase Hosting (recomendado: misma cuenta, dominio ya autorizado). Ojo: los datos locales son por dominio; para pasar datos usar el viaje compartido o Respaldo/Restaurar.
